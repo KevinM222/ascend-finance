@@ -58,7 +58,7 @@ nav ul li a:hover {
 .roadmap {
     position: relative;
     height: 100vh;
-    background: url("../images/rocket.png") no-repeat center center fixed; /* Rocket as background */
+    background: url("../rocket.png") no-repeat center center fixed; /* Rocket as background */
     background-size: cover;
     padding: 40px;
 }
