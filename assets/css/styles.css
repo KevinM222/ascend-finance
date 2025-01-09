@@ -152,6 +152,7 @@ button#disconnectWalletButton {
     margin-bottom: 20px;
 }
 
+/* Roadmap Button */
 .cta-button {
     padding: 12px 20px;
     background-color: #6c757d;
@@ -180,11 +181,9 @@ button#disconnectWalletButton {
     border-radius: 5px;
     font-size: 16px;
     transition: background-color 0.3s ease;
-    position: absolute;
-    top: 10px; /* Position relative to quote button */
-    left: 50%; /* Center the button horizontally */
-    transform: translateX(-50%);
-    z-index: 15;
+    position: relative;
+    margin-bottom: 20px; /* Add spacing between buttons */
+    display: inline-block; /* Ensure proper alignment */
 }
 
 .swap-button:hover {
@@ -221,7 +220,6 @@ button#disconnectWalletButton {
 
     .swap-button {
         font-size: 14px;
-        top: 50px; /* Adjust to maintain spacing on smaller screens */
     }
 
     /* Button max-width for mobile */
