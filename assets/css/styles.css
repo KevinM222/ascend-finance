@@ -1,0 +1,235 @@
+/* Body and html */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #000; /* Fallback background color */
+}
+
+/* Hero section with background image */
+.hero-section {
+    background-image: url('/frontend/Ascend/assets/images/background.webp');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Ensure it takes up the full height */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    color: white;
+    text-align: center;
+    position: relative; /* To ensure that the content stays inside this section */
+    padding-top: 60px; /* Space for toolbar */
+}
+
+/* Ensure content inside the hero section is layered correctly */
+.hero-section h1, .hero-section p {
+    z-index: 10;
+}
+
+/* Logo container and tagline */
+.logo-container {
+    text-align: center;
+    z-index: 10;
+    margin-bottom: 20px;
+}
+
+.main-logo {
+    width: 150px;
+}
+
+.tagline {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* Navigation bar on top */
+nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    padding: 10px 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 20;
+    margin: 0;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Token Information (Balance & Price) */
+.token-info-top {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    position: absolute;
+    top: 60px; /* Positioned under the toolbar */
+    left: 20px; /* Aligned to the left side */
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 300px;
+    border-radius: 5px;
+}
+
+.token-info-top p {
+    margin: 0;
+    padding: 5px 10px;
+}
+
+/* Button container styling */
+.wallet-container {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    z-index: 30;
+}
+
+/* Ensure buttons are centered and have a consistent size */
+button {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    width: 200px;
+    text-align: center;
+    border-radius: 5px;
+    max-width: 100%;
+}
+
+button#connectWalletButton {
+    background-color: #007bff;
+    color: white;
+}
+
+button#connectWalletButton:disabled {
+    background-color: gray;
+}
+
+button#connectWalletButton.connected {
+    background-color: #28a745;
+}
+
+button#disconnectWalletButton {
+    background-color: #e74c3c;
+    color: white;
+    display: none;
+    width: 200px;
+}
+
+/* Empowering quote section */
+.bottom-content {
+    text-align: center;
+    margin-top: 40px;
+    position: relative; /* Ensure the button stays within this container */
+    z-index: 10; /* Ensure this is above the background but not causing overflow */
+}
+
+.empowering-quote {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    padding: 12px 20px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    position: absolute; /* Position the button on top of the background */
+    bottom: 20px; /* Adjust as needed to make the button appear where you want it */
+    left: 50%; /* Center the button horizontally */
+    transform: translateX(-50%); /* Perfectly center it */
+    z-index: 15; /* Ensures the button is on top of other content but behind other UI elements */
+}
+
+.cta-button:hover {
+    background-color: #5a6268;
+}
+
+/* Button for Sushiswap */
+.swap-button {
+    padding: 12px 20px;
+    background-color: #FF5733;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    position: absolute;
+    top: 10px; /* Position relative to quote button */
+    left: 50%; /* Center the button horizontally */
+    transform: translateX(-50%);
+    z-index: 15;
+}
+
+.swap-button:hover {
+    background-color: #E74C3C;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 600px) {
+    /* Token info should stack vertically on small screens */
+    .token-info-top {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        width: 90%;
+    }
+
+    .wallet-container {
+        gap: 15px;
+    }
+
+    /* Adjust font sizes for mobile */
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section p {
+        font-size: 1.2rem;
+    }
+
+    .cta-button {
+        font-size: 14px;
+        bottom: 10px; /* Adjust the button's position for smaller screens */
+    }
+
+    .swap-button {
+        font-size: 14px;
+        top: 50px; /* Adjust to maintain spacing on smaller screens */
+    }
+
+    /* Button max-width for mobile */
+    button {
+        width: 90%;
+    }
+
+    .bottom-content {
+        padding: 20px;
+    }
+}
