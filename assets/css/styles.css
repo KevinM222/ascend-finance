@@ -1,3 +1,5 @@
+/* Updated styles.css */
+
 /* Body and html */
 body, html {
     height: 100%;
@@ -21,6 +23,7 @@ body, html {
     text-align: center;
     position: relative; /* To ensure that the content stays inside this section */
     padding-top: 60px; /* Space for toolbar */
+    overflow: hidden; /* Prevents extra scrolling */
 }
 
 /* Ensure content inside the hero section is layered correctly */
@@ -33,6 +36,7 @@ body, html {
     text-align: center;
     z-index: 10;
     margin-bottom: 20px;
+    position: relative; /* Only one instance of the logo appears */
 }
 
 .main-logo {
@@ -161,11 +165,9 @@ button#disconnectWalletButton {
     border-radius: 5px;
     font-size: 16px;
     transition: background-color 0.3s ease;
-    position: absolute; /* Position the button on top of the background */
-    bottom: 20px; /* Adjust as needed to make the button appear where you want it */
-    left: 50%; /* Center the button horizontally */
-    transform: translateX(-50%); /* Perfectly center it */
-    z-index: 15; /* Ensures the button is on top of other content but behind other UI elements */
+    position: relative; /* Position the button properly */
+    margin-bottom: 20px; /* Spacing between elements */
+    z-index: 15; /* Ensures proper stacking order */
 }
 
 .cta-button:hover {
@@ -181,9 +183,8 @@ button#disconnectWalletButton {
     border-radius: 5px;
     font-size: 16px;
     transition: background-color 0.3s ease;
-    position: relative;
-    margin-bottom: 20px; /* Add spacing between buttons */
     display: inline-block; /* Ensure proper alignment */
+    margin-left: 10px; /* Adjust spacing to avoid overlap */
 }
 
 .swap-button:hover {
