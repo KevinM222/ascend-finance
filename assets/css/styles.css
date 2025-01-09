@@ -8,6 +8,7 @@ body, html {
 
 /* Hero section with background image */
 .hero-section {
+    background-color: #1a1a1a;
     background-image: url('../../background.webp');
     background-size: cover;
     background-position: center center;
