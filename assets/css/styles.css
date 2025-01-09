@@ -8,7 +8,7 @@ body, html {
 
 /* Hero section with background image */
 .hero-section {
-    background-image: url('/frontend/Ascend/assets/images/background.webp');
+    background-image: url('../frontend/Ascend/background.webp');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
