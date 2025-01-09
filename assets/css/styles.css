@@ -1,5 +1,3 @@
-/* Updated styles.css */
-
 /* Body and html */
 body, html {
     height: 100%;
@@ -23,7 +21,6 @@ body, html {
     text-align: center;
     position: relative; /* To ensure that the content stays inside this section */
     padding-top: 60px; /* Space for toolbar */
-    overflow: hidden; /* Prevents extra scrolling */
 }
 
 /* Ensure content inside the hero section is layered correctly */
@@ -36,7 +33,6 @@ body, html {
     text-align: center;
     z-index: 10;
     margin-bottom: 20px;
-    position: relative; /* Only one instance of the logo appears */
 }
 
 .main-logo {
@@ -76,7 +72,7 @@ nav ul li a:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Token Information (Balance & Price) */
+/* Token Information (Balance) */
 .token-info-top {
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
@@ -165,9 +161,9 @@ button#disconnectWalletButton {
     border-radius: 5px;
     font-size: 16px;
     transition: background-color 0.3s ease;
-    position: relative; /* Position the button properly */
-    margin-bottom: 20px; /* Spacing between elements */
-    z-index: 15; /* Ensures proper stacking order */
+    position: relative; /* Positioned appropriately */
+    margin-top: 20px; /* Adjusted to create space for other buttons */
+    z-index: 15; /* Ensures the button is on top of other content */
 }
 
 .cta-button:hover {
@@ -183,8 +179,8 @@ button#disconnectWalletButton {
     border-radius: 5px;
     font-size: 16px;
     transition: background-color 0.3s ease;
-    display: inline-block; /* Ensure proper alignment */
-    margin-left: 10px; /* Adjust spacing to avoid overlap */
+    display: inline-block;
+    margin-top: 10px; /* Adjusted to prevent overlap */
 }
 
 .swap-button:hover {
@@ -216,7 +212,6 @@ button#disconnectWalletButton {
 
     .cta-button {
         font-size: 14px;
-        bottom: 10px; /* Adjust the button's position for smaller screens */
     }
 
     .swap-button {
