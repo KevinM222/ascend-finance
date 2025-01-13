@@ -80,7 +80,7 @@ nav ul li a:hover {
     padding: 10px;
     margin: 10px;
     position: absolute;
-    top: 60px; /* Positioned under the toolbar */
+    top: 80px; /* Positioned under the toolbar and wallet */
     left: 20px; /* Aligned to the left side */
     z-index: 20;
     display: flex;
@@ -186,6 +186,47 @@ button#disconnectWalletButton {
 
 .swap-button:hover {
     background-color: #E74C3C;
+}
+
+/* DEX-specific sections */
+.dex-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: white;
+}
+
+.dex-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.dex-section button {
+    margin-top: 10px;
+    background-color: #28a745;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.dex-section button:hover {
+    background-color: #218838;
+}
+
+/* Highlight user actions */
+button.processing {
+    background-color: #ffc107; /* Yellow for processing state */
+    cursor: wait;
+}
+
+#tokenBalance, #tokenPrice {
+    animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+    0% { background-color: rgba(255, 255, 255, 0.1); }
+    100% { background-color: transparent; }
 }
 
 /* Mobile responsiveness */
