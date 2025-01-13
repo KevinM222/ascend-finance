@@ -1,4 +1,5 @@
 // Frontend DEX Integration for AscendDEX
+console.log("DEX Integration script loaded successfully!");
 
 // Initial setup and imports
 // Placeholder for initializing web3, ethers.js, or other libraries
@@ -19,6 +20,9 @@ const ABI = [
 let provider;
 let signer;
 
+/**
+ * Initialize MetaMask connection and set up provider/signer
+ */
 async function initialize() {
     if (window.ethereum) {
         provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -29,7 +33,9 @@ async function initialize() {
     }
 }
 
-// Example function to connect to the contract
+/**
+ * Connect to the deployed contract using the provider and signer
+ */
 async function getContract() {
     if (!provider || !DEX_CONTRACT_ADDRESS || !ABI.length) {
         console.error("Ensure provider, contract address, and ABI are set up");
@@ -38,7 +44,9 @@ async function getContract() {
     return new ethers.Contract(DEX_CONTRACT_ADDRESS, ABI, signer);
 }
 
-// Example interaction: Fetch the token balance
+/**
+ * Fetch and display the token balance of the connected wallet
+ */
 async function getTokenBalance() {
     try {
         const contract = await getContract();
@@ -52,7 +60,12 @@ async function getTokenBalance() {
     }
 }
 
-// Token Swapping Functionality
+/**
+ * Swap tokens using the deployed DEX contract
+ * @param {number} inputAmount Amount of tokens to swap
+ * @param {string} tokenIn Address of the input token
+ * @param {string} tokenOut Address of the output token
+ */
 async function swapTokens(inputAmount, tokenIn, tokenOut) {
     try {
         const contract = await getContract();
@@ -69,7 +82,13 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
     }
 }
 
-// Liquidity Pool Management
+/**
+ * Add liquidity to the DEX liquidity pool
+ * @param {string} tokenA Address of token A
+ * @param {string} tokenB Address of token B
+ * @param {number} amountA Amount of token A
+ * @param {number} amountB Amount of token B
+ */
 async function addLiquidity(tokenA, tokenB, amountA, amountB) {
     try {
         const contract = await getContract();
@@ -86,7 +105,10 @@ async function addLiquidity(tokenA, tokenB, amountA, amountB) {
     }
 }
 
-// Price Data Integration
+/**
+ * Fetch and display the current price of a token using Chainlink Price Feeds
+ * @param {string} token Token symbol (e.g., MATIC or USDC)
+ */
 async function getPrice(token) {
     try {
         const priceFeedAddress = {
@@ -111,7 +133,9 @@ async function getPrice(token) {
     }
 }
 
-// Debugging Utilities
+/**
+ * Fetch and log pool information
+ */
 async function getPoolInfo() {
     try {
         const contract = await getContract();

@@ -11,7 +11,7 @@
     <script src="assets/Js/dexintegration.js" defer></script>
 </head>
 <body>
-    <!-- Hero section with background -->
+    <!-- Hero Section -->
     <section class="hero-section">
         <div class="logo-container">
             <p class="tagline">Your Launchpad to the Future of Finance</p>
@@ -19,12 +19,12 @@
         </div>
 
         <div class="wallet-container">
-            <button id="connectWalletButton" onclick="connectWallet()">Connect Wallet</button>
-            <button id="disconnectWalletButton" onclick="disconnectWallet()" style="display: none;">Disconnect Wallet</button>
-            <button id="addToMetaMaskButton" onclick="addToMetaMask()" style="display: none;">Add ASC to MetaMask</button>
+            <button id="connectWalletButton">Connect Wallet</button>
+            <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+            <button id="addToMetaMaskButton" style="display: none;">Add ASC to MetaMask</button>
         </div>
 
-        <!-- Token Information (Balance & Price) -->
+        <!-- Token Information -->
         <div class="token-info-top">
             <p id="tokenBalance">Your ASC Balance: N/A</p>
             <p id="tokenPrice">ASC Price: Loading...</p>
@@ -41,7 +41,14 @@
         </ul>
     </nav>
 
-    <!-- Empowering Quote and CTA Buttons -->
+    <!-- DEX Section -->
+    <div class="dex-section">
+        <h2>Decentralized Exchange</h2>
+        <button onclick="swapTokens(1, 'ASC', 'POL')">Swap ASC for POL</button>
+        <button onclick="addLiquidity('ASC', 'POL', 100, 200)">Add Liquidity</button>
+    </div>
+
+    <!-- Bottom Content -->
     <div class="bottom-content">
         <button class="cta-button-sushiswap" onclick="window.open('https://sushi.com/swap?inputCurrency=0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a&outputCurrency=POL', '_blank')">
             Swap ASC on SushiSwap
@@ -53,59 +60,67 @@
     <script>
         let currentAddress = null;
 
-        window.ethereum.on('accountsChanged', function (accounts) {
-            if (accounts.length === 0) {
-                disconnectWallet();
-            } else {
-                connectWallet();
-            }
-        });
+        // Automatically update wallet state on account change
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) {
+                    disconnectWallet();
+                } else {
+                    connectWallet();
+                }
+            });
 
+            window.ethereum.on('chainChanged', () => {
+                window.location.reload();
+            });
+        }
+
+        // Connect to wallet
         async function connectWallet() {
-            const button = document.getElementById('connectWalletButton');
-            const disconnectButton = document.getElementById('disconnectWalletButton');
-            const addToMetaMaskButton = document.getElementById('addToMetaMaskButton');
-            button.disabled = true;
-
             try {
                 const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
                 currentAddress = accounts[0];
-                button.innerHTML = `Connected: ${currentAddress.substring(0, 6)}...${currentAddress.substring(currentAddress.length - 4)}`;
-                button.style.backgroundColor = "#28a745"; // Green when connected
-                disconnectButton.style.display = 'inline-block';
-                addToMetaMaskButton.style.display = 'inline-block';
-                await getTokenBalance();
-                await getTokenPrice();
+                updateWalletUI(true, currentAddress);
+                await updateTokenInfo();
             } catch (error) {
-                alert("Failed to connect to MetaMask. Please try again.");
-                button.disabled = false;
+                console.error("Error connecting wallet:", error);
             }
         }
 
+        // Disconnect wallet
         function disconnectWallet() {
-            const button = document.getElementById('connectWalletButton');
+            currentAddress = null;
+            updateWalletUI(false);
+        }
+
+        // Update wallet UI
+        function updateWalletUI(connected, address = null) {
+            const connectButton = document.getElementById('connectWalletButton');
             const disconnectButton = document.getElementById('disconnectWalletButton');
             const addToMetaMaskButton = document.getElementById('addToMetaMaskButton');
-            currentAddress = null;
-            button.innerHTML = 'Connect Wallet';
-            button.style.backgroundColor = "#007bff";
-            disconnectButton.style.display = 'none';
-            addToMetaMaskButton.style.display = 'none';
-            document.getElementById('tokenBalance').textContent = 'Your ASC Balance: N/A';
-            document.getElementById('tokenPrice').textContent = 'ASC Price: Loading...';
+
+            if (connected) {
+                connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+                connectButton.style.backgroundColor = "#28a745"; // Green when connected
+                disconnectButton.style.display = 'inline-block';
+                addToMetaMaskButton.style.display = 'inline-block';
+            } else {
+                connectButton.textContent = 'Connect Wallet';
+                connectButton.style.backgroundColor = "#007bff";
+                disconnectButton.style.display = 'none';
+                addToMetaMaskButton.style.display = 'none';
+                document.getElementById('tokenBalance').textContent = 'Your ASC Balance: N/A';
+                document.getElementById('tokenPrice').textContent = 'ASC Price: Loading...';
+            }
         }
 
-        async function getTokenBalance() {
-            const balance = await getBalanceFromDex(); // Call a function from dexintegration.js
+        // Update token info
+        async function updateTokenInfo() {
+            const balance = await getTokenBalance();
+            const price = await getPrice('ASC');
             document.getElementById('tokenBalance').textContent = `Your ASC Balance: ${balance}`;
-        }
-
-        async function getTokenPrice() {
-            const price = await getPriceFromDex(); // Call a function from dexintegration.js
             document.getElementById('tokenPrice').textContent = `ASC Price: $${price}`;
         }
     </script>
-    <!-- Include dexintegration.js -->
-    <script src="assets/Js/dexintegration.js"></script>
 </body>
 </html>
