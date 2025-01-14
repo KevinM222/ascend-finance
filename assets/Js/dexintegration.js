@@ -1,9 +1,6 @@
 // Frontend DEX Integration for AscendDEX
 console.log("DEX Integration script loaded successfully!");
 
-// Initial setup and imports
-// Placeholder for initializing web3, ethers.js, or other libraries
-
 // Define constants and configurations
 const DEX_CONTRACT_ADDRESS = "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a"; // Deployed contract address
 const ABI = [
@@ -25,12 +22,60 @@ let signer;
  */
 async function initialize() {
     if (window.ethereum) {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
-        console.log("Connected to MetaMask");
+        try {
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            if (accounts.length === 0) {
+                console.error("No accounts found in MetaMask.");
+                return;
+            }
+
+            // Set up provider and signer
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+
+            // Get the connected wallet address
+            const address = accounts[0];
+            console.log(`Connected to MetaMask: ${address}`);
+
+            // Update UI
+            const connectButton = document.getElementById('connect-wallet');
+            const disconnectButton = document.getElementById('disconnect-wallet');
+            const addToMetaMaskButton = document.getElementById('addToMetaMaskButton');
+
+            connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.slice(-4)}`;
+            connectButton.style.backgroundColor = "#28a745"; // Green when connected
+            disconnectButton.style.display = 'inline-block';
+            addToMetaMaskButton.style.display = 'inline-block';
+
+        } catch (error) {
+            console.error("Error connecting to MetaMask:", error);
+            alert("Failed to connect to MetaMask. Please try again.");
+        }
     } else {
-        console.error("MetaMask not detected");
+        console.error("MetaMask not detected.");
+        alert("MetaMask is not installed. Please install MetaMask to use this feature.");
     }
+}
+
+/**
+ * Disconnect wallet and reset UI
+ */
+function disconnectWallet() {
+    // Reset provider and signer
+    provider = null;
+    signer = null;
+
+    // Reset UI
+    const connectButton = document.getElementById('connect-wallet');
+    const disconnectButton = document.getElementById('disconnect-wallet');
+    const addToMetaMaskButton = document.getElementById('addToMetaMaskButton');
+
+    connectButton.textContent = "Connect Wallet";
+    connectButton.style.backgroundColor = "#007bff"; // Default blue
+    disconnectButton.style.display = 'none';
+    addToMetaMaskButton.style.display = 'none';
+
+    console.log("Disconnected from MetaMask.");
 }
 
 /**
@@ -55,6 +100,7 @@ async function getTokenBalance() {
         const address = await signer.getAddress();
         const balance = await contract.balanceOf(address);
         console.log("Token Balance:", ethers.utils.formatUnits(balance, 18));
+        return ethers.utils.formatUnits(balance, 18);
     } catch (error) {
         console.error("Error fetching token balance:", error);
     }
@@ -62,18 +108,13 @@ async function getTokenBalance() {
 
 /**
  * Swap tokens using the deployed DEX contract
- * @param {number} inputAmount Amount of tokens to swap
- * @param {string} tokenIn Address of the input token
- * @param {string} tokenOut Address of the output token
  */
 async function swapTokens(inputAmount, tokenIn, tokenOut) {
     try {
         const contract = await getContract();
         if (!contract) return;
 
-        const tx = await contract.swap(inputAmount, tokenIn, tokenOut, {
-            gasLimit: 300000,
-        });
+        const tx = await contract.swap(inputAmount, tokenIn, tokenOut, { gasLimit: 300000 });
         console.log("Swap transaction submitted:", tx.hash);
         await tx.wait();
         console.log("Swap completed:", tx.hash);
@@ -84,19 +125,13 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
 
 /**
  * Add liquidity to the DEX liquidity pool
- * @param {string} tokenA Address of token A
- * @param {string} tokenB Address of token B
- * @param {number} amountA Amount of token A
- * @param {number} amountB Amount of token B
  */
 async function addLiquidity(tokenA, tokenB, amountA, amountB) {
     try {
         const contract = await getContract();
         if (!contract) return;
 
-        const tx = await contract.addLiquidity(tokenA, tokenB, amountA, amountB, {
-            gasLimit: 300000,
-        });
+        const tx = await contract.addLiquidity(tokenA, tokenB, amountA, amountB, { gasLimit: 300000 });
         console.log("Add liquidity transaction submitted:", tx.hash);
         await tx.wait();
         console.log("Liquidity added:", tx.hash);
@@ -106,14 +141,13 @@ async function addLiquidity(tokenA, tokenB, amountA, amountB) {
 }
 
 /**
- * Fetch and display the current price of a token using Chainlink Price Feeds
- * @param {string} token Token symbol (e.g., MATIC or USDC)
+ * Fetch the current price of a token using Chainlink Price Feeds
  */
 async function getPrice(token) {
     try {
         const priceFeedAddress = {
             "MATIC": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
-            "USDC": "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7",
+            "USDC": "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7"
         }[token];
 
         const priceFeed = new ethers.Contract(priceFeedAddress, [
@@ -122,12 +156,13 @@ async function getPrice(token) {
                 "name": "latestAnswer",
                 "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
                 "stateMutability": "view",
-                "type": "function",
-            },
+                "type": "function"
+            }
         ], provider);
 
         const price = await priceFeed.latestAnswer();
         console.log(`${token} price:`, ethers.utils.formatUnits(price, 8));
+        return ethers.utils.formatUnits(price, 8);
     } catch (error) {
         console.error("Error fetching price data:", error);
     }
@@ -151,11 +186,12 @@ async function getPoolInfo() {
 // Listen for MetaMask events
 if (window.ethereum) {
     window.ethereum.on("accountsChanged", (accounts) => {
-        console.log("Accounts changed:", accounts);
         if (accounts.length === 0) {
             console.log("MetaMask disconnected");
+            disconnectWallet();
         } else {
             console.log("Connected to account:", accounts[0]);
+            initialize();
         }
     });
 
@@ -167,20 +203,8 @@ if (window.ethereum) {
 
 // UI Elements and Event Listeners
 async function setupUI() {
-    const connectButton = document.getElementById("connect-wallet");
-    connectButton.addEventListener("click", initialize);
-
-    const fetchBalanceButton = document.getElementById("fetch-balance");
-    fetchBalanceButton.addEventListener("click", async () => {
-        const address = await signer.getAddress();
-        await getTokenBalance(address);
-    });
-
-    const disconnectButton = document.getElementById("disconnect-wallet");
-    disconnectButton.addEventListener("click", () => {
-        window.ethereum = null;
-        console.log("Disconnected from MetaMask");
-    });
+    document.getElementById("connect-wallet").addEventListener("click", initialize);
+    document.getElementById("disconnect-wallet").addEventListener("click", disconnectWallet);
 }
 
 // Initialize everything when the document loads
