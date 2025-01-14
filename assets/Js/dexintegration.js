@@ -33,7 +33,7 @@ async function initialize() {
 
         console.log(`Connected to MetaMask: ${address}`);
         updateWalletUI(true, address);
-        await updateTokenInfo();
+        await getTokenBalance(); // Fetch token balance after connecting
     } catch (error) {
         console.error("Error connecting to MetaMask:", error);
         alert("Failed to connect to MetaMask. Please try again.");
@@ -63,7 +63,6 @@ function updateWalletUI(connected, address = null) {
         disconnectButton.style.display = "none";
         addToMetaMaskButton.style.display = "none";
         document.getElementById("tokenBalance").textContent = "Your ASC Balance: N/A";
-        document.getElementById("tokenPrice").textContent = "ASC Price: Loading...";
     }
 }
 
@@ -85,38 +84,16 @@ async function getTokenBalance() {
         const formattedBalance = ethers.utils.formatUnits(balance, 18);
 
         console.log(`Token Balance: ${formattedBalance}`);
-        return formattedBalance;
+        document.getElementById("tokenBalance").textContent = `Your ASC Balance: ${formattedBalance}`;
     } catch (error) {
         console.error("Error fetching token balance:", error);
     }
 }
 
-function setupUI() {
-    const connectButton = document.getElementById("connectWalletButton");
-    const disconnectButton = document.getElementById("disconnectWalletButton");
-
-    if (connectButton) {
-        console.log("Connect Wallet button found.");
-        connectButton.addEventListener("click", initialize);
-    } else {
-        console.error("Connect Wallet button not found!");
-    }
-
-    if (disconnectButton) {
-        console.log("Disconnect Wallet button found.");
-        disconnectButton.addEventListener("click", disconnectWallet);
-    } else {
-        console.error("Disconnect Wallet button not found!");
-    }
-}
-/**
- * Swap tokens using the deployed DEX contract on Sepolia
- */
 async function swapTokens(inputAmount, tokenIn, tokenOut) {
     try {
-        // Ensure the user is on Sepolia
         const network = await provider.getNetwork();
-        if (network.chainId !== 11155111) { // Chain ID for Sepolia
+        if (network.chainId !== 11155111) {
             alert("Please switch to the Sepolia network.");
             return;
         }
@@ -126,11 +103,10 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
 
         console.log(`Initiating swap: ${inputAmount} ${tokenIn} -> ${tokenOut}`);
 
-        // Convert inputAmount to Wei (assuming 18 decimals)
         const amountInWei = ethers.utils.parseUnits(inputAmount.toString(), 18);
+        const amountOutMin = ethers.utils.parseUnits("0.1", 18);
 
-        // Send the swap transaction
-        const tx = await contract.swap(amountInWei, tokenIn, tokenOut, {
+        const tx = await contract.swap(tokenIn, amountInWei, tokenOut, amountOutMin, {
             gasLimit: 300000,
         });
 
@@ -145,7 +121,23 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
     }
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
     setupUI();
 });
+
+function setupUI() {
+    const connectButton = document.getElementById("connectWalletButton");
+    const disconnectButton = document.getElementById("disconnectWalletButton");
+    const swapButton = document.getElementById("swapButton");
+
+    if (connectButton) {
+        connectButton.addEventListener("click", initialize);
+    }
+
+    if (disconnectButton) {
+        disconnectButton.addEventListener("click", disconnectWallet);
+    }
+
+    if (swapButton) {
+        swapButton.addEventListener("click", () => {
+            const inputAmount = prompt("Enter the amount to swap:"
