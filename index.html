@@ -44,8 +44,8 @@
     <!-- DEX Section -->
     <div class="dex-section">
         <h2>Decentralized Exchange</h2>
-        <button onclick="swapTokens(1, 'ASC', 'POL')">Swap ASC for POL</button>
-        <button onclick="addLiquidity('ASC', 'POL', 100, 200)">Add Liquidity</button>
+        <button id="swapButton">Swap Tokens</button>
+        <button id="addLiquidityButton">Add Liquidity</button>
     </div>
 
     <!-- Bottom Content -->
@@ -56,71 +56,5 @@
         <p class="empowering-quote">"Empower your financial future with Ascend."</p>
         <button class="cta-button" onclick="window.location.href='roadmap.html'">Explore the Roadmap</button>
     </div>
-
-    <script>
-        let currentAddress = null;
-
-        // Automatically update wallet state on account change
-        if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
-                if (accounts.length === 0) {
-                    disconnectWallet();
-                } else {
-                    connectWallet();
-                }
-            });
-
-            window.ethereum.on('chainChanged', () => {
-                window.location.reload();
-            });
-        }
-
-        // Connect to wallet
-        async function connectWallet() {
-            try {
-                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                currentAddress = accounts[0];
-                updateWalletUI(true, currentAddress);
-                await updateTokenInfo();
-            } catch (error) {
-                console.error("Error connecting wallet:", error);
-            }
-        }
-
-        // Disconnect wallet
-        function disconnectWallet() {
-            currentAddress = null;
-            updateWalletUI(false);
-        }
-
-        // Update wallet UI
-        function updateWalletUI(connected, address = null) {
-            const connectButton = document.getElementById('connectWalletButton');
-            const disconnectButton = document.getElementById('disconnectWalletButton');
-            const addToMetaMaskButton = document.getElementById('addToMetaMaskButton');
-
-            if (connected) {
-                connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-                connectButton.style.backgroundColor = "#28a745"; // Green when connected
-                disconnectButton.style.display = 'inline-block';
-                addToMetaMaskButton.style.display = 'inline-block';
-            } else {
-                connectButton.textContent = 'Connect Wallet';
-                connectButton.style.backgroundColor = "#007bff";
-                disconnectButton.style.display = 'none';
-                addToMetaMaskButton.style.display = 'none';
-                document.getElementById('tokenBalance').textContent = 'Your ASC Balance: N/A';
-                document.getElementById('tokenPrice').textContent = 'ASC Price: Loading...';
-            }
-        }
-
-        // Update token info
-        async function updateTokenInfo() {
-            const balance = await getTokenBalance();
-            const price = await getPrice('ASC');
-            document.getElementById('tokenBalance').textContent = `Your ASC Balance: ${balance}`;
-            document.getElementById('tokenPrice').textContent = `ASC Price: $${price}`;
-        }
-    </script>
 </body>
 </html>
