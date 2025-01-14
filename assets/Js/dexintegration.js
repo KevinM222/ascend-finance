@@ -3,11 +3,17 @@ console.log("DEX Integration script loaded successfully!");
 const DEX_CONTRACT_ADDRESS = "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a";
 const ABI = [
     {
-        constant: true,
-        inputs: [{ name: "_owner", type: "address" }],
-        name: "balanceOf",
-        outputs: [{ name: "balance", type: "uint256" }],
-        type: "function"
+        "constant": false,
+        "inputs": [
+            { "name": "tokenIn", "type": "address" },
+            { "name": "amountIn", "type": "uint256" },
+            { "name": "tokenOut", "type": "address" },
+            { "name": "amountOutMin", "type": "uint256" }
+        ],
+        "name": "swap",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
     }
 ];
 
@@ -50,18 +56,15 @@ function disconnectWallet() {
 function updateWalletUI(connected, address = null) {
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
-    const addToMetaMaskButton = document.getElementById("addToMetaMaskButton");
 
     if (connected) {
         connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.slice(-4)}`;
         connectButton.style.backgroundColor = "#28a745";
         disconnectButton.style.display = "inline-block";
-        addToMetaMaskButton.style.display = "inline-block";
     } else {
         connectButton.textContent = "Connect Wallet";
         connectButton.style.backgroundColor = "#007bff";
         disconnectButton.style.display = "none";
-        addToMetaMaskButton.style.display = "none";
         document.getElementById("tokenBalance").textContent = "Your ASC Balance: N/A";
     }
 }
@@ -82,7 +85,6 @@ async function getTokenBalance() {
         const address = await signer.getAddress();
         const balance = await contract.balanceOf(address);
         const formattedBalance = ethers.utils.formatUnits(balance, 18);
-
         console.log(`Token Balance: ${formattedBalance}`);
         document.getElementById("tokenBalance").textContent = `Your ASC Balance: ${formattedBalance}`;
     } catch (error) {
@@ -102,7 +104,6 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
         if (!contract) return;
 
         console.log(`Initiating swap: ${inputAmount} ${tokenIn} -> ${tokenOut}`);
-
         const amountInWei = ethers.utils.parseUnits(inputAmount.toString(), 18);
         const amountOutMin = ethers.utils.parseUnits("0.1", 18);
 
@@ -121,10 +122,6 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    setupUI();
-});
-
 function setupUI() {
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
@@ -139,5 +136,18 @@ function setupUI() {
     }
 
     if (swapButton) {
-        swapButton.addEventListener("click", () => {
-            const inputAmount = prompt("Enter the amount to swap:"
+        swapButton.addEventListener("click", async () => {
+            const inputAmount = prompt("Enter the amount to swap:");
+            const tokenIn = "<tokenIn_address>";
+            const tokenOut = "<tokenOut_address>";
+
+            if (inputAmount && tokenIn && tokenOut) {
+                await swapTokens(inputAmount, tokenIn, tokenOut);
+            }
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    setupUI();
+});
