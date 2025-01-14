@@ -202,11 +202,26 @@ if (window.ethereum) {
 }
 
 // Initialize UI elements
-window.onload = () => {
+document.addEventListener("DOMContentLoaded", () => {
     setupUI();
-};
+});
+
 
 function setupUI() {
-    document.getElementById("connect-wallet").addEventListener("click", initialize);
-    document.getElementById("disconnect-wallet").addEventListener("click", disconnectWallet);
+    const connectButton = document.getElementById("connectWalletButton");
+    const disconnectButton = document.getElementById("disconnectWalletButton");
+
+    if (connectButton) {
+        console.log("Connect Wallet button found.");
+        connectButton.addEventListener("click", initialize);
+    } else {
+        console.error("Connect Wallet button not found!");
+    }
+
+    if (disconnectButton) {
+        console.log("Disconnect Wallet button found.");
+        disconnectButton.addEventListener("click", disconnectWallet);
+    } else {
+        console.error("Disconnect Wallet button not found!");
+    }
 }
