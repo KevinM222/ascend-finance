@@ -1,8 +1,6 @@
-// Frontend DEX Integration for AscendDEX
 console.log("DEX Integration script loaded successfully!");
 
-// Define constants and configurations
-const DEX_CONTRACT_ADDRESS = "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a"; // Deployed contract address
+const DEX_CONTRACT_ADDRESS = "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a";
 const ABI = [
     {
         constant: true,
@@ -13,11 +11,8 @@ const ABI = [
     }
 ];
 
-let provider, signer; // Initialize provider and signer globally
+let provider, signer;
 
-/**
- * Initialize MetaMask connection and set up provider/signer
- */
 async function initialize() {
     if (!window.ethereum) {
         alert("MetaMask is not installed. Please install MetaMask to use this feature.");
@@ -45,9 +40,6 @@ async function initialize() {
     }
 }
 
-/**
- * Disconnect wallet and reset UI
- */
 function disconnectWallet() {
     provider = null;
     signer = null;
@@ -55,9 +47,6 @@ function disconnectWallet() {
     console.log("Disconnected from MetaMask.");
 }
 
-/**
- * Update the wallet UI based on connection status
- */
 function updateWalletUI(connected, address = null) {
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
@@ -65,12 +54,12 @@ function updateWalletUI(connected, address = null) {
 
     if (connected) {
         connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.slice(-4)}`;
-        connectButton.style.backgroundColor = "#28a745"; // Green when connected
+        connectButton.style.backgroundColor = "#28a745";
         disconnectButton.style.display = "inline-block";
         addToMetaMaskButton.style.display = "inline-block";
     } else {
         connectButton.textContent = "Connect Wallet";
-        connectButton.style.backgroundColor = "#007bff"; // Default blue
+        connectButton.style.backgroundColor = "#007bff";
         disconnectButton.style.display = "none";
         addToMetaMaskButton.style.display = "none";
         document.getElementById("tokenBalance").textContent = "Your ASC Balance: N/A";
@@ -78,9 +67,6 @@ function updateWalletUI(connected, address = null) {
     }
 }
 
-/**
- * Connect to the deployed contract
- */
 async function getContract() {
     if (!provider || !DEX_CONTRACT_ADDRESS || !ABI.length) {
         console.error("Provider, contract address, or ABI is missing.");
@@ -89,9 +75,6 @@ async function getContract() {
     return new ethers.Contract(DEX_CONTRACT_ADDRESS, ABI, signer);
 }
 
-/**
- * Fetch and display the token balance
- */
 async function getTokenBalance() {
     try {
         const contract = await getContract();
@@ -107,105 +90,6 @@ async function getTokenBalance() {
         console.error("Error fetching token balance:", error);
     }
 }
-
-/**
- * Swap tokens using the DEX contract
- */
-async function swapTokens(inputAmount, tokenIn, tokenOut) {
-    try {
-        const contract = await getContract();
-        if (!contract) return;
-
-        const tx = await contract.swap(inputAmount, tokenIn, tokenOut, { gasLimit: 300000 });
-        console.log("Swap transaction submitted:", tx.hash);
-        await tx.wait();
-        console.log("Swap completed:", tx.hash);
-    } catch (error) {
-        console.error("Error executing token swap:", error);
-    }
-}
-
-/**
- * Add liquidity to the liquidity pool
- */
-async function addLiquidity(tokenA, tokenB, amountA, amountB) {
-    try {
-        const contract = await getContract();
-        if (!contract) return;
-
-        const tx = await contract.addLiquidity(tokenA, tokenB, amountA, amountB, { gasLimit: 300000 });
-        console.log("Add liquidity transaction submitted:", tx.hash);
-        await tx.wait();
-        console.log("Liquidity added:", tx.hash);
-    } catch (error) {
-        console.error("Error adding liquidity:", error);
-    }
-}
-
-/**
- * Fetch and display the token price using Chainlink
- */
-async function getPrice(token) {
-    try {
-        const priceFeedAddress = {
-            MATIC: "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
-            USDC: "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7"
-        }[token];
-
-        const priceFeed = new ethers.Contract(priceFeedAddress, [
-            {
-                inputs: [],
-                name: "latestAnswer",
-                outputs: [{ internalType: "int256", name: "", type: "int256" }],
-                stateMutability: "view",
-                type: "function"
-            }
-        ], provider);
-
-        const price = await priceFeed.latestAnswer();
-        const formattedPrice = ethers.utils.formatUnits(price, 8);
-
-        console.log(`${token} price: ${formattedPrice}`);
-        return formattedPrice;
-    } catch (error) {
-        console.error("Error fetching price:", error);
-    }
-}
-
-/**
- * Update token balance and price
- */
-async function updateTokenInfo() {
-    const balance = await getTokenBalance();
-    const price = await getPrice("ASC");
-
-    document.getElementById("tokenBalance").textContent = `Your ASC Balance: ${balance}`;
-    document.getElementById("tokenPrice").textContent = `ASC Price: $${price}`;
-}
-
-// Listen for MetaMask events
-if (window.ethereum) {
-    window.ethereum.on("accountsChanged", (accounts) => {
-        if (accounts.length === 0) {
-            console.log("MetaMask disconnected");
-            disconnectWallet();
-        } else {
-            console.log(`Account changed to ${accounts[0]}`);
-            initialize();
-        }
-    });
-
-    window.ethereum.on("chainChanged", () => {
-        console.log("Network changed");
-        window.location.reload();
-    });
-}
-
-// Initialize UI elements
-document.addEventListener("DOMContentLoaded", () => {
-    setupUI();
-});
-
 
 function setupUI() {
     const connectButton = document.getElementById("connectWalletButton");
@@ -225,3 +109,7 @@ function setupUI() {
         console.error("Disconnect Wallet button not found!");
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    setupUI();
+});
