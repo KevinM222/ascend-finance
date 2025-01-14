@@ -22,6 +22,7 @@
             <button id="connectWalletButton">Connect Wallet</button>
             <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
             <button id="addToMetaMaskButton" style="display: none;">Add ASC to MetaMask</button>
+        
         </div>
 
         <!-- Token Information -->
@@ -44,7 +45,7 @@
     <!-- DEX Section -->
     <div class="dex-section">
         <h2>Decentralized Exchange</h2>
-        <button id="swapButton">Swap Tokens</button>
+        <button id="swapButton" onclick="swapTokens(1, '<tokenIn_address>', '<tokenOut_address>')">Swap Tokens</button>
         <button id="addLiquidityButton">Add Liquidity</button>
     </div>
 
