@@ -59,8 +59,8 @@ function disconnectWallet() {
  * Update the wallet UI based on connection status
  */
 function updateWalletUI(connected, address = null) {
-    const connectButton = document.getElementById("connect-wallet");
-    const disconnectButton = document.getElementById("disconnect-wallet");
+    const connectButton = document.getElementById("connectWalletButton");
+    const disconnectButton = document.getElementById("disconnectWalletButton");
     const addToMetaMaskButton = document.getElementById("addToMetaMaskButton");
 
     if (connected) {
