@@ -45,9 +45,41 @@
     <!-- DEX Section -->
     <div class="dex-section">
         <h2>Decentralized Exchange</h2>
-        <button id="swapButton" onclick="swapTokens(1, '<tokenIn_address>', '<tokenOut_address>')">Swap Tokens</button>
-        <button id="addLiquidityButton">Add Liquidity</button>
+        <button id="openSwapModal">Open Swap</button>
     </div>
+    
+    <!-- Swap Modal -->
+    <div id="swapModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeSwapModal">&times;</span>
+            <h2>Swap Tokens</h2>
+            <div class="swap-container">
+                <div class="swap-row">
+                    <label for="tokenIn">From:</label>
+                    <select id="tokenIn">
+                        <option value="0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a">ASC</option>
+                        <option value="<address-for-ETH-Sepolia>">ETH</option>
+                    </select>
+                    <p>Balance: <span id="tokenInBalance">0.0</span></p>
+                    <input type="number" id="swapAmount" placeholder="Amount to swap">
+                </div>
+                <div class="swap-row">
+                    <button id="reverseTokens">⇅</button>
+                </div>
+                <div class="swap-row">
+                    <label for="tokenOut">To:</label>
+                    <select id="tokenOut">
+                        <option value="<address-for-ETH-Sepolia>">ETH</option>
+                        <option value="0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a">ASC</option>
+                    </select>
+                    <p>Balance: <span id="tokenOutBalance">0.0</span></p>
+                    <input type="text" id="estimatedOutput" placeholder="Estimated output" readonly>
+                </div>
+            </div>
+            <button id="confirmSwap">Confirm Swap</button>
+        </div>
+    </div>
+    
 
     <!-- Bottom Content -->
     <div class="bottom-content">
