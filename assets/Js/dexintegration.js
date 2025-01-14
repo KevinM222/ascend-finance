@@ -109,6 +109,42 @@ function setupUI() {
         console.error("Disconnect Wallet button not found!");
     }
 }
+/**
+ * Swap tokens using the deployed DEX contract on Sepolia
+ */
+async function swapTokens(inputAmount, tokenIn, tokenOut) {
+    try {
+        // Ensure the user is on Sepolia
+        const network = await provider.getNetwork();
+        if (network.chainId !== 11155111) { // Chain ID for Sepolia
+            alert("Please switch to the Sepolia network.");
+            return;
+        }
+
+        const contract = await getContract();
+        if (!contract) return;
+
+        console.log(`Initiating swap: ${inputAmount} ${tokenIn} -> ${tokenOut}`);
+
+        // Convert inputAmount to Wei (assuming 18 decimals)
+        const amountInWei = ethers.utils.parseUnits(inputAmount.toString(), 18);
+
+        // Send the swap transaction
+        const tx = await contract.swap(amountInWei, tokenIn, tokenOut, {
+            gasLimit: 300000,
+        });
+
+        console.log("Swap transaction submitted:", tx.hash);
+        await tx.wait();
+        console.log("Swap completed:", tx.hash);
+
+        alert("Swap successful!");
+    } catch (error) {
+        console.error("Error executing token swap:", error);
+        alert("Swap failed. Check console for details.");
+    }
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
     setupUI();
