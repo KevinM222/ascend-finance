@@ -20,13 +20,8 @@ body, html {
     align-items: center;
     color: white;
     text-align: center;
-    position: relative; /* To ensure that the content stays inside this section */
+    position: relative;
     padding-top: 60px; /* Space for toolbar */
-}
-
-/* Ensure content inside the hero section is layered correctly */
-.hero-section h1, .hero-section p {
-    z-index: 10;
 }
 
 /* Logo container and tagline */
@@ -45,7 +40,7 @@ body, html {
     margin-top: 10px;
 }
 
-/* Navigation bar on top */
+/* Navigation bar */
 nav ul {
     display: flex;
     justify-content: center;
@@ -73,15 +68,15 @@ nav ul li a:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Token Information (Balance) */
+/* Token Information */
 .token-info-top {
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
     padding: 10px;
     margin: 10px;
     position: absolute;
-    top: 80px; /* Positioned under the toolbar and wallet */
-    left: 20px; /* Aligned to the left side */
+    top: 80px;
+    left: 20px;
     z-index: 20;
     display: flex;
     flex-direction: column;
@@ -95,7 +90,7 @@ nav ul li a:hover {
     padding: 5px 10px;
 }
 
-/* Button container styling */
+/* Wallet buttons */
 .wallet-container {
     position: absolute;
     top: 10px;
@@ -107,88 +102,36 @@ nav ul li a:hover {
     z-index: 30;
 }
 
-/* Ensure buttons are centered and have a consistent size */
-button {
+/* Generic button styles */
+.button {
     padding: 10px;
     border: none;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s ease;
-    width: 200px;
     text-align: center;
     border-radius: 5px;
-    max-width: 100%;
+    transition: background-color 0.3s ease;
 }
 
-button#connectWalletButton {
+.button-primary {
     background-color: #007bff;
     color: white;
 }
 
-button#connectWalletButton:disabled {
-    background-color: gray;
+.button-primary:hover {
+    background-color: #0056b3;
 }
 
-button#connectWalletButton.connected {
-    background-color: #28a745;
-}
-
-button#disconnectWalletButton {
+.button-danger {
     background-color: #e74c3c;
     color: white;
-    display: none;
-    width: 200px;
 }
 
-/* Empowering quote section */
-.bottom-content {
-    text-align: center;
-    margin-top: 40px;
-    position: relative; /* Ensure the button stays within this container */
-    z-index: 10; /* Ensure this is above the background but not causing overflow */
+.button-danger:hover {
+    background-color: #c0392b;
 }
 
-.empowering-quote {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
-/* Roadmap Button */
-.cta-button {
-    padding: 12px 20px;
-    background-color: #6c757d;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    position: relative; /* Positioned appropriately */
-    margin-top: 20px; /* Adjusted to create space for other buttons */
-    z-index: 15; /* Ensures the button is on top of other content */
-}
-
-.cta-button:hover {
-    background-color: #5a6268;
-}
-
-/* Button for Sushiswap */
-.swap-button {
-    padding: 12px 20px;
-    background-color: #FF5733;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    display: inline-block;
-    margin-top: 10px; /* Adjusted to prevent overlap */
-}
-
-.swap-button:hover {
-    background-color: #E74C3C;
-}
-
-/* DEX-specific sections */
+/* DEX section */
 .dex-section {
     margin-top: 20px;
     padding: 20px;
@@ -196,17 +139,13 @@ button#disconnectWalletButton {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
     color: white;
-    position: relative;
-}
-
-.dex-section h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .dex-section button {
-    margin-top: 10px;
-    margin-right: 10px; /* Ensure spacing between buttons */
+    margin: 5px 0;
     background-color: #28a745;
     color: white;
     transition: background-color 0.3s ease;
@@ -216,37 +155,21 @@ button#disconnectWalletButton {
     background-color: #218838;
 }
 
-/* Tooltip for DEX buttons */
-.dex-section button:hover::after {
-    content: attr(data-tooltip); /* Show tooltip if data-tooltip is defined */
-    position: absolute;
-    top: -30px;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 12px;
+/* Bottom content */
+.bottom-content {
+    text-align: center;
+    margin-top: 40px;
+    position: relative;
+    z-index: 10;
 }
 
-/* Highlight user actions */
-button.processing {
-    background-color: #ffc107; /* Yellow for processing state */
-    cursor: wait;
-}
-
-#tokenBalance, #tokenPrice {
-    animation: highlight 2s ease-in-out;
-}
-
-@keyframes highlight {
-    0% { background-color: rgba(255, 255, 255, 0.1); }
-    100% { background-color: transparent; }
+.empowering-quote {
+    font-size: 20px;
+    margin-bottom: 20px;
 }
 
 /* Mobile responsiveness */
 @media screen and (max-width: 600px) {
-    /* Token info should stack vertically on small screens */
     .token-info-top {
         flex-direction: column;
         align-items: center;
@@ -258,7 +181,6 @@ button.processing {
         gap: 15px;
     }
 
-    /* Adjust font sizes for mobile */
     .hero-section h1 {
         font-size: 2rem;
     }
@@ -267,20 +189,11 @@ button.processing {
         font-size: 1.2rem;
     }
 
-    .cta-button {
-        font-size: 14px;
+    .dex-section {
+        padding: 15px;
     }
 
-    .swap-button {
-        font-size: 14px;
-    }
-
-    /* Button max-width for mobile */
-    button {
+    .button {
         width: 90%;
-    }
-
-    .bottom-content {
-        padding: 20px;
     }
 }
