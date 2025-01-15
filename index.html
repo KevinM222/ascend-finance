@@ -45,37 +45,41 @@
     <!-- DEX Section -->
     <div class="dex-section">
         <h2>Decentralized Exchange</h2>
-        <button id="openSwapModal">Open Swap</button>
+        <button id="openSwapModal" class="cta-button">Swap Tokens</button>
     </div>
     
+    <!--Error Handling -->
+    <div id="errorMessage" class="error-message" style="display: none;"></div>
+
     <!-- Swap Modal -->
-    <div id="swapModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="closeSwapModal">&times;</span>
-            <h2>Swap Tokens</h2>
-            <div class="swap-container">
-                <div class="swap-row">
-                    <label for="tokenIn">From:</label>
-                    <select id="tokenIn">
-                        <option value="0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a">ASC</option>
-                        <option value="<address-for-ETH-Sepolia>">ETH</option>
-                    </select>
-                    <p>Balance: <span id="tokenInBalance">0.0</span></p>
-                    <input type="number" id="swapAmount" placeholder="Amount to swap">
-                </div>
-                <div class="swap-row">
-                    <button id="reverseTokens">⇅</button>
-                </div>
-                <div class="swap-row">
-                    <label for="tokenOut">To:</label>
-                    <select id="tokenOut">
-                        <option value="<address-for-ETH-Sepolia>">ETH</option>
-                        <option value="0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a">ASC</option>
-                    </select>
-                    <p>Balance: <span id="tokenOutBalance">0.0</span></p>
-                    <input type="text" id="estimatedOutput" placeholder="Estimated output" readonly>
-                </div>
-            </div>
+    <div class="swap-container">
+        <div class="swap-row">
+            <label for="tokenIn">From:</label>
+            <select id="tokenIn">
+                <option value="0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a">ASC</option>
+                <option value="0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac">POL</option>
+                <option value="0xADD81fF77b4Bd54259f0EB5f885862eF5920D165">USDC</option>
+                <option value="0x0000000000000000000000000000000000000000">ETH (Sepolia)</option>
+            </select>
+            <p>Balance: <span id="tokenInBalance">0.0</span></p>
+            <input type="number" id="swapAmount" placeholder="Amount to swap">
+        </div>
+        <div class="swap-row">
+            <button id="reverseTokens">⇅</button>
+        </div>
+        <div class="swap-row">
+            <label for="tokenOut">To:</label>
+            <select id="tokenOut">
+                <option value="0x0000000000000000000000000000000000000000">ETH (Sepolia)</option>
+                <option value="0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a">ASC</option>
+                <option value="0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac">POL</option>
+                <option value="0xADD81fF77b4Bd54259f0EB5f885862eF5920D165">USDC</option>
+            </select>
+            <p>Balance: <span id="tokenOutBalance">0.0</span></p>
+            <input type="text" id="estimatedOutput" placeholder="Estimated output" readonly>
+        </div>
+    </div>
+    
             <button id="confirmSwap">Confirm Swap</button>
         </div>
     </div>
