@@ -155,6 +155,46 @@ nav ul li a:hover {
     background-color: #218838;
 }
 
+/* Estimated Output Field Styling */
+#estimatedOutput {
+    font-weight: bold;
+    border: 1px solid #ff5733; /* Highlight border */
+    color: #ff5733; /* Highlight text */
+    background-color: #2a2a2a; /* Match other inputs */
+}
+
+/* Better alignment for dropdowns and inputs */
+.swap-container {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr; /* Align dropdowns and button */
+    gap: 15px;
+    align-items: center;
+}
+
+.swap-row select,
+.swap-row input {
+    width: 100%;
+    text-align: center;
+}
+
+/* Reverse Tokens Button Hover Effect */
+#reverseTokens:hover {
+    background-color: #0056b3;
+    transform: rotate(180deg); /* Optional: Add a rotation effect */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Modal Responsiveness */
+@media screen and (max-width: 600px) {
+    .swap-container {
+        grid-template-columns: 1fr;
+    }
+
+    #reverseTokens {
+        margin: 10px auto;
+    }
+}
+
 /* Modal Styles */
 .modal {
     display: none; /* Hidden by default */
