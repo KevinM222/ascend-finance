@@ -72,24 +72,6 @@ nav ul li a:hover {
     z-index: 10; /* Ensure it's above the hero background */
 }
 
-/* Swap Button */
-#swapButton {
-    margin: 20px auto; /* Center horizontally */
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    display: block; /* Ensures it behaves like a block element for centering */
-    text-align: center;
-}
-
-#swapButton:hover {
-    background-color: #0056b3;
-}
-
 /* Modal */
 .modal {
     display: none;
@@ -115,17 +97,24 @@ nav ul li a:hover {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
     text-align: center;
 }
-
-/* Confirm Swap Button */
-#confirmSwap {
-    margin: auto; /* Centers horizontally in the modal */
+/* Swap & Confirm Swap Button */
+#swapButton, #confirmSwap {
+    margin: 10px auto; /* Centers horizontally */
     padding: 10px 20px;
-    background-color: #28a745;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    display: block; /* Makes it easier to center */
+    text-align: center;
+}
+
+
+
+#swapButton:hover {
+    background-color: #0056b3;
 }
 
 #confirmSwap:hover {
@@ -145,13 +134,18 @@ nav ul li a:hover {
         width: 90%;
     }
 
-    .swap-container {
+    .swap-container, .dex-section {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 15px;
+        align-items: center; /* Centers child elements horizontally */
+        justify-content: center; /* Optional: centers vertically */
+        gap: 15px; /* Spacing between buttons */
         margin: auto;
+        text-align: center;
+        width: 100%;
+        max-width: 400px; /* Optional: limit width for smaller content */
     }
+    
 
     .button {
         width: 90%;
