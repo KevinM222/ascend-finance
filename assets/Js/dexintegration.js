@@ -120,6 +120,43 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
     }
 }
 
+async function updateSwapDetails() {
+    try {
+        const tokenIn = document.getElementById("tokenIn").value;
+        const tokenOut = document.getElementById("tokenOut").value;
+        const amount = document.getElementById("swapAmount").value;
+
+        if (!tokenIn || !tokenOut || !amount) {
+            document.getElementById("estimatedOutput").value = "Enter details";
+            return;
+        }
+
+        const balance = await getTokenBalance(tokenIn);
+        document.getElementById("tokenInBalance").textContent = `Balance: ${balance}`;
+
+        const inputAmount = parseFloat(amount);
+        if (inputAmount > balance) {
+            document.getElementById("swapAmount").classList.add("error");
+            document.getElementById("estimatedOutput").value = "Exceeds balance";
+            return;
+        } else {
+            document.getElementById("swapAmount").classList.remove("error");
+        }
+
+        const estimatedOutput = calculateEstimatedOutput(inputAmount, balance);
+        document.getElementById("estimatedOutput").value = estimatedOutput.toFixed(6);
+    } catch (error) {
+        console.error("Error updating swap details:", error);
+    }
+}
+
+function calculateEstimatedOutput(amountIn, balance) {
+    const feeRate = 0.003; // 0.3% fee
+    const effectiveAmount = amountIn * (1 - feeRate);
+    const ratio = 1; // Example ratio, replace with actual pool data
+    return effectiveAmount * ratio;
+}
+
 async function validateNetwork() {
     const network = await provider.getNetwork();
     if (network.chainId !== 11155111) {
@@ -163,7 +200,6 @@ function setupUI() {
             const tokenInSelect = document.getElementById("tokenIn");
             const tokenOutSelect = document.getElementById("tokenOut");
 
-            // Swap the selected tokens
             const tempValue = tokenInSelect.value;
             tokenInSelect.value = tokenOutSelect.value;
             tokenOutSelect.value = tempValue;
@@ -185,7 +221,6 @@ function setupUI() {
         });
     }
 
-    // Close modal when clicking outside
     window.addEventListener("click", (event) => {
         const modal = document.getElementById("swapModal");
         if (event.target === modal) {
