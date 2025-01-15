@@ -2,14 +2,9 @@ console.log("DEX Integration script loaded successfully!");
 
 const DEX_CONTRACT_ADDRESS = "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a";
 const TOKEN_ADDRESSES = {
-    ASC: "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a", // ASC token address
-    POL: "0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac", // POL token address
-    USDC: "0xADD81fF77b4Bd54259f0EB5f885862eF5920D165"  // USDC token address
-};
-
-const PRICE_FEEDS = {
-    POL: "0x85b29C03A07e4F280804B06d5055d5348FEd1ed1", // PriceFeed_POL
-    USDC: "0x910D009468cf226949A76Be8dF5E1c56E6313692"  // PriceFeed_USDC
+    ASC: "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a",
+    POL: "0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac",
+    USDC: "0xADD81fF77b4Bd54259f0EB5f885862eF5920D165"
 };
 
 const ABI = [
@@ -31,12 +26,15 @@ const ABI = [
 let provider, signer;
 
 async function initialize() {
+    console.log("Initializing wallet connection...");
     if (!window.ethereum) {
         alert("MetaMask is not installed. Please install MetaMask to use this feature.");
+        console.error("MetaMask not detected.");
         return;
     }
 
     try {
+        console.log("Requesting MetaMask accounts...");
         const accounts = await ethereum.request({ method: "eth_requestAccounts" });
         if (!accounts || accounts.length === 0) {
             alert("No accounts found in MetaMask.");
@@ -46,6 +44,7 @@ async function initialize() {
         provider = new ethers.providers.Web3Provider(window.ethereum);
         signer = provider.getSigner();
         updateWalletUI(true, accounts[0]);
+        console.log("Wallet connected successfully.");
     } catch (error) {
         console.error("Error connecting to MetaMask:", error.message);
     }
@@ -78,39 +77,44 @@ async function getContract() {
     return new ethers.Contract(DEX_CONTRACT_ADDRESS, ABI, signer);
 }
 
-async function updateTokenBalances() {
+async function previewSwap(inputAmount, tokenIn, tokenOut) {
     try {
-        const tokenIn = document.getElementById("tokenIn").value;
-        const tokenOut = document.getElementById("tokenOut").value;
+        console.log("Previewing swap...");
+        const estimatedOutput = calculateEstimatedOutput(inputAmount);
+        console.log("Estimated Output:", estimatedOutput);
+        document.getElementById("estimatedOutput").value = estimatedOutput.toFixed(6);
 
-        const tokenInContract = new ethers.Contract(tokenIn, ABI, signer);
-        const tokenOutContract = new ethers.Contract(tokenOut, ABI, signer);
-
-        const userAddress = await signer.getAddress();
-        const tokenInBalance = await tokenInContract.balanceOf(userAddress);
-        const tokenOutBalance = await tokenOutContract.balanceOf(userAddress);
-
-        document.getElementById("tokenInBalance").textContent = ethers.utils.formatUnits(tokenInBalance, 18);
-        document.getElementById("tokenOutBalance").textContent = ethers.utils.formatUnits(tokenOutBalance, 18);
+        const gasEstimate = await signer.estimateGas({
+            to: DEX_CONTRACT_ADDRESS,
+            data: new ethers.utils.Interface(ABI).encodeFunctionData("swap", [
+                tokenIn,
+                ethers.utils.parseUnits(inputAmount.toString(), 18),
+                tokenOut,
+                ethers.utils.parseUnits("0.1", 18)
+            ])
+        });
+        console.log("Estimated Gas:", gasEstimate.toString());
     } catch (error) {
-        console.error("Error updating token balances:", error.message);
+        console.error("Error previewing swap:", error.message);
     }
 }
 
 async function swapTokens(inputAmount, tokenIn, tokenOut) {
     try {
+        console.log("Executing swap...");
         if (!(await validateNetwork())) return;
 
         const contract = await getContract();
         if (!contract) return;
 
         const amountInWei = ethers.utils.parseUnits(inputAmount.toString(), 18);
-        const amountOutMin = ethers.utils.parseUnits("0.1", 18); // Adjust dynamically if needed
+        const amountOutMin = ethers.utils.parseUnits("0.1", 18);
 
         const tx = await contract.swap(tokenIn, amountInWei, tokenOut, amountOutMin, {
             gasLimit: 300000,
         });
 
+        console.log("Transaction sent. Waiting for confirmation...");
         await tx.wait();
         alert("Swap successful!");
         updateTokenBalances();
@@ -120,41 +124,9 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
     }
 }
 
-async function updateSwapDetails() {
-    try {
-        const tokenIn = document.getElementById("tokenIn").value;
-        const tokenOut = document.getElementById("tokenOut").value;
-        const amount = document.getElementById("swapAmount").value;
-
-        if (!tokenIn || !tokenOut || !amount) {
-            document.getElementById("estimatedOutput").value = "Enter details";
-            return;
-        }
-
-        const balance = await getTokenBalance(tokenIn);
-        document.getElementById("tokenInBalance").textContent = `Balance: ${balance}`;
-
-        const inputAmount = parseFloat(amount);
-        if (inputAmount > balance) {
-            document.getElementById("swapAmount").classList.add("error");
-            document.getElementById("estimatedOutput").value = "Exceeds balance";
-            return;
-        } else {
-            document.getElementById("swapAmount").classList.remove("error");
-        }
-
-        const estimatedOutput = calculateEstimatedOutput(inputAmount, balance);
-        document.getElementById("estimatedOutput").value = estimatedOutput.toFixed(6);
-    } catch (error) {
-        console.error("Error updating swap details:", error);
-    }
-}
-
-function calculateEstimatedOutput(amountIn, balance) {
+function calculateEstimatedOutput(amountIn) {
     const feeRate = 0.003; // 0.3% fee
-    const effectiveAmount = amountIn * (1 - feeRate);
-    const ratio = 1; // Example ratio, replace with actual pool data
-    return effectiveAmount * ratio;
+    return amountIn * (1 - feeRate); // Example calculation, replace with actual logic
 }
 
 async function validateNetwork() {
@@ -166,17 +138,15 @@ async function validateNetwork() {
     return true;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    setupUI();
-});
+async function updateTokenBalances() {
+    console.log("Updating token balances...");
+    // Add logic to fetch and update balances dynamically
+}
 
-function setupUI() {
+document.addEventListener("DOMContentLoaded", () => {
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
     const swapButton = document.getElementById("confirmSwap");
-    const reverseButton = document.getElementById("reverseTokens");
-    const openModalButton = document.getElementById("openSwapModal");
-    const closeModalButton = document.getElementById("closeSwapModal");
 
     if (connectButton) connectButton.addEventListener("click", initialize);
     if (disconnectButton) disconnectButton.addEventListener("click", disconnectWallet);
@@ -194,37 +164,4 @@ function setupUI() {
             }
         });
     }
-
-    if (reverseButton) {
-        reverseButton.addEventListener("click", () => {
-            const tokenInSelect = document.getElementById("tokenIn");
-            const tokenOutSelect = document.getElementById("tokenOut");
-
-            const tempValue = tokenInSelect.value;
-            tokenInSelect.value = tokenOutSelect.value;
-            tokenOutSelect.value = tempValue;
-
-            updateTokenBalances();
-        });
-    }
-
-    if (openModalButton) {
-        openModalButton.addEventListener("click", () => {
-            document.getElementById("swapModal").style.display = "block";
-            updateTokenBalances();
-        });
-    }
-
-    if (closeModalButton) {
-        closeModalButton.addEventListener("click", () => {
-            document.getElementById("swapModal").style.display = "none";
-        });
-    }
-
-    window.addEventListener("click", (event) => {
-        const modal = document.getElementById("swapModal");
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-}
+});
