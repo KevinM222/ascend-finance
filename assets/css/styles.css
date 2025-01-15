@@ -13,16 +13,12 @@ body, html {
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    color: white;
-    text-align: center;
-    position: relative;
-    padding-top: 60px; /* Space for toolbar */
+    min-height: 100vh; /* Ensure it takes the full height of the viewport */
+    width: 100%;
+    position: absolute; /* Ensure it stays behind other elements */
+    z-index: -1; /* Send it to the background */
 }
+
 
 /* Logo container and tagline */
 .logo-container {
