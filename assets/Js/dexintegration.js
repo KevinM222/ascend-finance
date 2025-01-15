@@ -105,6 +105,27 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function setupUI() {
-    document.getElementById("connectWalletButton").addEventListener("click", initialize);
-    document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
+    const connectButton = document.getElementById("connectWalletButton");
+    const disconnectButton = document.getElementById("disconnectWalletButton");
+    const swapButton = document.getElementById("swapButton");
+
+    if (connectButton) {
+        connectButton.addEventListener("click", initialize);
+    }
+
+    if (disconnectButton) {
+        disconnectButton.addEventListener("click", disconnectWallet);
+    }
+
+    if (swapButton) {
+        swapButton.addEventListener("click", async () => {
+            const inputAmount = prompt("Enter the amount to swap:");
+            const tokenIn = TOKEN_ADDRESSES.ASC; // Replace with actual token address
+            const tokenOut = TOKEN_ADDRESSES.POL; // Replace with actual token address
+
+            if (inputAmount && tokenIn && tokenOut) {
+                await swapTokens(inputAmount, tokenIn, tokenOut);
+            }
+        });
+    }
 }
