@@ -258,7 +258,11 @@ nav ul li a:hover {
     .wallet-container {
         gap: 15px;
     }
-
+    .content-wrapper {
+        position: relative;
+        z-index: 10; /* Bring this content to the foreground */
+    }
+    
     .hero-section h1 {
         font-size: 2rem;
     }
