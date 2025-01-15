@@ -2,18 +2,18 @@
 body, html {
     height: 100%;
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif; /* Added fallback fonts */
-    background-color: #000; /* Fallback background color */
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #000;
 }
 
-/* Hero section with background image */
+/* Hero Section */
 .hero-section {
     background-color: #1a1a1a;
     background-image: url('../../background.webp');
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
-    height: 100vh; /* Ensure it takes up the full height */
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -155,49 +155,77 @@ nav ul li a:hover {
     background-color: #218838;
 }
 
-/* Estimated Output Field Styling */
+/* Swap Container */
+.swap-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    margin: 20px auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.swap-row label {
+    font-weight: bold;
+}
+
+.swap-row input,
+.swap-row select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    background-color: #2a2a2a;
+    color: white;
+}
+
+/* Estimated Output Field */
 #estimatedOutput {
     font-weight: bold;
-    border: 1px solid #ff5733; /* Highlight border */
-    color: #ff5733; /* Highlight text */
-    background-color: #2a2a2a; /* Match other inputs */
+    border: 1px solid #ff5733;
+    color: #ff5733;
+    background-color: #2a2a2a;
 }
 
-/* Better alignment for dropdowns and inputs */
-.swap-container {
-    display: grid;
-    grid-template-columns: 1fr 40px 1fr; /* Align dropdowns and button */
-    gap: 15px;
-    align-items: center;
+/* Reverse Tokens Button */
+#reverseTokens {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-.swap-row select,
-.swap-row input {
-    width: 100%;
-    text-align: center;
-}
-
-/* Reverse Tokens Button Hover Effect */
 #reverseTokens:hover {
     background-color: #0056b3;
-    transform: rotate(180deg); /* Optional: Add a rotation effect */
+    transform: rotate(180deg);
     transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-/* Modal Responsiveness */
-@media screen and (max-width: 600px) {
-    .swap-container {
-        grid-template-columns: 1fr;
-    }
-
-    #reverseTokens {
-        margin: 10px auto;
-    }
+/* Confirm Swap Button */
+#confirmSwap {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
 }
 
-/* Modal Styles */
+#confirmSwap:hover {
+    background-color: #218838;
+}
+
+/* Modal */
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -221,75 +249,7 @@ nav ul li a:hover {
     text-align: center;
 }
 
-.modal-content h2 {
-    margin-bottom: 20px;
-}
-
-.swap-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.swap-row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-}
-
-.swap-row label {
-    font-weight: bold;
-}
-
-.swap-row input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 100%;
-    background-color: #2a2a2a;
-    color: white;
-}
-
-.swap-row select {
-    padding: 10px;
-    border-radius: 4px;
-    background-color: #2a2a2a;
-    color: white;
-    width: 100%;
-}
-
-#reverseTokens {
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-#confirmSwap {
-    background-color: #28a745;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-    color: white;
-}
-
-
-/* Bottom content */
+/* Bottom Content */
 .bottom-content {
     text-align: center;
     margin-top: 40px;
@@ -302,7 +262,7 @@ nav ul li a:hover {
     margin-bottom: 20px;
 }
 
-/* Mobile responsiveness */
+/* Mobile Responsiveness */
 @media screen and (max-width: 600px) {
     .token-info-top {
         flex-direction: column;
@@ -323,7 +283,7 @@ nav ul li a:hover {
         font-size: 1.2rem;
     }
 
-    .dex-section {
+    .swap-container {
         padding: 15px;
     }
 
