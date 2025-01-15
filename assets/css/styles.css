@@ -9,7 +9,8 @@ body, html {
 /* Hero Section */
 .hero-section {
     background-color: #11b49c;
-    background-image: url('../images/background.webp'); /* Ensure the path is correct */
+    background-image: url('https://raw.githubusercontent.com/KevinM222/ascend-finance/main/background.webp');
+ /* Ensure the path is correct */
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
