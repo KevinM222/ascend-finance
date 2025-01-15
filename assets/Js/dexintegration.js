@@ -29,6 +29,7 @@ async function initialize() {
     console.log("Initializing wallet connection...");
     if (!window.ethereum) {
         alert("MetaMask is not installed. Please install MetaMask to use this feature.");
+        console.error("MetaMask not detected.");
         return;
     }
 
@@ -43,6 +44,18 @@ async function initialize() {
         provider = new ethers.providers.Web3Provider(window.ethereum);
         signer = provider.getSigner();
         updateWalletUI(true, accounts[0]);
+
+        // Event listener for account changes
+        ethereum.on("accountsChanged", (newAccounts) => {
+            if (newAccounts.length > 0) {
+                console.log("Account changed:", newAccounts[0]);
+                updateWalletUI(true, newAccounts[0]);
+            } else {
+                console.log("No accounts connected");
+                disconnectWallet();
+            }
+        });
+
         console.log("Wallet connected successfully.");
     } catch (error) {
         console.error("Error connecting to MetaMask:", error.message);
@@ -53,6 +66,7 @@ function disconnectWallet() {
     provider = null;
     signer = null;
     updateWalletUI(false);
+    console.log("Wallet disconnected.");
 }
 
 function updateWalletUI(connected, address = null) {
@@ -61,9 +75,11 @@ function updateWalletUI(connected, address = null) {
 
     if (connected) {
         connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.slice(-4)}`;
+        connectButton.style.backgroundColor = "#28a745";
         disconnectButton.style.display = "inline-block";
     } else {
         connectButton.textContent = "Connect Wallet";
+        connectButton.style.backgroundColor = "#007bff";
         disconnectButton.style.display = "none";
     }
 }
