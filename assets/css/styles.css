@@ -102,7 +102,7 @@ nav ul li a:hover {
     margin: 10px auto; /* Centers horizontally */
     padding: 10px 20px;
     background-color: #007bff;
-    color: white;
+    color: rgb(41, 188, 119);
     border: none;
     border-radius: 5px;
     cursor: pointer;
