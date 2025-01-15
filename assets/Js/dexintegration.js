@@ -29,7 +29,6 @@ async function initialize() {
     console.log("Initializing wallet connection...");
     if (!window.ethereum) {
         alert("MetaMask is not installed. Please install MetaMask to use this feature.");
-        console.error("MetaMask not detected.");
         return;
     }
 
@@ -77,25 +76,23 @@ async function getContract() {
     return new ethers.Contract(DEX_CONTRACT_ADDRESS, ABI, signer);
 }
 
-async function previewSwap(inputAmount, tokenIn, tokenOut) {
+async function updateTokenBalances() {
+    console.log("Updating token balances...");
     try {
-        console.log("Previewing swap...");
-        const estimatedOutput = calculateEstimatedOutput(inputAmount);
-        console.log("Estimated Output:", estimatedOutput);
-        document.getElementById("estimatedOutput").value = estimatedOutput.toFixed(6);
+        const tokenIn = document.getElementById("tokenIn").value;
+        const tokenOut = document.getElementById("tokenOut").value;
 
-        const gasEstimate = await signer.estimateGas({
-            to: DEX_CONTRACT_ADDRESS,
-            data: new ethers.utils.Interface(ABI).encodeFunctionData("swap", [
-                tokenIn,
-                ethers.utils.parseUnits(inputAmount.toString(), 18),
-                tokenOut,
-                ethers.utils.parseUnits("0.1", 18)
-            ])
-        });
-        console.log("Estimated Gas:", gasEstimate.toString());
+        const tokenInContract = new ethers.Contract(tokenIn, ABI, signer);
+        const tokenOutContract = new ethers.Contract(tokenOut, ABI, signer);
+
+        const userAddress = await signer.getAddress();
+        const tokenInBalance = await tokenInContract.balanceOf(userAddress);
+        const tokenOutBalance = await tokenOutContract.balanceOf(userAddress);
+
+        document.getElementById("tokenInBalance").textContent = ethers.utils.formatUnits(tokenInBalance, 18);
+        document.getElementById("tokenOutBalance").textContent = ethers.utils.formatUnits(tokenOutBalance, 18);
     } catch (error) {
-        console.error("Error previewing swap:", error.message);
+        console.error("Error updating token balances:", error.message);
     }
 }
 
@@ -124,11 +121,6 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
     }
 }
 
-function calculateEstimatedOutput(amountIn) {
-    const feeRate = 0.003; // 0.3% fee
-    return amountIn * (1 - feeRate); // Example calculation, replace with actual logic
-}
-
 async function validateNetwork() {
     const network = await provider.getNetwork();
     if (network.chainId !== 11155111) {
@@ -136,11 +128,6 @@ async function validateNetwork() {
         return false;
     }
     return true;
-}
-
-async function updateTokenBalances() {
-    console.log("Updating token balances...");
-    // Add logic to fetch and update balances dynamically
 }
 
 document.addEventListener("DOMContentLoaded", () => {
