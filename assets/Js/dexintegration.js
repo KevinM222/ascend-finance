@@ -123,31 +123,53 @@ async function updateTokenBalances() {
 }
 
 async function swapTokens(inputAmount, tokenIn, tokenOut) {
+    const swapButton = document.getElementById("confirmSwap");
+    swapButton.disabled = true;
+    swapButton.textContent = "Swapping...";
+
     try {
         console.log("Executing swap...");
+
+        // Validate network
         if (!(await validateNetwork())) {
             console.error("Swap aborted: Incorrect network.");
             return;
         }
 
+        // Get contract and validate
         const contract = await getContract();
         if (!contract) {
             console.error("Contract instance not available.");
             return;
         }
 
+        // Convert input amount to Wei
         const amountInWei = ethers.utils.parseUnits(inputAmount.toString(), 18);
         const amountOutMin = ethers.utils.parseUnits("0.1", 18);
 
+        // Check user token balance
+        const tokenInContract = new ethers.Contract(tokenIn, ABI, signer);
+        const userAddress = await signer.getAddress();
+        const userBalance = await tokenInContract.balanceOf(userAddress);
+
+        if (userBalance.lt(amountInWei)) {
+            alert("Insufficient balance for the swap.");
+            return;
+        }
+
+        // Execute swap
         const tx = await contract.swap(tokenIn, amountInWei, tokenOut, amountOutMin, {
             gasLimit: 300000,
         });
 
         console.log("Transaction sent. Waiting for confirmation...");
         await tx.wait();
+
+        // Success alert and update balances
         alert("Swap successful!");
         updateTokenBalances();
     } catch (error) {
+        // Handle errors
         if (error.code === "UNPREDICTABLE_GAS_LIMIT") {
             console.error("Swap failed: Gas estimation error.", error.message);
             alert("Swap failed: Gas estimation error. Check your inputs.");
@@ -155,33 +177,38 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
             console.error("Swap failed:", error.message);
             alert(`Swap failed: ${error.message}`);
         }
-    
-        const swapButton = document.getElementById("confirmSwap");
-        swapButton.disabled = true;
-        swapButton.textContent = "Swapping...";
-
-        try {
-        // Existing swap logic...
-        } finally {
+    } finally {
+        // Reset button state
         swapButton.disabled = false;
         swapButton.textContent = "Swap Tokens";
-        }
     }
 }
 
+async function switchToSepolia() {
+    try {
+        await ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0xaa36a7" }], // Sepolia chainId in hex
+        });
+        console.log("Switched to the Sepolia network.");
+        return true;
+    } catch (error) {
+        if (error.code === 4902) {
+            alert("Sepolia network is not added to MetaMask. Please add it manually.");
+        } else {
+            console.error("Error switching networks:", error.message);
+        }
+        return false;
+    }
+}
 
 async function validateNetwork() {
-    const network = await provider.getNetwork();
-    if (network.chainId !== 11155111) {
-        console.error(`Wrong network: Chain ID ${network.chainId}. Expected: 11155111.`);
-        const switched = await switchToSepolia();
-        if (!switched) {
-            return false;
-        }
+    if (!(await validateNetwork())) {
+        alert("Please switch to the Sepolia network.");
+        disconnectWallet();
+        return;
     }
-    console.log("Connected to the Sepolia network.");
-    return true;
-}
+    
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -205,4 +232,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    console.log("UI elements loaded:", {
+        connectButton,
+        disconnectButton,
+        swapButton,
+    });
+    
 });
