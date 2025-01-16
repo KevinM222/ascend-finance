@@ -67,12 +67,14 @@ async function initialize() {
         console.log("Wallet connected successfully.");
     } catch (error) {
         console.error("Error connecting to MetaMask:", error.message);
+        alert(`Error connecting to MetaMask: ${error.message}`);
     }
 }
 
 function disconnectWallet() {
     signer = null;
     updateWalletUI(false);
+    console.log("Wallet disconnected.");
 }
 
 function updateWalletUI(connected, address = null) {
@@ -85,19 +87,49 @@ function updateWalletUI(connected, address = null) {
 
     if (connected) {
         connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.slice(-4)}`;
+        connectButton.style.backgroundColor = "#28a745";
         disconnectButton.style.display = "inline-block";
     } else {
         connectButton.textContent = "Connect Wallet";
+        connectButton.style.backgroundColor = "#007bff";
         disconnectButton.style.display = "none";
     }
 }
 
 async function validateNetwork() {
+    if (!provider) {
+        console.error("Provider not initialized.");
+        return false;
+    }
+
     const network = await provider.getNetwork();
-    return network.chainId === 11155111;
+    console.log("Current network chain ID:", network.chainId);
+
+    if (network.chainId !== 11155111) {
+        console.error(`Wrong network: Chain ID ${network.chainId}. Expected: 11155111.`);
+        return await switchToSepolia();
+    }
+
+    console.log("Connected to the Sepolia network.");
+    return true;
+}
+
+async function switchToSepolia() {
+    try {
+        await ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0xaa36a7" }],
+        });
+        console.log("Switched to the Sepolia network.");
+        return true;
+    } catch (error) {
+        console.error("Error switching networks:", error.message);
+        return false;
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM fully loaded.");
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
     const sushiSwapButton = document.getElementById("sushiSwapButton");
@@ -114,3 +146,8 @@ document.addEventListener("DOMContentLoaded", () => {
         sushiSwapButton.addEventListener("click", () => {
             window.open(
                 'https://sushi.com/swap?inputCurrency=0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a&outputCurrency=POL',
+                '_blank'
+            );
+        });
+    }
+}); // Ensure this closing brace is present.
