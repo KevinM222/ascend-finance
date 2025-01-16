@@ -178,9 +178,11 @@ nav ul li a:hover {
     max-width: 300px;
 }
 
-.bottom-content .cta-button:hover, .cta-button-sushiswap:hover {
-    background-color: #117a8b;
+.bottom-content, .dex-section {
+    text-align: center;
+    margin: 20px auto;
 }
+
 
 /* Mobile Responsiveness */
 @media screen and (max-width: 600px) {
