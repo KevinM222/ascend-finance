@@ -4,7 +4,8 @@ const DEX_CONTRACT_ADDRESS = "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a";
 const TOKEN_ADDRESSES = {
     ASC: "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a",
     POL: "0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac",
-    USDC: "0xADD81fF77b4Bd54259f0EB5f885862eF5920D165"
+    USDC: "0xADD81fF77b4Bd54259f0EB5f885862eF5920D165",
+    ETH: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" // Placeholder for ETH
 };
 
 const ABI = [
@@ -22,6 +23,7 @@ const ABI = [
         type: "function"
     }
 ];
+
 let provider, signer;
 
 async function initialize() {
@@ -68,9 +70,7 @@ async function initialize() {
     }
 }
 
-
-function disconnectWallet()
- {
+function disconnectWallet() {
     signer = null;
     updateWalletUI(false);
     console.log("Wallet disconnected.");
@@ -80,7 +80,7 @@ function updateWalletUI(connected, address = null) {
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
 
-    connectButton.disabled = false; // Ensure the button is never disabled
+    connectButton.disabled = false;
 
     if (connected) {
         connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.slice(-4)}`;
@@ -92,7 +92,6 @@ function updateWalletUI(connected, address = null) {
         disconnectButton.style.display = "none";
     }
 }
-
 
 async function getContract() {
     if (!provider || !DEX_CONTRACT_ADDRESS || !ABI.length) {
@@ -107,16 +106,25 @@ async function updateTokenBalances() {
     try {
         const tokenIn = document.getElementById("tokenIn").value;
         const tokenOut = document.getElementById("tokenOut").value;
-
-        const tokenInContract = new ethers.Contract(tokenIn, ABI, signer);
-        const tokenOutContract = new ethers.Contract(tokenOut, ABI, signer);
-
         const userAddress = await signer.getAddress();
-        const tokenInBalance = await tokenInContract.balanceOf(userAddress);
-        const tokenOutBalance = await tokenOutContract.balanceOf(userAddress);
 
-        document.getElementById("tokenInBalance").textContent = ethers.utils.formatUnits(tokenInBalance, 18);
-        document.getElementById("tokenOutBalance").textContent = ethers.utils.formatUnits(tokenOutBalance, 18);
+        if (tokenIn === TOKEN_ADDRESSES.ETH) {
+            const ethBalance = await provider.getBalance(userAddress);
+            document.getElementById("tokenInBalance").textContent = ethers.utils.formatEther(ethBalance);
+        } else {
+            const tokenInContract = new ethers.Contract(tokenIn, ABI, signer);
+            const tokenInBalance = await tokenInContract.balanceOf(userAddress);
+            document.getElementById("tokenInBalance").textContent = ethers.utils.formatUnits(tokenInBalance, 18);
+        }
+
+        if (tokenOut === TOKEN_ADDRESSES.ETH) {
+            const ethBalance = await provider.getBalance(userAddress);
+            document.getElementById("tokenOutBalance").textContent = ethers.utils.formatEther(ethBalance);
+        } else {
+            const tokenOutContract = new ethers.Contract(tokenOut, ABI, signer);
+            const tokenOutBalance = await tokenOutContract.balanceOf(userAddress);
+            document.getElementById("tokenOutBalance").textContent = ethers.utils.formatUnits(tokenOutBalance, 18);
+        }
     } catch (error) {
         console.error("Error updating token balances:", error.message);
     }
@@ -129,56 +137,40 @@ async function swapTokens(inputAmount, tokenIn, tokenOut) {
 
     try {
         console.log("Executing swap...");
-
-        // Validate network
         if (!(await validateNetwork())) {
             console.error("Swap aborted: Incorrect network.");
             return;
         }
 
-        // Get contract and validate
         const contract = await getContract();
         if (!contract) {
             console.error("Contract instance not available.");
             return;
         }
 
-        // Convert input amount to Wei
         const amountInWei = ethers.utils.parseUnits(inputAmount.toString(), 18);
         const amountOutMin = ethers.utils.parseUnits("0.1", 18);
 
-        // Check user token balance
-        const tokenInContract = new ethers.Contract(tokenIn, ABI, signer);
-        const userAddress = await signer.getAddress();
-        const userBalance = await tokenInContract.balanceOf(userAddress);
-
-        if (userBalance.lt(amountInWei)) {
-            alert("Insufficient balance for the swap.");
-            return;
+        let tx;
+        if (tokenIn === TOKEN_ADDRESSES.ETH) {
+            tx = await contract.swap(tokenIn, amountInWei, tokenOut, amountOutMin, {
+                value: amountInWei,
+                gasLimit: 300000,
+            });
+        } else {
+            tx = await contract.swap(tokenIn, amountInWei, tokenOut, amountOutMin, {
+                gasLimit: 300000,
+            });
         }
-
-        // Execute swap
-        const tx = await contract.swap(tokenIn, amountInWei, tokenOut, amountOutMin, {
-            gasLimit: 300000,
-        });
 
         console.log("Transaction sent. Waiting for confirmation...");
         await tx.wait();
-
-        // Success alert and update balances
         alert("Swap successful!");
         updateTokenBalances();
     } catch (error) {
-        // Handle errors
-        if (error.code === "UNPREDICTABLE_GAS_LIMIT") {
-            console.error("Swap failed: Gas estimation error.", error.message);
-            alert("Swap failed: Gas estimation error. Check your inputs.");
-        } else {
-            console.error("Swap failed:", error.message);
-            alert(`Swap failed: ${error.message}`);
-        }
+        console.error("Swap failed:", error.message);
+        alert(`Swap failed: ${error.message}`);
     } finally {
-        // Reset button state
         swapButton.disabled = false;
         swapButton.textContent = "Swap Tokens";
     }
@@ -188,28 +180,25 @@ async function switchToSepolia() {
     try {
         await ethereum.request({
             method: "wallet_switchEthereumChain",
-            params: [{ chainId: "0xaa36a7" }], // Sepolia chainId in hex
+            params: [{ chainId: "0xaa36a7" }],
         });
         console.log("Switched to the Sepolia network.");
         return true;
     } catch (error) {
-        if (error.code === 4902) {
-            alert("Sepolia network is not added to MetaMask. Please add it manually.");
-        } else {
-            console.error("Error switching networks:", error.message);
-        }
+        console.error("Error switching networks:", error.message);
         return false;
     }
 }
 
 async function validateNetwork() {
-    if (!(await validateNetwork())) {
-        alert("Please switch to the Sepolia network.");
-        disconnectWallet();
-        return;
+    const network = await provider.getNetwork();
+    if (network.chainId !== 11155111) {
+        console.error(`Wrong network: Chain ID ${network.chainId}. Expected: 11155111.`);
+        return await switchToSepolia();
     }
-    
-
+    console.log("Connected to the Sepolia network.");
+    return true;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const connectButton = document.getElementById("connectWalletButton");
@@ -232,10 +221,4 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-    console.log("UI elements loaded:", {
-        connectButton,
-        disconnectButton,
-        swapButton,
-    });
-    
 });
