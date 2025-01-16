@@ -44,8 +44,6 @@ async function initialize() {
             return;
         }
 
-        console.log("MetaMask accounts:", accounts);
-
         provider = new ethers.providers.Web3Provider(window.ethereum);
         signer = provider.getSigner();
 
@@ -64,7 +62,6 @@ async function initialize() {
             if (newAccounts.length > 0) {
                 updateWalletUI(true, newAccounts[0]);
             } else {
-                console.log("No accounts connected.");
                 disconnectWallet();
             }
         });
@@ -142,6 +139,7 @@ async function switchToSepolia() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM fully loaded.");
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
 
