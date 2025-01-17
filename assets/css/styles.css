@@ -89,7 +89,7 @@ nav ul li a:hover {
 }
 
 .wallet-container button#disconnectWalletButton {
-    background-color: #28a745;
+    background-color: #d31125;
 }
 
 .wallet-container button#disconnectWalletButton:hover {
