@@ -8,20 +8,20 @@ body, html {
 /* Hero Section */
 .hero-section {
     background-color: #11b49c;
-    background-image: url('../images/background.webp'); /* Ensure the path is correct */
+    background-image: url('../images/background.webp');
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
     min-height: 100vh;
     width: 100%;
-    position: relative; /* Changed from fixed */
-    z-index: 1; /* Adjusted layering */
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center vertically */
-    align-items: center; /* Center horizontally */
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    padding-top: 60px; /* To avoid overlap with nav bar */
+    padding-top: 60px;
 }
 
 /* Logo container and tagline */
@@ -49,10 +49,10 @@ nav ul {
     list-style: none;
     padding: 10px 0;
     background-color: rgba(0, 0, 0, 0.8);
-    position: sticky; /* Changed from fixed to sticky */
+    position: sticky;
     top: 0;
     width: 100%;
-    z-index: 100; /* Ensures it stays above other content */
+    z-index: 100;
     margin: 0;
 }
 
@@ -93,7 +93,7 @@ nav ul li a:hover {
 }
 
 .wallet-container button#disconnectWalletButton:hover {
-    background-color: #218838;
+    background-color: #9c101a;
 }
 
 /* Swap Container */
@@ -106,7 +106,7 @@ nav ul li a:hover {
     width: 100%;
     max-width: 400px;
     text-align: center;
-    z-index: 10; /* Ensure it's above the hero background */
+    z-index: 10;
 }
 
 /* Modal */
@@ -114,9 +114,9 @@ nav ul li a:hover {
     display: none;
     position: fixed;
     z-index: 1000;
-    left: 50%; /* Horizontally centered */
-    top: 50%; /* Vertically centered */
-    transform: translate(-50%, -50%); /* Precise centering */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
@@ -145,7 +145,7 @@ nav ul li a:hover {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    display: block; /* Centers buttons within containers */
+    display: block;
     text-align: center;
 }
 
@@ -178,17 +178,14 @@ nav ul li a:hover {
     max-width: 300px;
 }
 
-/* Bottom Content Buttons */
 .bottom-content, .dex-section {
     text-align: center;
     margin: 20px auto;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centers child elements horizontally */
-    gap: 15px; /* Spacing between elements */
+    align-items: center;
+    gap: 15px;
 }
-
-
 
 /* Mobile Responsiveness */
 @media screen and (max-width: 600px) {
