@@ -92,7 +92,7 @@ function updateWalletUI(connected, address = null) {
         disconnectButton.style.display = "inline-block";
         addToMetaMaskButton.style.display = "inline-block";
 
-        addToMetaMaskButton.addEventListener("click", () => {
+        addToMetaMaskButton.onclick = () => {
             ethereum.request({
                 method: "wallet_watchAsset",
                 params: {
@@ -106,7 +106,7 @@ function updateWalletUI(connected, address = null) {
             })
                 .then(() => console.log("Token added to MetaMask"))
                 .catch((error) => console.error("Error adding token:", error.message));
-        });
+        };
     } else {
         connectButton.textContent = "Connect Wallet";
         connectButton.style.backgroundColor = "#007bff";
@@ -147,19 +147,27 @@ async function switchToSepolia() {
     }
 }
 
-// Swap Token Functionality
-async function swapTokens(tokenIn, tokenOut, amountIn, amountOutMin) {
-    console.log("Performing token swap...");
+async function swapTokens() {
+    console.log("Initiating token swap...");
+    try {
+        const tokenIn = document.getElementById("tokenIn").value;
+        const tokenOut = document.getElementById("tokenOut").value;
+        const amountIn = ethers.utils.parseUnits(document.getElementById("swapAmount").value, 18);
+        const amountOutMin = ethers.utils.parseUnits("0.1", 18);
 
-    const contract = new ethers.Contract(DEX_CONTRACT_ADDRESS, ABI, signer);
+        const contract = new ethers.Contract(DEX_CONTRACT_ADDRESS, ABI, signer);
 
-    const tx = await contract.swap(tokenIn, amountIn, tokenOut, amountOutMin, {
-        gasLimit: 300000,
-    });
+        const tx = await contract.swap(tokenIn, amountIn, tokenOut, amountOutMin, {
+            gasLimit: 300000,
+        });
 
-    console.log("Swap transaction sent, waiting for confirmation...");
-    await tx.wait();
-    console.log("Swap completed!");
+        console.log("Transaction sent, awaiting confirmation...");
+        await tx.wait();
+        alert("Swap successful!");
+    } catch (error) {
+        console.error("Error during swap:", error.message);
+        alert(`Swap failed: ${error.message}`);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -168,10 +176,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const disconnectButton = document.getElementById("disconnectWalletButton");
     const sushiSwapButton = document.getElementById("sushiSwapButton");
     const roadmapButton = document.getElementById("roadmapButton");
+    const confirmSwapButton = document.getElementById("confirmSwap");
 
     if (connectButton) connectButton.addEventListener("click", initialize);
     if (disconnectButton) disconnectButton.addEventListener("click", disconnectWallet);
-
     if (sushiSwapButton) {
         sushiSwapButton.addEventListener("click", () => {
             window.open(
@@ -180,10 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         });
     }
-
     if (roadmapButton) {
         roadmapButton.addEventListener("click", () => {
             window.location.href = "roadmap.html";
         });
     }
+    if (confirmSwapButton) confirmSwapButton.addEventListener("click", swapTokens);
 });
