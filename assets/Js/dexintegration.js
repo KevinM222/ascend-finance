@@ -80,8 +80,9 @@ function disconnectWallet() {
 function updateWalletUI(connected, address = null) {
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
+    const addToMetaMaskButton = document.getElementById("addToMetaMaskButton");
 
-    if (!connectButton || !disconnectButton) return;
+    if (!connectButton || !disconnectButton || !addToMetaMaskButton) return;
 
     connectButton.disabled = false;
 
@@ -89,10 +90,28 @@ function updateWalletUI(connected, address = null) {
         connectButton.textContent = `Connected: ${address.substring(0, 6)}...${address.slice(-4)}`;
         connectButton.style.backgroundColor = "#28a745";
         disconnectButton.style.display = "inline-block";
+        addToMetaMaskButton.style.display = "inline-block";
+
+        addToMetaMaskButton.addEventListener("click", () => {
+            ethereum.request({
+                method: "wallet_watchAsset",
+                params: {
+                    type: "ERC20",
+                    options: {
+                        address: TOKEN_ADDRESSES.ASC,
+                        symbol: "ASC",
+                        decimals: 18,
+                    },
+                },
+            })
+                .then(() => console.log("Token added to MetaMask"))
+                .catch((error) => console.error("Error adding token:", error.message));
+        });
     } else {
         connectButton.textContent = "Connect Wallet";
         connectButton.style.backgroundColor = "#007bff";
         disconnectButton.style.display = "none";
+        addToMetaMaskButton.style.display = "none";
     }
 }
 
@@ -128,19 +147,30 @@ async function switchToSepolia() {
     }
 }
 
+// Swap Token Functionality
+async function swapTokens(tokenIn, tokenOut, amountIn, amountOutMin) {
+    console.log("Performing token swap...");
+
+    const contract = new ethers.Contract(DEX_CONTRACT_ADDRESS, ABI, signer);
+
+    const tx = await contract.swap(tokenIn, amountIn, tokenOut, amountOutMin, {
+        gasLimit: 300000,
+    });
+
+    console.log("Swap transaction sent, waiting for confirmation...");
+    await tx.wait();
+    console.log("Swap completed!");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM fully loaded.");
     const connectButton = document.getElementById("connectWalletButton");
     const disconnectButton = document.getElementById("disconnectWalletButton");
     const sushiSwapButton = document.getElementById("sushiSwapButton");
+    const roadmapButton = document.getElementById("roadmapButton");
 
-    if (connectButton) {
-        connectButton.addEventListener("click", initialize);
-    }
-
-    if (disconnectButton) {
-        disconnectButton.addEventListener("click", disconnectWallet);
-    }
+    if (connectButton) connectButton.addEventListener("click", initialize);
+    if (disconnectButton) disconnectButton.addEventListener("click", disconnectWallet);
 
     if (sushiSwapButton) {
         sushiSwapButton.addEventListener("click", () => {
@@ -150,4 +180,10 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         });
     }
-}); // Ensure this closing brace is present.
+
+    if (roadmapButton) {
+        roadmapButton.addEventListener("click", () => {
+            window.location.href = "roadmap.html";
+        });
+    }
+});
