@@ -136,7 +136,7 @@ nav ul li a:hover {
 }
 
 /* Swap & Confirm Swap Buttons */
-#swapButton, #confirmSwap {
+#openSwapModal, #confirmSwap {
     margin: 10px auto;
     padding: 12px 25px;
     background-color: #007bff;
@@ -145,11 +145,11 @@ nav ul li a:hover {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    display: block;
     text-align: center;
+    transition: background-color 0.3s ease;
 }
 
-#swapButton:hover {
+#openSwapModal:hover {
     background-color: #0056b3;
 }
 
@@ -162,10 +162,10 @@ nav ul li a:hover {
 }
 
 /* Bottom Content Buttons */
-.bottom-content .cta-button, .cta-button-sushiswap {
+#sushiSwapButton {
     margin: 15px auto;
     padding: 12px 25px;
-    background-color: #17b84f;
+    background-color: #17a2b8;
     color: white;
     border: none;
     border-radius: 5px;
@@ -173,11 +173,15 @@ nav ul li a:hover {
     font-size: 16px;
     text-align: center;
     transition: background-color 0.3s ease;
-    display: block;
     width: 90%;
     max-width: 300px;
 }
 
+#sushiSwapButton:hover {
+    background-color: #117a8b;
+}
+
+/* Bottom Content Section */
 .bottom-content, .dex-section {
     text-align: center;
     margin: 20px auto;
