@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ascend Crypto On-Ramp Service - Your Launchpad to the Future of Finance">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://*.metamask.io https://cdn.jsdelivr.net; object-src 'none';">
+    <title>Ascend Finance</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="icon" href="assets/images/favicon_io/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="assets/Js/dexintegration.js" defer></script>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="logo-container">
+            <p class="tagline">Your Launchpad to the Future of Finance</p>
+            <img src="assets/images/logo.webp" alt="Ascend Logo" class="main-logo">
+        </div>
+
+        <div class="wallet-container">
+            <button id="connectWalletButton">Connect Wallet</button>
+            <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+            <button id="addToMetaMaskButton" style="display: none;">Add ASC to MetaMask</button>
+        </div>
+
+        <div class="token-info-top">
+            <p id="tokenBalance">Your ASC Balance: N/A</p>
+            <p id="tokenPrice">ASC Price: Loading...</p>
+        </div>
+    </section>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="roadmap.html" id="roadmapButton" class="cta-button">Roadmap</a></li>
+            <li><a href="whitepaper.html">Whitepaper</a></li>
+            <li><a href="https://polygonscan.com/token/0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a" target="_blank">ASC Token</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Swap Tokens Button -->
+<div class="dex-section">
+    <h2>Decentralized Exchange</h2>
+    <button id="openSwapModal" class="cta-button">Swap Tokens</button>
+</div>
+
+<!-- Swap Modal -->
+<div id="swapModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" id="closeSwapModal">&times;</span>
+        <h2>Swap Tokens</h2>
+        <div class="swap-container">
+            <label for="tokenIn">From:</label>
+            <select id="tokenIn">
+                <option value="0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a">ASC</option>
+                <option value="0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac">POL</option>
+                <option value="0xADD81fF77b4Bd54259f0EB5f885862eF5920D165">USDC</option>
+                <option value="0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE">ETH</option>
+            </select>
+            <input type="number" id="swapAmount" placeholder="Amount to swap">
+            <label for="tokenOut">To:</label>
+            <select id="tokenOut">
+                <option value="0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a">ASC</option>
+                <option value="0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac">POL</option>
+                <option value="0xADD81fF77b4Bd54259f0EB5f885862eF5920D165">USDC</option>
+                <option value="0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE">ETH</option>
+            </select>
+            <button id="reverseTokens" class="cta-button">⇅</button>
+            <button id="confirmSwap" class="cta-button">Confirm Swap</button>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Bottom Content -->
+    <div class="bottom-content">
+        <button id="sushiSwapButton" class="cta-button-sushiswap">Swap on SushiSwap</button>
+        <p class="empowering-quote">"Empower your financial future with Ascend."</p>
+    </div>
+</body>
+</html>
