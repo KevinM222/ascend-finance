@@ -13,7 +13,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     // Error declarations
-    error InvalidTokenAddress();
+    error InvalidTokenAddress;
     error TokenNotRegistered();
     error InsufficientLiquidity();
     error InsufficientOutputAmount();
