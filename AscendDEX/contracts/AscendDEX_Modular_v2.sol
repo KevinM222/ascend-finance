@@ -17,6 +17,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     error TokenNotRegistered();
     error InsufficientLiquidity();
     error InsufficientOutputAmount();
+    error FeeTooHigh();
 
     uint16 public fee = 30; // Fee in basis points (0.3%)
     address public feeRecipient;
@@ -57,7 +58,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function setFee(uint16 _fee) external onlyOwner {
-        if(_fee > 1000) revert InvalidTokenAddress(); // 1000 basis points = 10%
+        if(_fee > 1000) revert FeeTooHigh(); // 1000 basis points = 10%
         emit FeeUpdated(fee, _fee);
         fee = _fee;
     }
@@ -95,7 +96,6 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint amount1 = share * pair.reserve1 / 1e18 / (10 ** (18 - tokenDecimals[token1])); // Denormalize
         uint amount2 = share * pair.reserve2 / 1e18 / (10 ** (18 - tokenDecimals[token2])); // Denormalize
         if (amount1 > pair.reserve1 || amount2 > pair.reserve2) revert InsufficientLiquidity();
-        if (amount1 > pair.reserve1 / (10 ** (18 - tokenDecimals[token1])) || amount2 > pair.reserve2 / (10 ** (18 - tokenDecimals[token2]))) revert InsufficientLiquidity();
 
         pair.reserve1 -= _adjustAmount(amount1, tokenDecimals[token1]);
         pair.reserve2 -= _adjustAmount(amount2, tokenDecimals[token2]);
