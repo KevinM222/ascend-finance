@@ -19,7 +19,8 @@
     "ethers": "^5.7.2",
     "hardhat": "^2.22.0",
     "hardhat-console": "^1.0.0",
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "prettier": "^3.4.2"
   },
   "dependencies": {
     "@chainlink/contracts": "^0.4.1",

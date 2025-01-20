@@ -2,67 +2,106 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
-contract ModularDEX is Ownable {
+contract ModularDEX is Ownable, ReentrancyGuard {
     struct Pair {
         uint reserve1; // Reserve for token1
         uint reserve2; // Reserve for token2
     }
 
-    uint public fee = 3; // Fee in basis points (0.3%)
+    uint16 public fee = 30; // Fee in basis points (0.3%)
     address public feeRecipient;
     mapping(string => address) public tokenAddresses; // Token registry
     mapping(string => AggregatorV3Interface) public priceFeeds; // Price feed registry
+    mapping(string => uint8) public tokenDecimals; // Token decimals registry
     mapping(bytes32 => Pair) public pairs; // Token pair reserves
 
-    event TokenAdded(string indexed symbol, address tokenAddress);
+    event TokenAdded(string indexed symbol, address tokenAddress, uint8 decimals);
     event TokenRemoved(string indexed symbol);
     event FeeUpdated(uint oldFee, uint newFee);
     event Swap(address indexed user, string tokenIn, string tokenOut, uint amountIn, uint amountOut);
     event LiquidityAdded(address indexed provider, string token1, string token2, uint amount1, uint amount2);
+    event LiquidityRemoved(address indexed provider, string token1, string token2, uint amount1, uint amount2);
 
-    constructor(address _feeRecipient, address initialOwner) Ownable(initialOwner) {
+    error InvalidTokenAddress();
+    error TokenNotRegistered();
+    error InsufficientLiquidity();
+    error InsufficientOutputAmount();
+
+    constructor(address _feeRecipient, address initialOwner) Ownable() ReentrancyGuard() {
         require(_feeRecipient != address(0), "Invalid fee recipient");
         require(initialOwner != address(0), "Invalid initial owner");
         feeRecipient = _feeRecipient;
+        _transferOwnership(initialOwner);
     }
 
-    function addToken(string memory symbol, address tokenAddress, address priceFeed) external onlyOwner {
-        require(tokenAddress != address(0), "Invalid token address");
-        require(priceFeed != address(0), "Invalid price feed address");
+    function addToken(string memory symbol, address tokenAddress, address priceFeed, uint8 decimals) external onlyOwner {
+        if(tokenAddress == address(0) || priceFeed == address(0)) revert InvalidTokenAddress();
         tokenAddresses[symbol] = tokenAddress;
         priceFeeds[symbol] = AggregatorV3Interface(priceFeed);
-        emit TokenAdded(symbol, tokenAddress);
+        tokenDecimals[symbol] = decimals;
+        emit TokenAdded(symbol, tokenAddress, decimals);
     }
 
     function removeToken(string memory symbol) external onlyOwner {
-        require(tokenAddresses[symbol] != address(0), "Token not registered");
+        if(tokenAddresses[symbol] == address(0)) revert TokenNotRegistered();
         delete tokenAddresses[symbol];
         delete priceFeeds[symbol];
+        delete tokenDecimals[symbol]; // Remove decimals mapping
         emit TokenRemoved(symbol);
     }
 
-    function setFee(uint _fee) external onlyOwner {
-        require(_fee <= 100, "Fee too high");
+    function setFee(uint16 _fee) external onlyOwner {
+        if(_fee > 1000) revert("Fee too high"); // 1000 basis points = 10%
         emit FeeUpdated(fee, _fee);
         fee = _fee;
     }
 
-    function addLiquidity(string memory token1, string memory token2, uint amount1, uint amount2) public {
-        require(tokenAddresses[token1] != address(0) && tokenAddresses[token2] != address(0), "Invalid tokens");
+    function setFeeRecipient(address _newFeeRecipient) external onlyOwner {
+        require(_newFeeRecipient != address(0), "Invalid fee recipient");
+        feeRecipient = _newFeeRecipient;
+        emit FeeUpdated(fee, fee); // To signify feeRecipient change, although fee hasn't changed
+    }
 
-        bytes32 pairId = keccak256(abi.encodePacked(token1, token2));
+    function addLiquidity(string memory token1, string memory token2, uint amount1, uint amount2) public nonReentrant {
+        if(tokenAddresses[token1] == address(0) || tokenAddresses[token2] == address(0)) revert InvalidTokenAddress();
+
+        bytes32 pairId = _getPairId(token1, token2);
         Pair storage pair = pairs[pairId];
+
+        // Normalize amounts to 18 decimals for consistency
+        uint adjustedAmount1 = _adjustAmount(amount1, tokenDecimals[token1]);
+        uint adjustedAmount2 = _adjustAmount(amount2, tokenDecimals[token2]);
 
         IERC20(tokenAddresses[token1]).transferFrom(msg.sender, address(this), amount1);
         IERC20(tokenAddresses[token2]).transferFrom(msg.sender, address(this), amount2);
 
-        pair.reserve1 += amount1;
-        pair.reserve2 += amount2;
+        pair.reserve1 += adjustedAmount1;
+        pair.reserve2 += adjustedAmount2;
 
         emit LiquidityAdded(msg.sender, token1, token2, amount1, amount2);
+    }
+
+    function removeLiquidity(string memory token1, string memory token2, uint liquidityAmount) public nonReentrant {
+        bytes32 pairId = _getPairId(token1, token2);
+        Pair storage pair = pairs[pairId];
+
+        uint share = liquidityAmount * 1e18 / (pair.reserve1 + pair.reserve2);
+        uint amount1 = share * pair.reserve1 / 1e18 / (10 ** (18 - tokenDecimals[token1])); // Denormalize
+        uint amount2 = share * pair.reserve2 / 1e18 / (10 ** (18 - tokenDecimals[token2])); // Denormalize
+
+        if (amount1 > pair.reserve1 / (10 ** (18 - tokenDecimals[token1])) || amount2 > pair.reserve2 / (10 ** (18 - tokenDecimals[token2]))) revert InsufficientLiquidity();
+
+        pair.reserve1 -= _adjustAmount(amount1, tokenDecimals[token1]);
+        pair.reserve2 -= _adjustAmount(amount2, tokenDecimals[token2]);
+
+        IERC20(tokenAddresses[token1]).transfer(msg.sender, amount1);
+        IERC20(tokenAddresses[token2]).transfer(msg.sender, amount2);
+
+        emit LiquidityRemoved(msg.sender, token1, token2, amount1, amount2);
     }
 
     function swap(
@@ -70,43 +109,62 @@ contract ModularDEX is Ownable {
         string memory tokenOut,
         uint amountIn,
         uint amountOutMin
-    ) public {
-        require(tokenAddresses[tokenIn] != address(0) && tokenAddresses[tokenOut] != address(0), "Invalid tokens");
-        require(keccak256(bytes(tokenIn)) != keccak256(bytes(tokenOut)), "Tokens must be different");
+    ) public nonReentrant {
+        if(tokenAddresses[tokenIn] == address(0) || tokenAddresses[tokenOut] == address(0)) revert InvalidTokenAddress();
+        if(keccak256(bytes(tokenIn)) == keccak256(bytes(tokenOut))) revert("Tokens must be different");
 
-        bytes32 pairId = keccak256(abi.encodePacked(tokenIn, tokenOut));
+        bytes32 pairId = _getPairId(tokenIn, tokenOut);
         Pair storage pair = pairs[pairId];
 
-        uint reserveIn = pair.reserve1;
-        uint reserveOut = pair.reserve2;
+        uint reserveIn = tokenIn < tokenOut ? pair.reserve1 : pair.reserve2;
+        uint reserveOut = tokenIn < tokenOut ? pair.reserve2 : pair.reserve1;
 
-        uint amountOut = getAmountOut(amountIn, reserveIn, reserveOut);
-        uint feeAmount = (amountOut * fee) / 1000;
-        amountOut -= feeAmount;
+        uint amountOut = _getAmountOut(amountIn, reserveIn, reserveOut, tokenDecimals[tokenIn], tokenDecimals[tokenOut]);
+        uint feeAmount = amountOut * fee / 10000; // 10000 basis points = 100%
+        uint amountOutAfterFee = amountOut - feeAmount;
 
-        require(amountOut >= amountOutMin, "Insufficient output amount");
+        if(amountOutAfterFee < amountOutMin * (10 ** (18 - tokenDecimals[tokenOut]))) revert InsufficientOutputAmount();
 
+        // Effect
+        if (tokenIn < tokenOut) {
+            pair.reserve1 += _adjustAmount(amountIn, tokenDecimals[tokenIn]);
+            pair.reserve2 -= amountOut;
+        } else {
+            pair.reserve1 -= amountOut;
+            pair.reserve2 += _adjustAmount(amountIn, tokenDecimals[tokenIn]);
+        }
+
+        // Interaction
         IERC20(tokenAddresses[tokenIn]).transferFrom(msg.sender, address(this), amountIn);
-        IERC20(tokenAddresses[tokenOut]).transfer(msg.sender, amountOut);
-        IERC20(tokenAddresses[tokenOut]).transfer(feeRecipient, feeAmount);
+        IERC20(tokenAddresses[tokenOut]).transfer(msg.sender, amountOutAfterFee / (10 ** (18 - tokenDecimals[tokenOut])));
+        IERC20(tokenAddresses[tokenOut]).transfer(feeRecipient, feeAmount / (10 ** (18 - tokenDecimals[tokenOut])));
 
-        pair.reserve1 += amountIn;
-        pair.reserve2 -= amountOut;
-
-        emit Swap(msg.sender, tokenIn, tokenOut, amountIn, amountOut);
+        emit Swap(msg.sender, tokenIn, tokenOut, amountIn, amountOutAfterFee / (10 ** (18 - tokenDecimals[tokenOut])));
     }
 
-    function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) public pure returns (uint) {
-        require(reserveIn > 0 && reserveOut > 0, "Insufficient liquidity");
-        uint numerator = amountIn * reserveOut;
-        uint denominator = reserveIn + amountIn;
+    function _getAmountOut(uint amountIn, uint reserveIn, uint reserveOut, uint8 decimalsIn, uint8 decimalsOut) internal pure returns (uint) {
+        if(reserveIn == 0 || reserveOut == 0) revert InsufficientLiquidity();
+        uint adjustedAmountIn = _adjustAmount(amountIn, decimalsIn);
+        uint adjustedReserveIn = _adjustAmount(reserveIn / 1e18, decimalsIn) * 1e18; // Normalize and back to 18 decimals for calculation
+        uint adjustedReserveOut = _adjustAmount(reserveOut / 1e18, decimalsOut) * 1e18; // Normalize and back to 18 decimals for calculation
+        
+        uint numerator = adjustedAmountIn * adjustedReserveOut;
+        uint denominator = adjustedReserveIn + adjustedAmountIn;
         return numerator / denominator;
+    }
+
+    function _adjustAmount(uint amount, uint8 decimals) internal pure returns (uint) {
+        return amount * (10 ** (18 - decimals));
     }
 
     function getPrice(string memory symbol) public view returns (int) {
         AggregatorV3Interface priceFeed = priceFeeds[symbol];
-        require(address(priceFeed) != address(0), "Price feed not registered");
+        if(address(priceFeed) == address(0)) revert TokenNotRegistered();
         (, int price,,,) = priceFeed.latestRoundData();
         return price;
+    }
+
+    function _getPairId(string memory token1, string memory token2) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(token1 < token2 ? token1 : token2, token1 < token2 ? token2 : token1));
     }
 }
