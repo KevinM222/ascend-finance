@@ -31,6 +31,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     event Swap(address indexed user, string tokenIn, string tokenOut, uint amountIn, uint amountOut);
     event LiquidityAdded(address indexed provider, string token1, string token2, uint amount1, uint amount2);
     event LiquidityRemoved(address indexed provider, string token1, string token2, uint amount1, uint amount2);
+    event FeeRecipientUpdated(address oldFeeRecipient, address newFeeRecipient);
 
     constructor(address _feeRecipient, address initialOwner) Ownable() ReentrancyGuard() {
         require(_feeRecipient != address(0), "Invalid fee recipient");
@@ -56,7 +57,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function setFee(uint16 _fee) external onlyOwner {
-        if(_fee > 1000) revert("Fee too high"); // 1000 basis points = 10%
+        if(_fee > 1000) revert InvalidTokenAddress(); // 1000 basis points = 10%
         emit FeeUpdated(fee, _fee);
         fee = _fee;
     }
@@ -64,7 +65,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     function setFeeRecipient(address _newFeeRecipient) external onlyOwner {
         require(_newFeeRecipient != address(0), "Invalid fee recipient");
         feeRecipient = _newFeeRecipient;
-        emit FeeUpdated(fee, fee); // To signify feeRecipient change, although fee hasn't changed
+        emit FeeRecipientUpdated(feeRecipient, _newFeeRecipient);
     }
 
     function addLiquidity(string memory token1, string memory token2, uint amount1, uint amount2) public nonReentrant {
@@ -93,7 +94,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint share = liquidityAmount * 1e18 / (pair.reserve1 + pair.reserve2);
         uint amount1 = share * pair.reserve1 / 1e18 / (10 ** (18 - tokenDecimals[token1])); // Denormalize
         uint amount2 = share * pair.reserve2 / 1e18 / (10 ** (18 - tokenDecimals[token2])); // Denormalize
-
+        if (amount1 > pair.reserve1 || amount2 > pair.reserve2) revert InsufficientLiquidity();
         if (amount1 > pair.reserve1 / (10 ** (18 - tokenDecimals[token1])) || amount2 > pair.reserve2 / (10 ** (18 - tokenDecimals[token2]))) revert InsufficientLiquidity();
 
         pair.reserve1 -= _adjustAmount(amount1, tokenDecimals[token1]);
@@ -124,7 +125,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint feeAmount = amountOut * fee / 10000; // 10000 basis points = 100%
         uint amountOutAfterFee = amountOut - feeAmount;
 
-        if(amountOutAfterFee < amountOutMin * (10 ** (18 - tokenDecimals[tokenOut]))) revert InsufficientOutputAmount();
+        if(amountOutAfterFee < amountOutMin) revert InsufficientOutputAmount();
 
         // Effect
         if (tokenIn < tokenOut) {
@@ -137,8 +138,8 @@ contract ModularDEX is Ownable, ReentrancyGuard {
 
         // Interaction
         IERC20(tokenAddresses[tokenIn]).transferFrom(msg.sender, address(this), amountIn);
-        IERC20(tokenAddresses[tokenOut]).transfer(msg.sender, amountOutAfterFee / (10 ** (18 - tokenDecimals[tokenOut])));
-        IERC20(tokenAddresses[tokenOut]).transfer(feeRecipient, feeAmount / (10 ** (18 - tokenDecimals[tokenOut])));
+        IERC20(tokenAddresses[tokenOut]).transfer(msg.sender, amountOutAfterFee);
+        IERC20(tokenAddresses[tokenOut]).transfer(feeRecipient, feeAmount);
 
         emit Swap(msg.sender, tokenIn, tokenOut, amountIn, amountOutAfterFee / (10 ** (18 - tokenDecimals[tokenOut])));
     }
@@ -146,8 +147,8 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     function _getAmountOut(uint amountIn, uint reserveIn, uint reserveOut, uint8 decimalsIn, uint8 decimalsOut) internal pure returns (uint) {
         if(reserveIn == 0 || reserveOut == 0) revert InsufficientLiquidity();
         uint adjustedAmountIn = _adjustAmount(amountIn, decimalsIn);
-        uint adjustedReserveIn = _adjustAmount(reserveIn / 1e18, decimalsIn) * 1e18; // Normalize and back to 18 decimals for calculation
-        uint adjustedReserveOut = _adjustAmount(reserveOut / 1e18, decimalsOut) * 1e18; // Normalize and back to 18 decimals for calculation
+        uint adjustedReserveIn = _adjustAmount(reserveIn, decimalsIn); // Normalize for calculation
+        uint adjustedReserveOut = _adjustAmount(reserveOut, decimalsOut); // Normalize for calculation
         
         uint numerator = adjustedAmountIn * adjustedReserveOut;
         uint denominator = adjustedReserveIn + adjustedAmountIn;
@@ -155,6 +156,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function _adjustAmount(uint amount, uint8 decimals) internal pure returns (uint) {
+        require(decimals <= 18, "Decimals greater than 18 not supported");
         return amount * (10 ** (18 - decimals));
     }
 
