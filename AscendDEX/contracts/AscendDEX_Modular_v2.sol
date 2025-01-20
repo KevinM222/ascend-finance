@@ -12,6 +12,12 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint reserve2; // Reserve for token2
     }
 
+    // Error declarations
+    error InvalidTokenAddress();
+    error TokenNotRegistered();
+    error InsufficientLiquidity();
+    error InsufficientOutputAmount();
+
     uint16 public fee = 30; // Fee in basis points (0.3%)
     address public feeRecipient;
     mapping(string => address) public tokenAddresses; // Token registry
