@@ -162,8 +162,8 @@ contract ModularDEX is Ownable, ReentrancyGuard {
 
     function getPrice(string memory symbol) public view returns (int) {
         AggregatorV3Interface priceFeed = priceFeeds[symbol];
-        if(address(priceFeed) == address(0)) revert TokenNotRegistered();
-        (, int price,,,) = priceFeed.latestRoundData();
+        if(address(priceFeed) == address(0)) revert TokenNotRegistered;
+        (, int price,,,) = priceFeed.latestRoundData;
         return price;
     }
 
