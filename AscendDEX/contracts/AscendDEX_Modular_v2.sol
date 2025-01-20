@@ -95,7 +95,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint share = liquidityAmount * 1e18 / (pair.reserve1 + pair.reserve2);
         uint amount1 = share * pair.reserve1 / 1e18 / (10 ** (18 - tokenDecimals[token1])); // Denormalize
         uint amount2 = share * pair.reserve2 / 1e18 / (10 ** (18 - tokenDecimals[token2])); // Denormalize
-        if (amount1 > pair.reserve1 || amount2 > pair.reserve2) revert InsufficientLiquidity();
+        if (amount1 > pair.reserve1 || amount2 > pair.reserve2) revert InsufficientLiquidity;
 
         pair.reserve1 -= _adjustAmount(amount1, tokenDecimals[token1]);
         pair.reserve2 -= _adjustAmount(amount2, tokenDecimals[token2]);
@@ -112,7 +112,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint amountIn,
         uint amountOutMin
     ) public nonReentrant {
-        if(tokenAddresses[tokenIn] == address(0) || tokenAddresses[tokenOut] == address(0)) revert InvalidTokenAddress();
+        if(tokenAddresses[tokenIn] == address(0) || tokenAddresses[tokenOut] == address(0)) revert InvalidTokenAddress;
         if(keccak256(bytes(tokenIn)) == keccak256(bytes(tokenOut))) revert("Tokens must be different");
 
         bytes32 pairId = _getPairId(tokenIn, tokenOut);
@@ -125,7 +125,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint feeAmount = amountOut * fee / 10000; // 10000 basis points = 100%
         uint amountOutAfterFee = amountOut - feeAmount;
 
-        if(amountOutAfterFee < amountOutMin) revert InsufficientOutputAmount();
+        if(amountOutAfterFee < amountOutMin) revert InsufficientOutputAmount;
 
         // Effect
         if (tokenIn < tokenOut) {
@@ -145,7 +145,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function _getAmountOut(uint amountIn, uint reserveIn, uint reserveOut, uint8 decimalsIn, uint8 decimalsOut) internal pure returns (uint) {
-        if(reserveIn == 0 || reserveOut == 0) revert InsufficientLiquidity();
+        if(reserveIn == 0 || reserveOut == 0) revert InsufficientLiquidity;
         uint adjustedAmountIn = _adjustAmount(amountIn, decimalsIn);
         uint adjustedReserveIn = _adjustAmount(reserveIn, decimalsIn); // Normalize for calculation
         uint adjustedReserveOut = _adjustAmount(reserveOut, decimalsOut); // Normalize for calculation
