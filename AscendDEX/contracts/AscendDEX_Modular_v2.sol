@@ -32,11 +32,6 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     event LiquidityAdded(address indexed provider, string token1, string token2, uint amount1, uint amount2);
     event LiquidityRemoved(address indexed provider, string token1, string token2, uint amount1, uint amount2);
 
-    error InvalidTokenAddress();
-    error TokenNotRegistered();
-    error InsufficientLiquidity();
-    error InsufficientOutputAmount();
-
     constructor(address _feeRecipient, address initialOwner) Ownable() ReentrancyGuard() {
         require(_feeRecipient != address(0), "Invalid fee recipient");
         require(initialOwner != address(0), "Invalid initial owner");
