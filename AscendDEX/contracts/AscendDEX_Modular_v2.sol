@@ -112,7 +112,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint amountIn,
         uint amountOutMin
     ) public nonReentrant {
-        if(tokenAddresses[tokenIn] == address(0) || tokenAddresses[tokenOut] == address(0)) revert InvalidTokenAddress();
+        if(tokenAddresses[tokenIn] == address(0) || tokenAddresses[tokenOut] == address(0)) revert InvalidTokenAddress;
         if(keccak256(bytes(tokenIn)) == keccak256(bytes(tokenOut))) revert("Tokens must be different");
 
         bytes32 pairId = _getPairId(tokenIn, tokenOut);
@@ -125,7 +125,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint feeAmount = amountOut * fee / 10000; // 10000 basis points = 100%
         uint amountOutAfterFee = amountOut - feeAmount;
 
-        if(amountOutAfterFee < amountOutMin) revert InsufficientOutputAmount();
+        if(amountOutAfterFee < amountOutMin) revert InsufficientOutputAmount;
 
         // Effect
         if (tokenIn < tokenOut) {
