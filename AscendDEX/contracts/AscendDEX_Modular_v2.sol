@@ -42,7 +42,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function addToken(string memory symbol, address tokenAddress, address priceFeed, uint8 decimals) external onlyOwner {
-        if(tokenAddress == address(0) || priceFeed == address(0)) revert InvalidTokenAddress();
+        if(tokenAddress == address(0) || priceFeed == address(0)) revert InvalidTokenAddress;
         tokenAddresses[symbol] = tokenAddress;
         priceFeeds[symbol] = AggregatorV3Interface(priceFeed);
         tokenDecimals[symbol] = decimals;
@@ -50,7 +50,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function removeToken(string memory symbol) external onlyOwner {
-        if(tokenAddresses[symbol] == address(0)) revert TokenNotRegistered();
+        if(tokenAddresses[symbol] == address(0)) revert TokenNotRegistered;
         delete tokenAddresses[symbol];
         delete priceFeeds[symbol];
         delete tokenDecimals[symbol]; // Remove decimals mapping
