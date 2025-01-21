@@ -3,25 +3,20 @@ const hre = require("hardhat");
 async function main() {
     // Define constructor arguments
     const feeRecipient = "0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1"; // Ascend-specific fee recipient address
+    const initialOwner = "0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1"; // Initial owner address
 
     // Get the contract factory
     const ModularDEX = await hre.ethers.getContractFactory("ModularDEX");
 
     console.log("Deploying ModularDEX contract...");
 
-    // Deploy the contract
-    const modularDEX = await ModularDEX.deploy(feeRecipient);
+    // Deploy the contract with both arguments
+    const modularDEX = await ModularDEX.deploy(feeRecipient, initialOwner);
 
     // Wait for the deployment to be mined
     await modularDEX.deployed();
 
     console.log("ModularDEX deployed to:", modularDEX.address);
-
-    // Transfer ownership to the initial owner
-    const initialOwner = "0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1";
-    console.log(`Transferring ownership to: ${initialOwner}`);
-    await modularDEX.transferOwnership(initialOwner);
-    console.log("Ownership transferred successfully.");
 
     // Add initial tokens
     console.log("Adding initial tokens...");
