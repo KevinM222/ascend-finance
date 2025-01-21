@@ -58,7 +58,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function setFee(uint16 _fee) external onlyOwner {
-        if(_fee > 1000) revert FeeTooHigh(); // 1000 basis points = 10%
+        if(_fee > 1000) revert FeeTooHigh; // 1000 basis points = 10%
         emit FeeUpdated(fee, _fee);
         fee = _fee;
     }
