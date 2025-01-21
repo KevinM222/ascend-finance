@@ -1,7 +1,6 @@
 const hre = require("hardhat");
-const { ethers } = hre;
-const fs = require('fs');
-const prettier = require('prettier');
+const fs = require("fs");
+const prettier = require("prettier");
 
 async function main() {
     const MockERC20 = await hre.ethers.getContractFactory("MockERC20");
@@ -10,29 +9,28 @@ async function main() {
     console.log(`Deploying on ${network.name}`);
 
     const tokens = [
-        { name: "Mock USD Coin", symbol: "USDC", supply: ethers.utils.parseUnits("1000000", 18) },
-        { name: "Mock Polygon Token", symbol: "POL", supply: ethers.utils.parseUnits("1000000", 18) },
+        { name: "Mock USD Coin", symbol: "USDC", decimals: 6, supply: hre.ethers.utils.parseUnits("1000000", 6) },
+        { name: "Mock Polygon Token", symbol: "POL", decimals: 18, supply: hre.ethers.utils.parseUnits("1000000", 18) },
     ];
 
     const addresses = {};
 
     for (const token of tokens) {
         console.log(`Deploying ${token.name}...`);
-        const mockToken = await MockERC20.deploy(token.name, token.symbol, token.supply);
+        const mockToken = await MockERC20.deploy(token.name, token.symbol, token.decimals, token.supply);
         await mockToken.deployed();
         console.log(`${token.name} deployed to:`, mockToken.address);
         addresses[token.symbol] = mockToken.address;
     }
 
     // Format and save to JSON file
+    const fileName = `deployedAddresses_${network.name}.json`;
     try {
         const formattedAddresses = prettier.format(JSON.stringify(addresses), { parser: "json" });
-        fs.writeFileSync('deployedAddresses.json', formattedAddresses);
-        console.log("Addresses saved to deployedAddresses.json");
+        fs.writeFileSync(fileName, formattedAddresses);
+        console.log(`Addresses saved to ${fileName}`);
     } catch (err) {
         console.error("Error writing address file:", err);
-        // Optionally, you might want to exit the script if this fails
-        // process.exit(1);
     }
 
     return addresses;
@@ -46,6 +44,5 @@ main()
     })
     .catch((error) => {
         console.error("Deployment failed:", error);
-        console.error(error.stack);
         process.exit(1);
     });
