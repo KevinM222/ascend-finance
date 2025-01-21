@@ -145,7 +145,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function _getAmountOut(uint amountIn, uint reserveIn, uint reserveOut, uint8 decimalsIn, uint8 decimalsOut) internal pure returns (uint) {
-        if(reserveIn == 0 || reserveOut == 0) revert InsufficientLiquidity();
+        if(reserveIn == 0 || reserveOut == 0) revert InsufficientLiquidity;
         uint adjustedAmountIn = _adjustAmount(amountIn, decimalsIn);
         uint adjustedReserveIn = _adjustAmount(reserveIn, decimalsIn); // Normalize for calculation
         uint adjustedReserveOut = _adjustAmount(reserveOut, decimalsOut); // Normalize for calculation
@@ -162,7 +162,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
 
     function getPrice(string memory symbol) public view returns (int) {
         AggregatorV3Interface priceFeed = priceFeeds[symbol];
-        if(address(priceFeed) == address(0)) revert TokenNotRegistered();
+        if(address(priceFeed) == address(0)) revert TokenNotRegistered;
         (, int price,,,) = priceFeed.latestRoundData;
         return price;
     }
