@@ -70,7 +70,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     }
 
     function addLiquidity(string memory token1, string memory token2, uint amount1, uint amount2) public nonReentrant {
-        if(tokenAddresses[token1] == address(0) || tokenAddresses[token2] == address(0)) revert InvalidTokenAddress();
+        if(tokenAddresses[token1] == address(0) || tokenAddresses[token2] == address(0)) revert InvalidTokenAddress;
 
         bytes32 pairId = _getPairId(token1, token2);
         Pair storage pair = pairs[pairId];
@@ -95,7 +95,7 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint share = liquidityAmount * 1e18 / (pair.reserve1 + pair.reserve2);
         uint amount1 = share * pair.reserve1 / 1e18 / (10 ** (18 - tokenDecimals[token1])); // Denormalize
         uint amount2 = share * pair.reserve2 / 1e18 / (10 ** (18 - tokenDecimals[token2])); // Denormalize
-        if (amount1 > pair.reserve1 || amount2 > pair.reserve2) revert InsufficientLiquidity();
+        if (amount1 > pair.reserve1 || amount2 > pair.reserve2) revert InsufficientLiquidity;
 
         pair.reserve1 -= _adjustAmount(amount1, tokenDecimals[token1]);
         pair.reserve2 -= _adjustAmount(amount2, tokenDecimals[token2]);
