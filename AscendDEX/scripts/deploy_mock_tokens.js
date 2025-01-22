@@ -23,12 +23,21 @@ async function main() {
         addresses[token.symbol] = mockToken.address;
     }
 
-    // Format and save to JSON file
+    // Save to JSON file
     const fileName = `deployedAddresses_${network.name}.json`;
     try {
-        const jsonString = JSON.stringify(addresses, null, 2); // Create a JSON string
-        const formattedAddresses = prettier.format(jsonString, { parser: "json" }); // Synchronous formatting
-        fs.writeFileSync(fileName, formattedAddresses, "utf8"); // Write to file
+        console.log("Preparing to save addresses...");
+
+        // Debugging JSON.stringify
+        const jsonString = JSON.stringify(addresses, null, 2);
+        console.log("JSON stringified addresses:", jsonString);
+
+        // Synchronously format with Prettier
+        const formattedAddresses = prettier.format(jsonString, { parser: "json" });
+        console.log("Formatted Addresses:", formattedAddresses);
+
+        // Write to file
+        fs.writeFileSync(fileName, formattedAddresses, "utf8");
         console.log(`Addresses saved to ${fileName}`);
     } catch (err) {
         console.error("Error writing address file:", err);
