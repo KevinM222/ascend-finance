@@ -1,7 +1,8 @@
 const hre = require("hardhat");
 
 async function main() {
-    const Treasury = await hre.ethers.getContractFactory("Treasury");
+    // Use the fully qualified name for the Treasury contract
+    const Treasury = await hre.ethers.getContractFactory("contracts/Treasury.sol:Treasury");
 
     console.log("Deploying Treasury...");
     const treasury = await Treasury.deploy();
@@ -38,6 +39,5 @@ main()
     })
     .catch((error) => {
         console.error("Error deploying Treasury:", error);
-        console.error(error.stack);
         process.exit(1);
     });
