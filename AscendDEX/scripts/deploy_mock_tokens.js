@@ -28,15 +28,15 @@ async function main() {
     try {
         console.log("Preparing to save addresses...");
 
-        // Debugging JSON.stringify
+        // Create a JSON string
         const jsonString = JSON.stringify(addresses, null, 2);
         console.log("JSON stringified addresses:", jsonString);
 
-        // Synchronously format with Prettier
+        // Format using Prettier synchronously
         const formattedAddresses = prettier.format(jsonString, { parser: "json" });
         console.log("Formatted Addresses:", formattedAddresses);
 
-        // Write to file
+        // Write the formatted string to file
         fs.writeFileSync(fileName, formattedAddresses, "utf8");
         console.log(`Addresses saved to ${fileName}`);
     } catch (err) {
