@@ -1,0 +1,17 @@
+// In a file like testTransfer.js
+async function main() {
+    try {
+        const tx = await usdc.transferFrom(someAddress, dex.address, ethers.utils.parseUnits("1", 6));
+        await tx.wait();
+        console.log("USDC transferFrom test passed");
+    } catch (error) {
+        console.error("USDC transferFrom test failed:", error.message);
+    }
+}
+
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
