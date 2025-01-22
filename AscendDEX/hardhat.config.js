@@ -1,3 +1,4 @@
+require("dotenv").config(); // Ensure this is the first line
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
