@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Treasury is Ownable {
+contract governanceTreasury is Ownable {
     event Deposited(address indexed token, uint amount);
     event Withdrawn(address indexed token, address to, uint amount);
 
