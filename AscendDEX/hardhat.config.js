@@ -2,7 +2,10 @@ require("dotenv").config(); // Ensure this is the first line
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
-require("dotenv").config();
+
+//debug statement 
+console.log("SEPOLIA_RPC_URL:", process.env.SEPOLIA_RPC_URL);
+
 const { task } = require("hardhat/config");
 
 // Custom Task: Block Number
