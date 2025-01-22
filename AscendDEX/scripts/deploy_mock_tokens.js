@@ -26,7 +26,14 @@ async function main() {
     // Format and save to JSON file
     const fileName = `deployedAddresses_${network.name}.json`;
     try {
+        // Debug: Log addresses before formatting
+        console.log("Addresses before formatting:", addresses);
+
         const formattedAddresses = prettier.format(JSON.stringify(addresses, null, 2), { parser: "json" });
+
+        // Debug: Log formattedAddresses
+        console.log("Formatted Addresses:", formattedAddresses);
+
         fs.writeFileSync(fileName, formattedAddresses, "utf8");
         console.log(`Addresses saved to ${fileName}`);
     } catch (err) {
