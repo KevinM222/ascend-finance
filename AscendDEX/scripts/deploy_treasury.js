@@ -9,13 +9,22 @@ async function main() {
 
     console.log("Treasury deployed to:", treasury.address);
 
-    // Optionally, transfer ownership if you have an owner address in mind
+    // Transfer ownership if INITIAL_OWNER is set
     const initialOwner = process.env.INITIAL_OWNER;
     if (initialOwner) {
-        console.log("Transferring ownership to:", initialOwner);
-        await treasury.transferOwnership(initialOwner);
+        try {
+            console.log("Transferring ownership to:", initialOwner);
+            const tx = await treasury.transferOwnership(initialOwner);
+            await tx.wait();
+            console.log("Ownership transferred to:", initialOwner);
+        } catch (error) {
+            console.error("Error transferring ownership:", error);
+        }
     } else {
-        console.log("Warning: INITIAL_OWNER not set. The contract owner is currently", await treasury.owner());
+        console.log(
+            "Warning: INITIAL_OWNER not set. The contract owner is currently",
+            await treasury.owner()
+        );
     }
 
     return treasury.address;
