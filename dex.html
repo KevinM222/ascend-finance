@@ -1,73 +1,64 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ascend DEX</title>
-  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
-  <script src="web3.js"></script> <!-- Use this if you already include Web3.js -->
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ascend Decentralized Exchange - Powered by CCIP">
+    <title>Ascend DEX</title>
+    <link rel="stylesheet" href="dex-styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body>
-  <h1>Ascend DEX</h1>
-  <div>
-    <label for="tokenA">Token A:</label>
-    <select id="tokenA">
-      <option value="USDC">USDC</option>
-      <option value="POL">POL</option>
-    </select>
-    <label for="amountA">Amount:</label>
-    <input type="number" id="amountA" placeholder="Enter amount">
-  </div>
+    <!-- Header -->
+    <header class="dex-header">
+        <h1>Ascend Decentralized Exchange</h1>
+        <button id="connectWalletButton">Connect Wallet</button>
+    </header>
 
-  <div>
-    <label for="tokenB">Token B:</label>
-    <select id="tokenB">
-      <option value="POL">POL</option>
-      <option value="USDC">USDC</option>
-    </select>
-  </div>
+    <!-- Background -->
+    <div class="background">
+        <!-- This is where the background visuals will go -->
+    </div>
 
-  <button id="swapButton">Swap Tokens</button>
+    <!-- Swap Section -->
+    <main class="swap-container">
+        <h2>Swap Tokens</h2>
+        <div class="swap-inputs">
+            <div class="token-section">
+                <label for="tokenIn">From:</label>
+                <select id="tokenIn">
+                    <option value="asc">ASC</option>
+                    <option value="usdc">USDC</option>
+                    <option value="pol">POL</option>
+                    <option value="eth">ETH</option>
+                </select>
+                <input type="number" id="tokenInAmount" placeholder="Amount">
+            </div>
+            <button id="reverseTokens">⇅</button>
+            <div class="token-section">
+                <label for="tokenOut">To:</label>
+                <select id="tokenOut">
+                    <option value="asc">ASC</option>
+                    <option value="usdc">USDC</option>
+                    <option value="pol">POL</option>
+                    <option value="eth">ETH</option>
+                </select>
+                <input type="number" id="tokenOutAmount" placeholder="Amount" readonly>
+            </div>
+        </div>
+        <div class="swap-details">
+            <p id="estimatedFees">Estimated Fees: N/A</p>
+            <p id="estimatedOutput">Estimated Output: N/A</p>
+        </div>
+        <button id="swapButton" class="cta-button">Swap</button>
+    </main>
 
-  <script src="dex.js"></script>
+    <!-- Footer -->
+    <footer class="dex-footer">
+        <p>&copy; 2025 Ascend. All Rights Reserved.</p>
+        <a href="index.html">Back to Home</a>
+    </footer>
+
+    <script src="../assets/js/dex.js"></script>
 </body>
 </html>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ascend DEX</title>
-  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
-  <script src="web3.js"></script> <!-- Use this if you already include Web3.js -->
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>Ascend DEX</h1>
-  <div>
-    <label for="tokenA">Token A:</label>
-    <select id="tokenA">
-      <option value="USDC">USDC</option>
-      <option value="POL">POL</option>
-    </select>
-    <label for="amountA">Amount:</label>
-    <input type="number" id="amountA" placeholder="Enter amount">
-  </div>
-
-  <div>
-    <label for="tokenB">Token B:</label>
-    <select id="tokenB">
-      <option value="POL">POL</option>
-      <option value="USDC">USDC</option>
-    </select>
-  </div>
-
-  <button id="swapButton">Swap Tokens</button>
-
-  <script src="dex.js"></script>
-</body>
-</html>
->>>>>>> 3f36c362dfb15d596d35c3da847d1762edae0a41
