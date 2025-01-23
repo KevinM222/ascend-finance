@@ -12,8 +12,8 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background: rgba(0, 0, 0, 0.8);
-    border-bottom: 2px solid #ff9800;
+    background: none;
+    border-bottom: none;
 }
 
 .dex-header h1 {
@@ -54,5 +54,5 @@ button.cta-button {
 .dex-footer {
     text-align: center;
     padding: 1rem;
-    background: rgba(0, 0, 0, 0.8);
+    background: none;
 }
