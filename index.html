@@ -41,10 +41,10 @@
         </ul>
     </nav>
 
-    <!-- Swap Tokens Button -->
+    <!-- DEX Button -->
     <div class="dex-section">
         <h2>Decentralized Exchange</h2>
-        <button id="goToDexButton" class="cta-button"> DEX </button>
+        <button id="goToDexButton" class="cta-button">DEX</button>
     </div>
 
     <!-- Bottom Content -->
@@ -58,10 +58,12 @@
     </div>
 
     <script>
+        // Navigate to the DEX page
         document.getElementById("goToDexButton").addEventListener("click", function() {
             window.location.href = "frontend/dex.html";
         });
 
+        // Open SushiSwap in a new tab
         document.getElementById("sushiSwapButton").addEventListener("click", function() {
             window.open("https://sushi.com/swap", "_blank");
         });
