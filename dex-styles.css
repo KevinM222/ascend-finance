@@ -6,6 +6,7 @@ body {
     background-size: cover;
     font-family: 'Arial', sans-serif;
     color: #ffffff;
+    scroll-behavior: smooth; /* Smooth scrolling for better UX */
 }
 
 /* Navigation Bar */
@@ -46,8 +47,10 @@ nav ul li a:hover {
 
 /* Wallet Container */
 .wallet-container {
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
     text-align: right;
-    margin: 1rem 2rem;
 }
 
 .wallet-container button {
@@ -73,10 +76,10 @@ nav ul li a:hover {
     background: rgba(0, 0, 0, 0.8); /* Semi-transparent dark background */
     padding: 2.5rem;
     border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+    border: 2px solid #00ffcc; /* Bright border */
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
     text-align: center;
 }
-
 
 .swap-container h2 {
     font-size: 1.8rem;
