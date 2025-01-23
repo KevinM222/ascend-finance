@@ -3,62 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ascend Decentralized Exchange - Powered by CCIP">
-    <title>Ascend DEX</title>
-    <link rel="stylesheet" href="dex-styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <meta name="description" content="Ascend Decentralized Exchange">
+    <title>Ascend Decentralized Exchange</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="dex-header">
-        <h1>Ascend Decentralized Exchange</h1>
-        <button id="connectWalletButton">Connect Wallet</button>
-    </header>
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="whitepaper.html">Whitepaper</a></li>
+            <li><a href="https://polygonscan.com/token/0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a" target="_blank">ASC Token</a></li>
+            <li><a href="dex.html">Decentralized Exchange</a></li>
+        </ul>
+    </nav>
 
-    <!-- Background -->
-    <div class="background">
-        <!-- This is where the background visuals will go -->
+    <!-- Wallet Connection -->
+    <div class="wallet-container">
+        <button id="connectWalletButton">Connect Wallet</button>
+        <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
     </div>
 
     <!-- Swap Section -->
-    <main class="swap-container">
-        <h2>Swap Tokens</h2>
-        <div class="swap-inputs">
-            <div class="token-section">
+    <div class="swap-section">
+        <div class="swap-box">
+            <h2>Swap Tokens</h2>
+            <div class="swap-content">
                 <label for="tokenIn">From:</label>
                 <select id="tokenIn">
                     <option value="asc">ASC</option>
                     <option value="usdc">USDC</option>
-                    <option value="pol">POL</option>
                     <option value="eth">ETH</option>
                 </select>
-                <input type="number" id="tokenInAmount" placeholder="Amount">
-            </div>
-            <button id="reverseTokens">⇅</button>
-            <div class="token-section">
+                <input type="number" id="swapAmount" placeholder="Amount to swap">
+
                 <label for="tokenOut">To:</label>
                 <select id="tokenOut">
                     <option value="asc">ASC</option>
                     <option value="usdc">USDC</option>
-                    <option value="pol">POL</option>
                     <option value="eth">ETH</option>
                 </select>
-                <input type="number" id="tokenOutAmount" placeholder="Amount" readonly>
+
+                <button class="cta-button">Confirm Swap</button>
             </div>
         </div>
-        <div class="swap-details">
-            <p id="estimatedFees">Estimated Fees: N/A</p>
-            <p id="estimatedOutput">Estimated Output: N/A</p>
-        </div>
-        <button id="swapButton" class="cta-button">Swap</button>
-    </main>
-
-    <!-- Footer -->
-    <footer class="dex-footer">
-        <p>&copy; 2025 Ascend. All Rights Reserved.</p>
-        <a href="index.html">Back to Home</a>
-    </footer>
-
-    <script src="../assets/js/dex.js"></script>
+    </div>
 </body>
 </html>
