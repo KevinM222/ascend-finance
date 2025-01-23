@@ -1,129 +1,53 @@
-/* General Styles */
-body {
-    margin: 0;
-    padding: 0;
-    background: url('DEX_background.webp') no-repeat center center fixed;
-    background-size: cover;
-    font-family: 'Arial', sans-serif;
-    color: #ffffff;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ascend Decentralized Exchange">
+    <title>Ascend Decentralized Exchange</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="whitepaper.html">Whitepaper</a></li>
+            <li><a href="https://polygonscan.com/token/0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a" target="_blank">ASC Token</a></li>
+            <li><a href="dex.html">Decentralized Exchange</a></li>
+        </ul>
+    </nav>
 
-/* Navigation Bar */
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background: rgba(0, 0, 0, 0.7); /* Slight transparency */
-    border-bottom: 2px solid #ff9800;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 10;
-}
+    <!-- Wallet Connection -->
+    <div class="wallet-container">
+        <button id="connectWalletButton">Connect Wallet</button>
+        <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+    </div>
 
-nav ul {
-    display: flex;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
+    <!-- Swap Section -->
+    <div class="swap-container">
+        <h2>Ascend Decentralized Exchange</h2>
+        <div class="swap-box">
+            <div class="swap-content">
+                <label for="tokenA">From:</label>
+                <select id="tokenA">
+                    <option value="asc">ASC</option>
+                    <option value="usdc">USDC</option>
+                    <option value="eth">ETH</option>
+                </select>
+                <input type="number" id="amountA" placeholder="Amount to swap">
 
-nav ul li {
-    margin-right: 1.5rem;
-}
+                <label for="tokenB">To:</label>
+                <select id="tokenB">
+                    <option value="asc">ASC</option>
+                    <option value="usdc">USDC</option>
+                    <option value="eth">ETH</option>
+                </select>
 
-nav ul li a {
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 1rem;
-    transition: color 0.3s;
-}
-
-nav ul li a:hover {
-    color: #00ffcc;
-}
-
-/* Wallet Container */
-.wallet-container {
-    position: absolute;
-    top: 1rem;
-    right: 2rem;
-}
-
-.wallet-container button {
-    background: linear-gradient(90deg, #00ffcc, #ff00cc);
-    border: none;
-    color: #ffffff;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.wallet-container button:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
-}
-
-/* Swap Container */
-.swap-container {
-    max-width: 600px;
-    margin: 8rem auto 2rem;
-    background: rgba(0, 0, 0, 0.8); /* Semi-transparent dark background */
-    padding: 2.5rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
-    text-align: center;
-}
-
-.swap-container h2 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    color: #ff9800;
-}
-
-.swap-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-label {
-    font-size: 1rem;
-}
-
-select,
-input {
-    width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: 1px solid #cccccc;
-    background: #2e2e2e;
-    color: #ffffff;
-}
-
-select:focus,
-input:focus {
-    border-color: #00ffcc;
-    outline: none;
-}
-
-/* Buttons */
-button.cta-button {
-    background: linear-gradient(90deg, #ff9800, #ff5722);
-    color: #ffffff;
-    border: none;
-    padding: 1rem 2.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-button.cta-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 0px 15px rgba(255, 152, 0, 0.8);
-}
+                <button id="swapButton" class="cta-button">Confirm Swap</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

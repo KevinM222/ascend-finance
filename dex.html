@@ -6,8 +6,6 @@
     <meta name="description" content="Ascend Decentralized Exchange">
     <title>Ascend Decentralized Exchange</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="wallet.js" defer></script> <!-- Include your wallet connection script -->
-    <script src="swap.js" defer></script> <!-- Include your swap logic script -->
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -29,32 +27,27 @@
 
     <!-- Swap Section -->
     <div class="swap-container">
-        <h2>Swap Tokens</h2>
-        <div class="swap-content">
-            <label for="tokenIn">From:</label>
-            <select id="tokenIn">
-                <option value="asc">ASC</option>
-                <option value="usdc">USDC</option>
-                <option value="eth">ETH</option>
-            </select>
-            <input type="number" id="swapAmount" placeholder="Amount to swap">
+        <h2>Ascend Decentralized Exchange</h2>
+        <div class="swap-box">
+            <div class="swap-content">
+                <label for="tokenA">From:</label>
+                <select id="tokenA">
+                    <option value="asc">ASC</option>
+                    <option value="usdc">USDC</option>
+                    <option value="eth">ETH</option>
+                </select>
+                <input type="number" id="amountA" placeholder="Amount to swap">
 
-            <label for="tokenOut">To:</label>
-            <select id="tokenOut">
-                <option value="asc">ASC</option>
-                <option value="usdc">USDC</option>
-                <option value="eth">ETH</option>
-            </select>
+                <label for="tokenB">To:</label>
+                <select id="tokenB">
+                    <option value="asc">ASC</option>
+                    <option value="usdc">USDC</option>
+                    <option value="eth">ETH</option>
+                </select>
 
-            <button class="cta-button" id="confirmSwapButton">Confirm Swap</button>
+                <button id="swapButton" class="cta-button">Confirm Swap</button>
+            </div>
         </div>
     </div>
-
-    <script>
-        // Add a default "Swap Tokens" functionality placeholder
-        document.getElementById("confirmSwapButton").addEventListener("click", () => {
-            alert("Swap functionality will be implemented soon!");
-        });
-    </script>
 </body>
 </html>
