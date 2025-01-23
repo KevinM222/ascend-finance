@@ -6,7 +6,6 @@ body {
     background-size: cover;
     font-family: 'Arial', sans-serif;
     color: #ffffff;
-    scroll-behavior: smooth; /* Smooth scrolling for better UX */
 }
 
 /* Navigation Bar */
@@ -15,8 +14,8 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background: rgba(0, 0, 0, 0.7); /* Slightly transparent black */
-    border-bottom: 2px solid #ff9800; /* Ascend orange highlight */
+    background: rgba(0, 0, 0, 0.7); /* Slight transparency */
+    border-bottom: 2px solid #ff9800;
     position: fixed;
     top: 0;
     width: 100%;
@@ -38,11 +37,11 @@ nav ul li a {
     text-decoration: none;
     color: #ffffff;
     font-size: 1rem;
-    transition: color 0.2s;
+    transition: color 0.3s;
 }
 
 nav ul li a:hover {
-    color: #ff9800; /* Ascend orange hover */
+    color: #00ffcc;
 }
 
 /* Wallet Container */
@@ -50,7 +49,6 @@ nav ul li a:hover {
     position: absolute;
     top: 1rem;
     right: 2rem;
-    text-align: right;
 }
 
 .wallet-container button {
@@ -76,31 +74,23 @@ nav ul li a:hover {
     background: rgba(0, 0, 0, 0.8); /* Semi-transparent dark background */
     padding: 2.5rem;
     border-radius: 16px;
-    border: 2px solid #00ffcc; /* Bright border */
-    box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
     text-align: center;
 }
 
 .swap-container h2 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     margin-bottom: 1.5rem;
-    color: #00ffcc; /* Bright accent color */
+    color: #ff9800;
 }
 
-.swap-inputs {
+.swap-content {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.token-section {
-    display: flex;
-    flex-direction: column;
 }
 
 label {
-    margin-bottom: 0.5rem;
     font-size: 1rem;
 }
 
@@ -117,7 +107,7 @@ input {
 
 select:focus,
 input:focus {
-    border-color: #00ffcc; /* Bright border focus */
+    border-color: #00ffcc;
     outline: none;
 }
 
@@ -136,29 +126,4 @@ button.cta-button {
 button.cta-button:hover {
     transform: scale(1.05);
     box-shadow: 0px 0px 15px rgba(255, 152, 0, 0.8);
-}
-
-/* Footer */
-.dex-footer {
-    text-align: center;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.7); /* Matches navbar background */
-    color: #ffffff;
-    font-size: 0.9rem;
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-    .swap-container {
-        margin: 6rem 1rem 2rem;
-        padding: 2rem;
-    }
-
-    nav ul li {
-        margin-right: 1rem;
-    }
-
-    nav ul li a {
-        font-size: 0.9rem;
-    }
 }
