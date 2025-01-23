@@ -69,13 +69,14 @@ nav ul li a:hover {
 /* Swap Container */
 .swap-container {
     max-width: 600px;
-    margin: 8rem auto 2rem; /* Leaves space for the navbar */
-    background: rgba(0, 0, 0, 0.8); /* Transparent dark background */
+    margin: 8rem auto 2rem;
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent dark background */
     padding: 2.5rem;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
     text-align: center;
 }
+
 
 .swap-container h2 {
     font-size: 1.8rem;
