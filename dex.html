@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ascend DEX</title>
+  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+  <script src="web3.js"></script> <!-- Use this if you already include Web3.js -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Ascend DEX</h1>
+  <div>
+    <label for="tokenA">Token A:</label>
+    <select id="tokenA">
+      <option value="USDC">USDC</option>
+      <option value="POL">POL</option>
+    </select>
+    <label for="amountA">Amount:</label>
+    <input type="number" id="amountA" placeholder="Enter amount">
+  </div>
+
+  <div>
+    <label for="tokenB">Token B:</label>
+    <select id="tokenB">
+      <option value="POL">POL</option>
+      <option value="USDC">USDC</option>
+    </select>
+  </div>
+
+  <button id="swapButton">Swap Tokens</button>
+
+  <script src="dex.js"></script>
+</body>
+</html>
