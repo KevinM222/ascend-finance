@@ -1,13 +1,11 @@
 body {
     margin: 0;
+    padding: 0;
+    background: url('DEX_background.webp') no-repeat center center fixed;
+    background-size: cover;
     font-family: Arial, sans-serif;
-    background: linear-gradient(120deg, #1e1e2f, #2d2d44);
-    color: #fff;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
+
 
 .dex-header {
     display: flex;
