@@ -6,8 +6,8 @@
     <meta name="description" content="Ascend Crypto On-Ramp Service - Your Launchpad to the Future of Finance">
     <meta name="Content-Security-Policy" content="script-src 'self' https://*.metamask.io https://cdn.jsdelivr.net; object-src 'none';">
     <title>Ascend Finance</title>
-    <link rel="stylesheet" href="Ascend\styles.css">
-    <link rel="icon" href="assets/images/favicon_io/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="frontend/assets/css/styles.css">
+    <link rel="icon" href="frontend/assets/images/favicon_io/favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body>
@@ -15,7 +15,7 @@
     <section class="hero-section">
         <div class="logo-container">
             <p class="tagline">Your Launchpad to the Future of Finance</p>
-            <img src="Ascend\logo.webp" alt="Ascend Logo" class="main-logo">
+            <img src="frontend/assets/images/logo.webp" alt="Ascend Logo" class="main-logo">
         </div>
 
         <div class="wallet-container">
@@ -34,10 +34,10 @@
     <nav>
         <ul>
             <li><a href="index.html">Home</a></li>
-            <li><a href="roadmap.html" id="roadmapButton" class="cta-button">Roadmap</a></li>
-            <li><a href="whitepaper.html">Whitepaper</a></li>
+            <li><a href="frontend/roadmap.html" id="roadmapButton" class="cta-button">Roadmap</a></li>
+            <li><a href="frontend/whitepaper.html">Whitepaper</a></li>
             <li><a href="https://polygonscan.com/token/0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a" target="_blank">ASC Token</a></li>
-            <li><a href="dex.html">Decentralized Exchange</a></li>
+            <li><a href="frontend/dex.html">Decentralized Exchange</a></li>
         </ul>
     </nav>
 
@@ -59,7 +59,7 @@
 
     <script>
         document.getElementById("goToDexButton").addEventListener("click", function() {
-            window.location.href = "dex.html";
+            window.location.href = "frontend/dex.html";
         });
 
         document.getElementById("sushiSwapButton").addEventListener("click", function() {
