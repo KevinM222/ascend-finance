@@ -11,7 +11,7 @@ body {
 /* Navigation Bar */
 nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Center the entire nav bar */
     align-items: center;
     padding: 1rem 2rem;
     background: rgba(0, 0, 0, 0.7); /* Slight transparency */
@@ -23,13 +23,16 @@ nav {
 
 nav ul {
     display: flex;
+    justify-content: space-around; /* Spread links evenly across the nav */
     list-style-type: none;
     margin: 0;
     padding: 0;
+    width: 100%; /* Ensures links take the full width */
 }
 
 nav ul li {
-    margin-right: 1.5rem;
+    flex: 1; /* Makes each nav item take equal space */
+    text-align: center; /* Center-aligns the text */
 }
 
 nav ul li a {
@@ -40,18 +43,18 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    color: #00ffcc; /* Ascend green hover */
+    color: #00ffcc;
 }
 
 /* Wallet Container */
 .wallet-container {
-    position: absolute;
-    top: 1rem;
+    position: fixed;
+    top: 4rem; /* Moved down slightly for spacing */
     right: 2rem;
 }
 
 .wallet-container button {
-    background: linear-gradient(90deg, #00ffcc, #0099ff); /* Green to blue gradient */
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
     border: none;
     color: #ffffff;
     padding: 0.8rem 1.5rem;
@@ -80,7 +83,7 @@ nav ul li a:hover {
 .swap-container h2 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    color: #0099ff; /* Ascend blue */
+    color: #0099ff;
 }
 
 .swap-content {
@@ -91,7 +94,7 @@ nav ul li a:hover {
 
 label {
     font-size: 1rem;
-    color: #00ffcc; /* Ascend green */
+    color: #00ffcc;
 }
 
 select,
@@ -101,8 +104,8 @@ input {
     font-size: 1rem;
     border-radius: 8px;
     border: 1px solid #cccccc;
-    background: #f9f9f9; /* Light gray for input backgrounds */
-    color: #333333; /* Dark text */
+    background: #f9f9f9;
+    color: #333333;
 }
 
 select:focus,
@@ -113,7 +116,7 @@ input:focus {
 
 /* Buttons */
 button.cta-button {
-    background: linear-gradient(90deg, #00ffcc, #0099ff); /* Green to blue gradient */
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
     color: #ffffff;
     border: none;
     padding: 1rem 2.5rem;
