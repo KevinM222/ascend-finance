@@ -28,7 +28,6 @@
         <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
     </div>
 
-    <!-- Swap Section -->
     <div class="swap-container">
         <h2>Swap Tokens</h2>
         <div class="swap-content">
@@ -39,15 +38,18 @@
                 <option value="eth">ETH</option>
             </select>
             <input type="number" id="amountA" placeholder="Amount to swap">
+    
             <label for="tokenB">To:</label>
             <select id="tokenB">
                 <option value="asc">ASC</option>
                 <option value="usdc">USDC</option>
                 <option value="eth">ETH</option>
             </select>
+    
             <button id="swapButton" class="cta-button">Confirm Swap</button>
         </div>
     </div>
+    
 
     <script src="dex.js"></script>
 </body>
