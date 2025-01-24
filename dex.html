@@ -29,27 +29,37 @@
     </div>
 
     <div class="swap-container">
-        <h2>Swap Tokens</h2>
-        <div class="swap-content">
-            <label for="tokenA">From:</label>
-            <select id="tokenA">
-                <option value="asc">ASC</option>
-                <option value="usdc">USDC</option>
-                <option value="eth">ETH</option>
-            </select>
-            <input type="number" id="amountA" placeholder="Amount to swap">
-    
-            <label for="tokenB">To:</label>
-            <select id="tokenB">
-                <option value="asc">ASC</option>
-                <option value="usdc">USDC</option>
-                <option value="eth">ETH</option>
-            </select>
-    
-            <button id="swapButton" class="cta-button">Confirm Swap</button>
-        </div>
+    <h2>Swap Tokens</h2>
+    <div class="swap-content">
+        <label for="tokenA">From:</label>
+        <select id="tokenA">
+            <option value="asc">ASC</option>
+            <option value="usdc">USDC</option>
+            <option value="eth">ETH</option>
+            <option value="pol">POL</option>
+            <option value="link">LINK</option>
+        </select>
+        <input type="number" id="amountA" placeholder="Amount to swap">
+
+        <!-- Reverse Button -->
+        <button id="reverseButton" class="reverse-button">⇅</button>
+
+        <label for="tokenB">To:</label>
+        <select id="tokenB">
+            <option value="asc">ASC</option>
+            <option value="usdc">USDC</option>
+            <option value="eth">ETH</option>
+            <option value="pol">POL</option>
+            <option value="link">LINK</option>
+        </select>
+
+        <!-- Estimated Output -->
+        <p id="estimatedOutput" class="estimated-output">Estimated Output: --</p>
+
+        <button id="swapButton" class="cta-button">Confirm Swap</button>
     </div>
-    
+</div>
+
 
     <script src="dex.js"></script>
 </body>

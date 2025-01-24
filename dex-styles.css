@@ -154,4 +154,31 @@ button.cta-button:hover {
     nav ul li a {
         font-size: 0.9rem;
     }
+    
+    /* Reverse Button */
+.reverse-button {
+    margin: 1rem auto;
+    display: block;
+    background: #00ffcc;
+    border: none;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.reverse-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+}
+
+/* Estimated Output */
+.estimated-output {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #0099ff;
+}
+
 }
