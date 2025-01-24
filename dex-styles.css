@@ -72,19 +72,24 @@ nav ul li a:hover {
 .swap-container {
     max-width: 600px;
     margin: 8rem auto 2rem;
-    background: rgba(0, 0, 0, 0.8); /* Semi-transparent dark background */
+    background: rgba(0, 0, 0, 0.85); /* Dark semi-transparent box */
     padding: 2.5rem;
     border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 255, 204, 0.7); /* Glowing shadow */
     text-align: center;
+    border: 2px solid rgba(255, 152, 0, 0.8); /* Ascend orange border */
+    backdrop-filter: blur(10px); /* Glass effect */
 }
 
+/* Swap Container Title */
 .swap-container h2 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    color: #ff9800;
+    color: #ff9800; /* Bright orange text */
+    text-shadow: 0px 0px 10px rgba(255, 152, 0, 0.8); /* Text glow */
 }
 
+/* Input Fields and Dropdowns */
 .swap-content {
     display: flex;
     flex-direction: column;
@@ -93,6 +98,8 @@ nav ul li a:hover {
 
 label {
     font-size: 1rem;
+    color: #ffffff; /* White text for labels */
+    margin-bottom: 0.5rem;
 }
 
 select,
@@ -102,19 +109,20 @@ input {
     font-size: 1rem;
     border-radius: 8px;
     border: 1px solid #cccccc;
-    background: #2e2e2e;
+    background: #2e2e2e; /* Dark background for inputs */
     color: #ffffff;
+    transition: border-color 0.3s ease;
 }
 
 select:focus,
 input:focus {
-    border-color: #00ffcc;
+    border-color: #00ffcc; /* Bright border on focus */
     outline: none;
 }
 
 /* Buttons */
 button.cta-button {
-    background: linear-gradient(90deg, #ff9800, #ff5722);
+    background: linear-gradient(90deg, #ff9800, #ff5722); /* Gradient button */
     color: #ffffff;
     border: none;
     padding: 1rem 2.5rem;
@@ -126,5 +134,5 @@ button.cta-button {
 
 button.cta-button:hover {
     transform: scale(1.05);
-    box-shadow: 0px 0px 15px rgba(255, 152, 0, 0.8);
+    box-shadow: 0px 0px 20px rgba(255, 152, 0, 0.8); /* Glowing hover effect */
 }
