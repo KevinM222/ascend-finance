@@ -4,10 +4,9 @@ body {
     padding: 0;
     background: url('DEX_background.webp') no-repeat center center fixed;
     background-size: cover;
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    color: #ffffff;
 }
-
-
 
 /* Navigation Bar */
 nav {
@@ -16,7 +15,6 @@ nav {
     align-items: center;
     padding: 1rem 2rem;
     background: rgba(0, 0, 0, 0.7); /* Slight transparency */
-    border-bottom: 2px solid #ff9800;
     position: fixed;
     top: 0;
     width: 100%;
@@ -42,7 +40,7 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    color: #00ffcc;
+    color: #00ffcc; /* Ascend green hover */
 }
 
 /* Wallet Container */
@@ -53,7 +51,7 @@ nav ul li a:hover {
 }
 
 .wallet-container button {
-    background: linear-gradient(90deg, #00ffcc, #ff00cc);
+    background: linear-gradient(90deg, #00ffcc, #0099ff); /* Green to blue gradient */
     border: none;
     color: #ffffff;
     padding: 0.8rem 1.5rem;
@@ -65,31 +63,26 @@ nav ul li a:hover {
 
 .wallet-container button:hover {
     transform: scale(1.05);
-    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
 }
 
 /* Swap Container */
 .swap-container {
     max-width: 600px;
     margin: 8rem auto 2rem;
-    background: rgba(0, 0, 0, 0.85); /* Dark semi-transparent box */
+    background: #ffffff; /* White background */
     padding: 2.5rem;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 255, 204, 0.7); /* Glowing shadow */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
-    border: 2px solid rgba(255, 152, 0, 0.8); /* Ascend orange border */
-    backdrop-filter: blur(10px); /* Glass effect */
 }
 
-/* Swap Container Title */
 .swap-container h2 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    color: #ff9800; /* Bright orange text */
-    text-shadow: 0px 0px 10px rgba(255, 152, 0, 0.8); /* Text glow */
+    color: #0099ff; /* Ascend blue */
 }
 
-/* Input Fields and Dropdowns */
 .swap-content {
     display: flex;
     flex-direction: column;
@@ -98,8 +91,7 @@ nav ul li a:hover {
 
 label {
     font-size: 1rem;
-    color: #ffffff; /* White text for labels */
-    margin-bottom: 0.5rem;
+    color: #00ffcc; /* Ascend green */
 }
 
 select,
@@ -109,20 +101,19 @@ input {
     font-size: 1rem;
     border-radius: 8px;
     border: 1px solid #cccccc;
-    background: #2e2e2e; /* Dark background for inputs */
-    color: #ffffff;
-    transition: border-color 0.3s ease;
+    background: #f9f9f9; /* Light gray for input backgrounds */
+    color: #333333; /* Dark text */
 }
 
 select:focus,
 input:focus {
-    border-color: #00ffcc; /* Bright border on focus */
+    border-color: #00ffcc;
     outline: none;
 }
 
 /* Buttons */
 button.cta-button {
-    background: linear-gradient(90deg, #ff9800, #ff5722); /* Gradient button */
+    background: linear-gradient(90deg, #00ffcc, #0099ff); /* Green to blue gradient */
     color: #ffffff;
     border: none;
     padding: 1rem 2.5rem;
@@ -134,5 +125,30 @@ button.cta-button {
 
 button.cta-button:hover {
     transform: scale(1.05);
-    box-shadow: 0px 0px 20px rgba(255, 152, 0, 0.8); /* Glowing hover effect */
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8);
+}
+
+/* Footer */
+.dex-footer {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .swap-container {
+        margin: 6rem 1rem 2rem;
+        padding: 2rem;
+    }
+
+    nav ul li {
+        margin-right: 1rem;
+    }
+
+    nav ul li a {
+        font-size: 0.9rem;
+    }
 }
