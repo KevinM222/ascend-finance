@@ -9,7 +9,7 @@ const dexAddress = "0xf2c0E223B5A2A65933EE7F0bbb801c944cFa12C6"; // Replace with
 async function loadDexContract() {
     try {
         // Fetch the ABI from the JSON file
-        const response = await fetch('./ABI/dexABI.json');
+        const response = await fetch('./dexABI.json');
         const dexABI = await response.json();
 
         // Initialize the DEX contract
