@@ -1,4 +1,5 @@
-"abi": [
+{
+  "abi": [
     {
       "inputs": [
         {
@@ -15,3 +16,25 @@
       "stateMutability": "nonpayable",
       "type": "constructor"
     },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldFeeRecipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newFeeRecipient",
+          "type": "address"
+        }
+      ],
+      "name": "FeeRecipientUpdated",
+      "type": "event"
+    },
+    ...
+  ]
+}
