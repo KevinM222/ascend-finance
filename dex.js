@@ -130,11 +130,11 @@ async function getReserves(token1, token2) {
 
 // Estimate output functionality
 async function estimateOutput() {
-    const token1 = document.getElementById("token1").value;
-    const token2 = document.getElementById("token2").value;
-    const amount1 = document.getElementById("amount1").value;
+    const token1 = document.getElementById("token1").value; // Input token symbol (e.g., "ASC")
+    const token2 = document.getElementById("token2").value; // Output token symbol (e.g., "POL")
+    const amount1 = document.getElementById("amount1").value; // Input amount
 
-    // Validate input
+    // Validate input amount
     if (!amount1 || parseFloat(amount1) <= 0) {
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
         return;
@@ -142,25 +142,34 @@ async function estimateOutput() {
 
     try {
         const dex = await loadDexContract(); // Load the DEX contract
+        if (!dex) throw new Error("DEX contract not loaded.");
 
-        if (!dex.estimateOutput) {
-            throw new Error("estimateOutput function not found on the contract.");
+        const tokens = await loadTokenData(); // Load token data from sepolia.json
+        if (!tokens) throw new Error("Failed to load token data.");
+
+        // Resolve token details
+        const token1Data = tokens[token1];
+        const token2Data = tokens[token2];
+        if (!token1Data || !token2Data) {
+            throw new Error(`Invalid token symbol(s): ${token1}, ${token2}`);
         }
 
-        // Parse the input amount to the correct format
-        const parsedAmountIn = ethers.utils.parseUnits(amount1, 18); // Assuming 18 decimals for input token
+        const token1Address = token1Data.address;
+        const token2Address = token2Data.address;
+
+        // Parse the input amount to the correct format (using token1 decimals)
+        const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
+
+        console.log("Estimating output with the following parameters:");
+        console.log(`Token1 Address: ${token1Address}`);
+        console.log(`Token2 Address: ${token2Address}`);
+        console.log(`Input Amount: ${parsedAmountIn.toString()}`);
 
         // Call the contract's estimateOutput function
-        const amountOut = await dex.estimateOutput(
-            parsedAmountIn,
-            token1, // Token symbol (e.g., "USDC")
-            token2  // Token symbol (e.g., "POL")
-        );
+        const amountOut = await dex.estimateOutput(parsedAmountIn, token1Address, token2Address);
 
-        // Format the output amount
-        const tokens = await loadTokenData(); // Load token data
-        const tokenData2 = tokens[token2];
-        const formattedAmountOut = ethers.utils.formatUnits(amountOut, tokenData2.decimals);
+        // Format the output amount (using token2 decimals)
+        const formattedAmountOut = ethers.utils.formatUnits(amountOut, token2Data.decimals);
 
         // Display the result
         document.getElementById("estimatedOutput").textContent =
@@ -170,6 +179,7 @@ async function estimateOutput() {
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
     }
 }
+
 
 
 // Reverse token functionality
