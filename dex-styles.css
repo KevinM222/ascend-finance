@@ -72,31 +72,34 @@ nav ul li a:hover {
 
 /* Swap Container */
 .swap-container {
-    max-width: 700px; /* Increased width slightly for both sections */
+    display: flex;
+    flex-wrap: wrap; /* Allows content to adjust for smaller screens */
+    justify-content: space-between;
+    max-width: 1200px; /* Maximum width for the combined sections */
     margin: 8rem auto 2rem;
     background: #ffffff;
-    padding: 2.5rem;
+    padding: 2rem;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
 }
 
-/* Headings */
-.swap-container h2,
-.swap-container h3 {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    color: #0099ff;
-}
-
-/* Swap and Add Liquidity Content */
+/* Section Styling */
 .swap-content,
 .add-liquidity-content {
-    margin-top: 2rem;
+    flex: 1 1 45%; /* Make sections side-by-side with space */
+    margin: 1rem;
     padding: 1rem;
     background: rgba(0, 0, 0, 0.05); /* Slight background to separate sections */
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.swap-content h3,
+.add-liquidity-content h3 {
+    font-size: 1.5rem;
+    color: #0099ff;
+    margin-bottom: 1rem;
 }
 
 /* Labels and Input Fields */
@@ -109,7 +112,8 @@ label {
 
 select,
 input {
-    width: 100%;
+    width: 80%; /* Reduced width for a neater appearance */
+    max-width: 300px; /* Constrain maximum width */
     padding: 0.8rem;
     font-size: 1rem;
     border-radius: 8px;
@@ -130,8 +134,9 @@ input:focus {
     font-size: 0.9rem;
     color: #555;
     text-align: left;
-    margin-top: -0.5rem;
-    margin-bottom: 1rem;
+    margin: -0.5rem auto 1rem;
+    width: 80%;
+    max-width: 300px;
 }
 
 /* Buttons */
@@ -189,20 +194,20 @@ button.cta-button:hover {
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
     .swap-container {
-        margin: 6rem 1rem 2rem;
-        padding: 2rem;
+        flex-direction: column; /* Stack sections vertically on smaller screens */
     }
 
     .swap-content,
     .add-liquidity-content {
-        padding: 1rem;
+        flex: 1 1 100%;
     }
 
-    nav ul li {
-        margin-right: 1rem;
+    select,
+    input {
+        width: 100%; /* Expand inputs for smaller screens */
     }
 
-    nav ul li a {
-        font-size: 0.9rem;
+    .balance-display {
+        width: 100%;
     }
 }
