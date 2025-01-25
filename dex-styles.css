@@ -48,9 +48,10 @@ nav ul li a:hover {
 
 /* Wallet Container */
 .wallet-container {
-    position: fixed;
-    top: 4rem; /* Moved down slightly for spacing */
-    right: 2rem;
+    display: flex;
+    justify-content: flex-end; /* Align wallet buttons to the right */
+    gap: 1rem;
+    margin: 1rem 2rem;
 }
 
 .wallet-container button {
@@ -92,6 +93,7 @@ nav ul li a:hover {
     gap: 1.5rem;
 }
 
+/* Labels and Input Fields */
 label {
     font-size: 1rem;
     color: #00ffcc;
@@ -131,31 +133,7 @@ button.cta-button:hover {
     box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8);
 }
 
-/* Footer */
-.dex-footer {
-    text-align: center;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.7);
-    color: #ffffff;
-    font-size: 0.9rem;
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-    .swap-container {
-        margin: 6rem 1rem 2rem;
-        padding: 2rem;
-    }
-
-    nav ul li {
-        margin-right: 1rem;
-    }
-
-    nav ul li a {
-        font-size: 0.9rem;
-    }
-    
-    /* Reverse Button */
+/* Reverse Button */
 .reverse-button {
     margin: 1rem auto;
     display: block;
@@ -181,4 +159,27 @@ button.cta-button:hover {
     color: #0099ff;
 }
 
+/* Footer */
+.dex-footer {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .swap-container {
+        margin: 6rem 1rem 2rem;
+        padding: 2rem;
+    }
+
+    nav ul li {
+        margin-right: 1rem;
+    }
+
+    nav ul li a {
+        font-size: 0.9rem;
+    }
 }
