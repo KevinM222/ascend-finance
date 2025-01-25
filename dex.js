@@ -59,7 +59,7 @@ async function getTokenBalance(token) {
         const dexContract = await loadDexContract();
         if (!dexContract) return null;
 
-        const tokenAddress = await dexContract.tokenAddresses(token); // Fetch token address from mapping
+        const tokenAddress = await dexContract.tokenAddresses(token); // token should be a string here
         const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
 
         const accounts = await provider.listAccounts();
@@ -67,18 +67,17 @@ async function getTokenBalance(token) {
 
         return ethers.utils.formatUnits(balance, 18); // Assuming 18 decimals
     } catch (error) {
-        console.error(`Error fetching balance for ${token}:`, error);
+        console.error(`Error fetching balance for ${token}:`, error); // Pass the actual token value for debugging
         return "0";
     }
 }
 
-
 async function updateBalance() {
-    const tokenA = document.getElementById("token1").value;
-
-    const balance = await getTokenBalance(token1);
+    const token1 = document.getElementById("token1").value; // Ensure we get the value, not the element
+    const balance = await getTokenBalance(token1); // Pass the token string to `getTokenBalance`
     document.getElementById("balanceDisplay").textContent = `Available Balance: ${balance}`;
 }
+
 
 document.getElementById("token1").addEventListener("change", updateBalance);
 
