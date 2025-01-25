@@ -108,4 +108,58 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     function _getPairId(string memory token1, string memory token2) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(token1, token2));
     }
+
+    function estimateOutput(
+    string memory tokenIn,
+    string memory tokenOut,
+    uint amountIn
+) public view returns (uint amountOut) {
+    require(tokenAddresses[tokenIn] != address(0), "Invalid tokenIn address");
+    require(tokenAddresses[tokenOut] != address(0), "Invalid tokenOut address");
+
+    bytes32 pairId = _getPairId(tokenIn, tokenOut);
+    Pair storage pair = pairs[pairId];
+
+    require(pair.reserve1 > 0 && pair.reserve2 > 0, "Insufficient liquidity");
+
+    uint adjustedAmountIn = _adjustAmount(amountIn, tokenDecimals[tokenIn]);
+    uint feeAmount = (adjustedAmountIn * fee) / 10000;
+    uint amountInAfterFee = adjustedAmountIn - feeAmount;
+
+    amountOut = (pair.reserve2 * amountInAfterFee) / (pair.reserve1 + amountInAfterFee);
+    return amountOut / (10 ** (18 - tokenDecimals[tokenOut])); // Adjust for decimals
+}
+
+function swap(
+    string memory tokenIn,
+    string memory tokenOut,
+    uint amountIn,
+    uint minAmountOut
+) public nonReentrant {
+    require(tokenAddresses[tokenIn] != address(0), "Invalid tokenIn address");
+    require(tokenAddresses[tokenOut] != address(0), "Invalid tokenOut address");
+
+    bytes32 pairId = _getPairId(tokenIn, tokenOut);
+    Pair storage pair = pairs[pairId];
+
+    require(pair.reserve1 > 0 && pair.reserve2 > 0, "Insufficient liquidity");
+
+    uint adjustedAmountIn = _adjustAmount(amountIn, tokenDecimals[tokenIn]);
+    uint feeAmount = (adjustedAmountIn * fee) / 10000;
+    uint amountInAfterFee = adjustedAmountIn - feeAmount;
+
+    uint amountOut = (pair.reserve2 * amountInAfterFee) / (pair.reserve1 + amountInAfterFee);
+    require(amountOut >= _adjustAmount(minAmountOut, tokenDecimals[tokenOut]), "Slippage limit exceeded");
+
+    pair.reserve1 += adjustedAmountIn;
+    pair.reserve2 -= amountOut;
+
+    IERC20(tokenAddresses[tokenIn]).transferFrom(msg.sender, address(this), amountIn);
+    IERC20(tokenAddresses[tokenOut]).transfer(msg.sender, amountOut);
+
+    IERC20(tokenAddresses[tokenIn]).transfer(feeRecipient, feeAmount);
+
+    emit Swap(msg.sender, tokenIn, tokenOut, amountIn, amountOut);
+}
+
 }

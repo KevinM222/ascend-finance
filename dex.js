@@ -138,23 +138,22 @@ async function estimateOutput() {
     }
 
     try {
-        const reserves = await getReserves(token1, token2);
-        if (!reserves) return;
+        const dex = await loadDexContract();
+        const adjustedAmountIn = ethers.utils.parseUnits(amount1, 6); // Assuming 6 decimals for input
+        const estimatedOutput = await dex.estimateOutput(token1, token2, adjustedAmountIn);
 
         const tokens = await loadTokenData();
-        const tokenData1 = tokens[token1];
-        const tokenData2 = tokens[token2];
-        const adjustedReserve1 = reserves.reserve1 / (10 ** tokenData1.decimals);
-        const adjustedReserve2 = reserves.reserve2 / (10 ** tokenData2.decimals);
+        const tokenOutData = tokens[token2];
+        const formattedOutput = ethers.utils.formatUnits(estimatedOutput, tokenOutData.decimals);
 
-        const amountOut = (adjustedReserve2 * amount1) / (adjustedReserve1 + amount1);
         document.getElementById("estimatedOutput").textContent =
-            `Estimated Output: ${amountOut.toFixed(6)} ${token2.toUpperCase()}`;
+            `Estimated Output: ${formattedOutput} ${token2.toUpperCase()}`;
     } catch (error) {
         console.error("Error estimating output:", error);
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
     }
 }
+
 
 // Reverse token functionality
 function reverseTokens() {
