@@ -1,34 +1,32 @@
 {
-    "ModularDEX": {
-      "address": "0xf2c0E223B5A2A65933EE7F0bbb801c944cFa12C6",
-      "deployedAt": "2025-01-21T12:00:00Z",
-      "tokens": {
-        "ASC": {
-          "address": "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a",
-          "priceFeed": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
-          "decimals": 18
-        },
-        "POL": {
-          "address": "0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac",
-          "priceFeed": "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7",
-          "decimals": 18
-        },
-        "USDC": {
-          "address": "0xADD81fF77b4Bd54259f0EB5f885862eF5920D165",
-          "priceFeed": "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
-          "decimals": 6
-        },
-        "ETH": {
-          "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-          "priceFeed": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-          "decimals": 18
-        },
-        "LINK": {
-          "address": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-          "priceFeed": "0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c",
-          "decimals": 18
-        }
+  "ModularDEX": {
+    "address": "0x1913cacde27BEae22D2CA012945486110A2516aD",
+    "tokens": {
+      "ASC": {
+        "address": "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a",
+        "priceFeed": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
+        "decimals": 18
+      },
+      "POL": {
+        "address": "0x3Ef815f827c71E2e1C1604870FedDEF6e9BA85Ac",
+        "priceFeed": "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7",
+        "decimals": 18
+      },
+      "USDC": {
+        "address": "0xADD81fF77b4Bd54259f0EB5f885862eF5920D165",
+        "priceFeed": "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
+        "decimals": 6
+      },
+      "ETH": {
+        "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "priceFeed": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+        "decimals": 18
+      },
+      "LINK": {
+        "address": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+        "priceFeed": "0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c",
+        "decimals": 18
       }
     }
   }
-  
+}
