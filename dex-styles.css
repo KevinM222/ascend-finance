@@ -11,10 +11,10 @@ body {
 /* Navigation Bar */
 nav {
     display: flex;
-    justify-content: center; /* Center the entire nav bar */
+    justify-content: center;
     align-items: center;
     padding: 1rem 2rem;
-    background: rgba(0, 0, 0, 0.7); /* Slight transparency */
+    background: rgba(0, 0, 0, 0.7);
     position: fixed;
     top: 0;
     width: 100%;
@@ -23,16 +23,16 @@ nav {
 
 nav ul {
     display: flex;
-    justify-content: space-around; /* Spread links evenly across the nav */
+    justify-content: space-around;
     list-style-type: none;
     margin: 0;
     padding: 0;
-    width: 100%; /* Ensures links take the full width */
+    width: 100%;
 }
 
 nav ul li {
-    flex: 1; /* Makes each nav item take equal space */
-    text-align: center; /* Center-aligns the text */
+    flex: 1;
+    text-align: center;
 }
 
 nav ul li a {
@@ -49,7 +49,7 @@ nav ul li a:hover {
 /* Wallet Container */
 .wallet-container {
     display: flex;
-    justify-content: flex-end; /* Align wallet buttons to the right */
+    justify-content: flex-end;
     gap: 1rem;
     margin: 1rem 2rem;
 }
@@ -72,31 +72,39 @@ nav ul li a:hover {
 
 /* Swap Container */
 .swap-container {
-    max-width: 600px;
+    max-width: 700px; /* Increased width slightly for both sections */
     margin: 8rem auto 2rem;
-    background: #ffffff; /* White background */
+    background: #ffffff;
     padding: 2.5rem;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
 }
 
-.swap-container h2 {
-    font-size: 2rem;
+/* Headings */
+.swap-container h2,
+.swap-container h3 {
+    font-size: 1.8rem;
     margin-bottom: 1.5rem;
     color: #0099ff;
 }
 
-.swap-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+/* Swap and Add Liquidity Content */
+.swap-content,
+.add-liquidity-content {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.05); /* Slight background to separate sections */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Labels and Input Fields */
 label {
     font-size: 1rem;
     color: #00ffcc;
+    display: block;
+    margin-bottom: 0.5rem;
 }
 
 select,
@@ -108,12 +116,22 @@ input {
     border: 1px solid #cccccc;
     background: #f9f9f9;
     color: #333333;
+    margin-bottom: 1rem;
 }
 
 select:focus,
 input:focus {
     border-color: #00ffcc;
     outline: none;
+}
+
+/* Balance Display */
+.balance-display {
+    font-size: 0.9rem;
+    color: #555;
+    text-align: left;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
 }
 
 /* Buttons */
@@ -173,6 +191,11 @@ button.cta-button:hover {
     .swap-container {
         margin: 6rem 1rem 2rem;
         padding: 2rem;
+    }
+
+    .swap-content,
+    .add-liquidity-content {
+        padding: 1rem;
     }
 
     nav ul li {

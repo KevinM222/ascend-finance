@@ -30,7 +30,10 @@
             <button id="connectWalletButton">Connect Wallet</button>
             <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
         </div>
+    
+        <!-- Swap Content -->
         <div class="swap-content">
+            <h3>Swap Tokens</h3>
             <!-- From Token -->
             <label for="token1">From:</label>
             <select id="token1">
@@ -42,8 +45,7 @@
             </select>
             <input type="number" id="amount1" placeholder="Amount to swap">
             <p id="balanceDisplay" class="balance-display">Available Balance: --</p>
-            document.getElementById("token1").addEventListener("change", updateBalance);
-
+    
             <!-- Reverse Button -->
             <button id="reverseButton" class="reverse-button">⇅</button>
     
@@ -63,7 +65,37 @@
             <!-- Swap Button -->
             <button id="swapButton" class="cta-button">Confirm Swap</button>
         </div>
+    
+        <!-- Add Liquidity Section -->
+        <div class="add-liquidity-content">
+            <h3>Add Liquidity</h3>
+            <!-- Token 1 -->
+            <label for="addToken1">Token 1:</label>
+            <select id="addToken1">
+                <option value="ASC">ASC</option>
+                <option value="USDC">USDC</option>
+                <option value="ETH">ETH</option>
+                <option value="POL">POL</option>
+                <option value="LINK">LINK</option>
+            </select>
+            <input type="number" id="addAmount1" placeholder="Amount of Token 1">
+    
+            <!-- Token 2 -->
+            <label for="addToken2">Token 2:</label>
+            <select id="addToken2">
+                <option value="ASC">ASC</option>
+                <option value="USDC">USDC</option>
+                <option value="ETH">ETH</option>
+                <option value="POL">POL</option>
+                <option value="LINK">LINK</option>
+            </select>
+            <input type="number" id="addAmount2" placeholder="Amount of Token 2">
+    
+            <!-- Add Liquidity Button -->
+            <button onclick="handleAddLiquidity()" class="cta-button">Add Liquidity</button>
+        </div>
     </div>
+    
     
     
 

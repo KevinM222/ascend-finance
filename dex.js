@@ -225,6 +225,34 @@ async function swapTokens() {
     }
 }
 
+// Function to add liquidity to the DEX
+async function addLiquidity(token1, token2, amount1, amount2) {
+    try {
+        const dex = await loadDexContract(); // Load the DEX contract
+
+        // Parse amounts to the correct format (adjust decimals as needed)
+        const parsedAmount1 = ethers.utils.parseUnits(amount1, 18); // Adjust decimals for token1
+        const parsedAmount2 = ethers.utils.parseUnits(amount2, 18); // Adjust decimals for token2
+
+        // Call the `addLiquidity` function on the contract
+        const tx = await dex.addLiquidity(
+            token1, // Token1 address
+            token2, // Token2 address
+            parsedAmount1, // Token1 amount
+            parsedAmount2  // Token2 amount
+        );
+
+        console.log("Transaction sent:", tx.hash);
+        await tx.wait(); // Wait for the transaction to be mined
+        console.log(`Liquidity added successfully for pair: ${token1} - ${token2}`);
+        alert("Liquidity added successfully!");
+    } catch (error) {
+        console.error("Error adding liquidity:", error);
+        alert("Failed to add liquidity. Check console for details.");
+    }
+}
+
+
 
 // Attach event listeners after DOM content is loaded
 document.addEventListener("DOMContentLoaded", () => {
