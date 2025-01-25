@@ -236,9 +236,9 @@ document.getElementById("connectWalletButton").addEventListener("click", connect
 document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
 document.getElementById("swapButton").addEventListener("click", swapTokens);
 document.getElementById("reverseButton").addEventListener("click", reverseTokens);
-document.getElementById("amountA").addEventListener("input", estimateOutput);
+document.getElementById("amount1").addEventListener("input", estimateOutput);
 
 // Attach event listeners to update estimation dynamically
-document.getElementById("tokenA").addEventListener("change", estimateOutput);
-document.getElementById("tokenB").addEventListener("change", estimateOutput);
-document.getElementById("amountA").addEventListener("input", estimateOutput);
+document.getElementById("token1").addEventListener("change", estimateOutput);
+document.getElementById("token2").addEventListener("change", estimateOutput);
+document.getElementById("amount1").addEventListener("input", estimateOutput);
