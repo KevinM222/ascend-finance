@@ -10,8 +10,9 @@ async function loadDexContract() {
     if (dexContract) return dexContract;
 
     try {
+        console.log("Loading DEX ABI...");
         const response = await fetch('./frontend/dexABI.json');
-        const { abi: dexABI } = await response.json();
+        const { abi: dexABI } = await response.json(); // Load the ABI
         dexContract = new ethers.Contract(dexAddress, dexABI, signer);
         console.log("DEX contract initialized:", dexContract);
         return dexContract;
@@ -20,6 +21,7 @@ async function loadDexContract() {
         return null;
     }
 }
+
 
 // Load ABI dynamically
 async function loadABI(filePath) {
