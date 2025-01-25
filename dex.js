@@ -54,6 +54,26 @@ function disconnectWallet() {
     document.getElementById("connectWalletButton").disabled = false;
 }
 
+//Get token balances functionality
+async function getTokenBalance(token) {
+    try {
+        const dexContract = await loadDexContract();
+        if (!dexContract) return null;
+
+        const tokenAddress = await dexContract.tokenAddresses(token);
+        const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
+
+        const accounts = await provider.listAccounts();
+        const balance = await tokenContract.balanceOf(accounts[0]);
+
+        return ethers.utils.formatUnits(balance, 18); // Assuming 18 decimals
+    } catch (error) {
+        console.error(`Error fetching balance for ${token}:`, error);
+        return "0";
+    }
+}
+
+
 // Swap functionality
 async function swapTokens() {
     const tokenA = document.getElementById("tokenA").value;
