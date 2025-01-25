@@ -8,8 +8,10 @@ const dexAddress = "0xf2c0E223B5A2A65933EE7F0bbb801c944cFa12C6";
 // Function to load the ABI dynamically
 async function loadDexContract() {
     try {
+        console.log("Fetching ABI from ./dexABI.json...");
         const response = await fetch('./dexABI.json');
         const { abi: dexABI } = await response.json();
+        console.log("ABI loaded successfully:", dexABI);
 
         const dexContract = new ethers.Contract(dexAddress, dexABI, signer);
         console.log("DEX contract initialized:", dexContract);
@@ -19,6 +21,7 @@ async function loadDexContract() {
         return null;
     }
 }
+
 
 // Wallet connection functionality
 async function connectWallet() {
