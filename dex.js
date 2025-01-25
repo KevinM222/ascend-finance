@@ -28,16 +28,12 @@ async function loadDexContract() {
 }
 
 // Load Token Data from Sepolia JSON
-const tokenDataPath = "../AscendDEX/deployments/sepolia.json";
-
 async function loadTokenData() {
     try {
-        console.log(`Fetching token data from ${tokenDataPath}...`);
-        const response = await fetch(tokenDataPath);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch("./ascendDEX/deployments/sepolia.json");
         const data = await response.json();
-        console.log("Token data loaded successfully:", data);
-        return data;
+        console.log(data); // Add this to debug the loaded data
+        return data.ModularDEX.tokens;
     } catch (error) {
         console.error("Error loading token data:", error);
         return null;
