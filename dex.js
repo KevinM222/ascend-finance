@@ -30,6 +30,43 @@ async function loadABI(filePath) {
     }
 }
 
+// Wallet connection functionality
+async function connectWallet() {
+    if (window.ethereum) {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await provider.listAccounts();
+            const walletAddress = accounts[0];
+
+            // Verify network
+            const network = await provider.getNetwork();
+            console.log(`Connected to network: ${network.name}, chainId: ${network.chainId}`);
+
+            document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+            document.getElementById("disconnectWalletButton").style.display = "inline-block";
+            document.getElementById("connectWalletButton").disabled = true;
+        } catch (error) {
+            console.error("Failed to connect wallet:", error);
+            alert("Failed to connect wallet.");
+        }
+    } else {
+        alert("MetaMask is not installed. Please install it to use this DApp.");
+    }
+}
+
+// Disconnect wallet functionality
+function disconnectWallet() {
+    document.getElementById("connectWalletButton").textContent = "Connect Wallet";
+    document.getElementById("disconnectWalletButton").style.display = "none";
+    document.getElementById("connectWalletButton").disabled = false;
+}
+
+// Attach event listeners
+document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
+document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
+
+
+
 async function loadTokenData() {
     try {
         const response = await fetch('./deployments/sepolia.json');
@@ -103,8 +140,6 @@ async function estimateOutput() {
 }
 
 // Attach event listeners
-document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
-document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
 document.getElementById("swapButton").addEventListener("click", swapTokens);
 document.getElementById("reverseButton").addEventListener("click", reverseTokens);
 document.getElementById("amount1").addEventListener("input", estimateOutput);
