@@ -114,20 +114,17 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     string memory tokenOut,
     uint amountIn
 ) public view returns (uint amountOut) {
-    require(tokenAddresses[tokenIn] != address(0), "Invalid tokenIn address");
-    require(tokenAddresses[tokenOut] != address(0), "Invalid tokenOut address");
+    bytes32 pairKey = _getPairId(tokenIn, tokenOut);
+    Pair storage pair = pairs[pairKey];
+    require(pair.reserve1 > 0 && pair.reserve2 > 0, "No liquidity");
+    return _getAmountOut(amountIn, pair.reserve1, pair.reserve2);
+}
 
-    bytes32 pairId = _getPairId(tokenIn, tokenOut);
-    Pair storage pair = pairs[pairId];
-
-    require(pair.reserve1 > 0 && pair.reserve2 > 0, "Insufficient liquidity");
-
-    uint adjustedAmountIn = _adjustAmount(amountIn, tokenDecimals[tokenIn]);
-    uint feeAmount = (adjustedAmountIn * fee) / 10000;
-    uint amountInAfterFee = adjustedAmountIn - feeAmount;
-
-    amountOut = (pair.reserve2 * amountInAfterFee) / (pair.reserve1 + amountInAfterFee);
-    return amountOut / (10 ** (18 - tokenDecimals[tokenOut])); // Adjust for decimals
+function _getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) internal pure returns (uint) {
+    uint amountInWithFee = amountIn * 997; // Assuming 0.3% fee
+    uint numerator = amountInWithFee * reserveOut;
+    uint denominator = reserveIn * 1000 + amountInWithFee;
+    return numerator / denominator;
 }
 
 function swap(
@@ -136,28 +133,22 @@ function swap(
     uint amountIn,
     uint minAmountOut
 ) public nonReentrant {
-    require(tokenAddresses[tokenIn] != address(0), "Invalid tokenIn address");
-    require(tokenAddresses[tokenOut] != address(0), "Invalid tokenOut address");
+    require(tokenAddresses[tokenIn] != address(0), "Invalid input token");
+    require(tokenAddresses[tokenOut] != address(0), "Invalid output token");
+    require(amountIn > 0, "Amount must be greater than 0");
 
-    bytes32 pairId = _getPairId(tokenIn, tokenOut);
-    Pair storage pair = pairs[pairId];
+    bytes32 pairKey = _getPairId(tokenIn, tokenOut);
+    Pair storage pair = pairs[pairKey];
+    require(pair.reserve1 > 0 && pair.reserve2 > 0, "No liquidity");
 
-    require(pair.reserve1 > 0 && pair.reserve2 > 0, "Insufficient liquidity");
-
-    uint adjustedAmountIn = _adjustAmount(amountIn, tokenDecimals[tokenIn]);
-    uint feeAmount = (adjustedAmountIn * fee) / 10000;
-    uint amountInAfterFee = adjustedAmountIn - feeAmount;
-
-    uint amountOut = (pair.reserve2 * amountInAfterFee) / (pair.reserve1 + amountInAfterFee);
-    require(amountOut >= _adjustAmount(minAmountOut, tokenDecimals[tokenOut]), "Slippage limit exceeded");
-
-    pair.reserve1 += adjustedAmountIn;
-    pair.reserve2 -= amountOut;
+    uint amountOut = _getAmountOut(amountIn, pair.reserve1, pair.reserve2);
+    require(amountOut >= minAmountOut, "Insufficient output amount");
 
     IERC20(tokenAddresses[tokenIn]).transferFrom(msg.sender, address(this), amountIn);
     IERC20(tokenAddresses[tokenOut]).transfer(msg.sender, amountOut);
 
-    IERC20(tokenAddresses[tokenIn]).transfer(feeRecipient, feeAmount);
+    pair.reserve1 += amountIn;
+    pair.reserve2 -= amountOut;
 
     emit Swap(msg.sender, tokenIn, tokenOut, amountIn, amountOut);
 }
