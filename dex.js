@@ -30,6 +30,11 @@ async function connectWallet() {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             const accounts = await provider.listAccounts();
             const walletAddress = accounts[0];
+
+            // Verify network
+            const network = await provider.getNetwork();
+            console.log(`Connected to network: ${network.name}, chainId: ${network.chainId}`);
+
             document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
             document.getElementById("disconnectWalletButton").style.display = "inline-block";
             document.getElementById("connectWalletButton").disabled = true;
@@ -41,6 +46,7 @@ async function connectWallet() {
         alert("MetaMask is not installed. Please install it to use this DApp.");
     }
 }
+
 
 function disconnectWallet() {
     document.getElementById("connectWalletButton").textContent = "Connect Wallet";
