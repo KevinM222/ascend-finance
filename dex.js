@@ -47,7 +47,6 @@ async function connectWallet() {
     }
 }
 
-
 function disconnectWallet() {
     document.getElementById("connectWalletButton").textContent = "Connect Wallet";
     document.getElementById("disconnectWalletButton").style.display = "none";
@@ -81,6 +80,12 @@ async function updateBalance() {
 
 document.getElementById("tokenA").addEventListener("change", updateBalance);
 
+
+function disconnectWallet() {
+    document.getElementById("connectWalletButton").textContent = "Connect Wallet";
+    document.getElementById("disconnectWalletButton").style.display = "none";
+    document.getElementById("connectWalletButton").disabled = false;
+}
 
 // Swap functionality
 async function swapTokens() {
@@ -153,6 +158,7 @@ async function getReserves(tokenA, tokenB) {
 }
 
 
+
 // Estimate output functionality
 async function estimateOutput() {
     const tokenA = document.getElementById("tokenA").value;
@@ -188,6 +194,32 @@ async function estimateOutput() {
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
     }
 }
+async function getPrice(token) {
+    try {
+        const dexContract = await loadDexContract();
+        if (!dexContract) return null;
+
+        // Get the price feed address for the token
+        const priceFeedAddress = await dexContract.priceFeeds(token);
+
+        if (priceFeedAddress === ethers.constants.AddressZero) {
+            console.warn(`No price feed found for token: ${token}`);
+            return null;
+        }
+
+        const priceFeed = new ethers.Contract(priceFeedAddress, priceFeedABI, provider);
+
+        // Fetch the latest price
+        const latestRoundData = await priceFeed.latestRoundData();
+        const price = ethers.utils.formatUnits(latestRoundData.answer, 8); // Assuming 8 decimals
+        console.log(`Price for ${token}: ${price}`);
+        return parseFloat(price);
+    } catch (error) {
+        console.error(`Error fetching price for ${token}:`, error);
+        return null;
+    }
+}
+
 
 
 
@@ -196,4 +228,9 @@ document.getElementById("connectWalletButton").addEventListener("click", connect
 document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
 document.getElementById("swapButton").addEventListener("click", swapTokens);
 document.getElementById("reverseButton").addEventListener("click", reverseTokens);
+document.getElementById("amountA").addEventListener("input", estimateOutput);
+
+// Attach event listeners to update estimation dynamically
+document.getElementById("tokenA").addEventListener("change", estimateOutput);
+document.getElementById("tokenB").addEventListener("change", estimateOutput);
 document.getElementById("amountA").addEventListener("input", estimateOutput);
