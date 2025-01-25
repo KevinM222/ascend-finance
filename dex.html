@@ -42,6 +42,7 @@
             </select>
             <input type="number" id="amount1" placeholder="Amount to swap">
             <p id="balanceDisplay" class="balance-display">Available Balance: --</p>
+            document.getElementById("token1").addEventListener("change", updateBalance);
 
             <!-- Reverse Button -->
             <button id="reverseButton" class="reverse-button">⇅</button>
