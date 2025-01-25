@@ -28,17 +28,22 @@ async function loadDexContract() {
 }
 
 // Load Token Data from Sepolia JSON
+const tokenDataPath = "../AscendDEX/deployments/sepolia.json";
+
 async function loadTokenData() {
     try {
-        const response = await fetch('./deployments/sepolia.json');
-        const { ModularDEX } = await response.json();
-        console.log("Token data loaded:", ModularDEX.tokens);
-        return ModularDEX.tokens;
+        console.log(`Fetching token data from ${tokenDataPath}...`);
+        const response = await fetch(tokenDataPath);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        console.log("Token data loaded successfully:", data);
+        return data;
     } catch (error) {
         console.error("Error loading token data:", error);
         return null;
     }
 }
+
 
 // Wallet connection functionality
 async function connectWallet() {
