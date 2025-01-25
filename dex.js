@@ -133,13 +133,18 @@ async function getReserves(tokenA, tokenB) {
         const dexContract = await loadDexContract();
         if (!dexContract) return null;
 
-        // Hash tokenA and tokenB to form the pair key
+        // Generate the pair key
         const pairKey = ethers.utils.keccak256(
             ethers.utils.defaultAbiCoder.encode(["string", "string"], [tokenA, tokenB])
         );
 
+        console.log(`Fetching reserves for pair key: ${pairKey}`);
+
         // Fetch reserves from the contract
         const reserves = await dexContract.pairs(pairKey);
+
+        console.log(`Reserves fetched for ${tokenA}-${tokenB}:`, reserves);
+
         return { reserve1: reserves.reserve1, reserve2: reserves.reserve2 };
     } catch (error) {
         console.error("Error fetching reserves:", error);
