@@ -78,7 +78,7 @@ async function getTokenBalance(token) {
 
         return ethers.utils.formatUnits(balance, tokenData.decimals);
     } catch (error) {
-        console.error(`Error fetching balance for ${token}:", error);
+        console.error(`Error fetching balance for ${token}:', error);
         return "0";
     }
 }
