@@ -90,28 +90,57 @@ function reverseTokens() {
     tokenB.value = tempValue;
 }
 
+// Get reserves functionality
+async function getReserves(tokenA, tokenB) {
+    try {
+        const dexContract = await loadDexContract();
+        if (!dexContract) return null;
+
+        // Hash tokenA and tokenB to form the pair key
+        const pairKey = ethers.utils.keccak256(
+            ethers.utils.defaultAbiCoder.encode(["string", "string"], [tokenA, tokenB])
+        );
+
+        // Fetch reserves from the contract
+        const reserves = await dexContract.pairs(pairKey);
+        return { reserve1: reserves.reserve1, reserve2: reserves.reserve2 };
+    } catch (error) {
+        console.error("Error fetching reserves:", error);
+        return null;
+    }
+}
+
+
 // Estimate output functionality
 async function estimateOutput() {
     const tokenA = document.getElementById("tokenA").value;
     const tokenB = document.getElementById("tokenB").value;
     const amountA = document.getElementById("amountA").value;
 
+    if (!amountA || parseFloat(amountA) <= 0) {
+        document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
+        return;
+    }
+
     try {
-        const dexContract = await loadDexContract();
-        if (!dexContract) return;
+        const reserves = await getReserves(tokenA, tokenB);
+        if (!reserves) {
+            document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
+            return;
+        }
 
-        const estimatedOutput = await dexContract.estimateSwap(
-            tokenA,
-            tokenB,
-            ethers.utils.parseUnits(amountA, 6)
-        );
+        const { reserve1, reserve2 } = reserves;
+        const amountOut = (reserve2 * amountA) / (parseFloat(reserve1) + parseFloat(amountA));
 
-        document.getElementById("estimatedOutput").textContent = 
-            `Estimated Output: ${ethers.utils.formatUnits(estimatedOutput, 6)} ${tokenB}`;
+        // Format and display the estimated output
+        document.getElementById("estimatedOutput").textContent =
+            `Estimated Output: ${amountOut.toFixed(6)} ${tokenB.toUpperCase()}`;
     } catch (error) {
         console.error("Error estimating output:", error);
+        document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
     }
 }
+
 
 // Attach event listeners
 document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
