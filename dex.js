@@ -187,8 +187,8 @@ async function swapTokens() {
         const tx = await dex.swap(
             token1,
             token2,
-            ethers.utils.parseUnits(amount1, 6),
-            0
+            ethers.utils.parseUnits(amount1, 18), // Use correct decimals for token1
+            0 // Min output (set to 0 for testing)
         );
         await tx.wait();
         alert("Swap successful!");
@@ -197,6 +197,7 @@ async function swapTokens() {
         alert("Swap failed. Check console for details.");
     }
 }
+
 
 // Attach event listeners after DOM content is loaded
 document.addEventListener("DOMContentLoaded", () => {
