@@ -1,7 +1,7 @@
 // Load dependencies
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
-const dexAddress = "0x1913cacde27BEae22D2CA012945486110A2516aD";
+const dexAddress = "0xD38f2f760f768Acd8122651baf3edfbD2814c1AF";
 
 let dexContract = null;
 
