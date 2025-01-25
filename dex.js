@@ -195,7 +195,7 @@ async function estimateOutput() {
 
         // Update the display
         document.getElementById("estimatedOutput").textContent =
-            `Estimated Output: ${amountOut.toFixed(6)} ${tokenB.toUpperCase()}`;
+            `Estimated Output: ${amountOut.toFixed(6)} ${token2.toUpperCase()}`;
     } catch (error) {
         console.error("Error estimating output:", error);
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
