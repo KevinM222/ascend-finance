@@ -59,7 +59,7 @@ async function getTokenBalance(token) {
         const dexContract = await loadDexContract();
         if (!dexContract) return null;
 
-        const tokenAddress = await dexContract.tokenAddresses(token);
+        const tokenAddress = await dexContract.tokenAddresses(token); // Fetch token address from mapping
         const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
 
         const accounts = await provider.listAccounts();
@@ -71,14 +71,16 @@ async function getTokenBalance(token) {
         return "0";
     }
 }
-async function updateBalance() {
-    const tokenA = document.getElementById("tokenA").value;
 
-    const balance = await getTokenBalance(tokenA);
+}
+async function updateBalance() {
+    const tokenA = document.getElementById("token1").value;
+
+    const balance = await getTokenBalance(token1);
     document.getElementById("balanceDisplay").textContent = `Available Balance: ${balance}`;
 }
 
-document.getElementById("tokenA").addEventListener("change", updateBalance);
+document.getElementById("token1").addEventListener("change", updateBalance);
 
 
 function disconnectWallet() {
@@ -89,15 +91,17 @@ function disconnectWallet() {
 
 // Swap functionality
 async function swapTokens() {
-    const tokenA = document.getElementById("tokenA").value;
-    const tokenB = document.getElementById("tokenB").value;
-    const amountA = document.getElementById("amountA").value;
+    const token1 = document.getElementById("token1").value; // First token
+    const token2 = document.getElementById("token2").value; // Second token
+    const amount1 = document.getElementById("amount1").value; // Amount of token1 to swap
+    const amount2 = 0; // Output amount (optional)
 
-    if (!tokenA || !tokenB || !amountA) {
+    // Validation
+    if (!token1 || !token2 || !amount1) {
         alert("Please select tokens and enter a valid amount.");
         return;
     }
-    if (tokenA === tokenB) {
+    if (token1 === token2) {
         alert("You cannot swap the same tokens. Please select different tokens.");
         return;
     }
@@ -109,11 +113,8 @@ async function swapTokens() {
             return;
         }
 
-        const tx = await dexContract.swap(
-            tokenA,
-            tokenB,
-            ethers.utils.parseUnits(amountA, 6)
-        );
+        // Correct parameter names
+        const tx = await dexContract.swap(token1, token2, ethers.utils.parseUnits(amount1, 6), amount2);
 
         await tx.wait();
         alert("Swap successful!");
@@ -123,33 +124,38 @@ async function swapTokens() {
     }
 }
 
+
 // Reverse token functionality
 function reverseTokens() {
-    const tokenA = document.getElementById("tokenA");
-    const tokenB = document.getElementById("tokenB");
-    const tempValue = tokenA.value;
-    tokenA.value = tokenB.value;
-    tokenB.value = tempValue;
+    const tokenA = document.getElementById("token1");
+    const tokenB = document.getElementById("token2");
+    const tempValue = token1.value;
+    token1.value = token2.value;
+    token2.value = tempValue;
+
+    // Update balance and estimate output
+    updateBalance();
+    estimateOutput();
 }
 
+
 // Get reserves functionality
-async function getReserves(tokenA, tokenB) {
+async function getReserves(token1, token2) {
     try {
         const dexContract = await loadDexContract();
         if (!dexContract) return null;
 
         // Generate the pair key
         const pairKey = ethers.utils.keccak256(
-            ethers.utils.defaultAbiCoder.encode(["string", "string"], [tokenA, tokenB])
+            ethers.utils.defaultAbiCoder.encode(["string", "string"], [token1, token2])
         );
 
-        console.log(`Fetching reserves for pair key: ${pairKey}`);
+        console.log(`Fetching reserves for pair: ${token1}-${token2}, key: ${pairKey}`);
 
         // Fetch reserves from the contract
         const reserves = await dexContract.pairs(pairKey);
 
-        console.log(`Reserves fetched for ${tokenA}-${tokenB}:`, reserves);
-
+        console.log(`Reserves fetched for ${token1}-${token2}:`, reserves);
         return { reserve1: reserves.reserve1, reserve2: reserves.reserve2 };
     } catch (error) {
         console.error("Error fetching reserves:", error);
@@ -159,22 +165,23 @@ async function getReserves(tokenA, tokenB) {
 
 
 
+
 // Estimate output functionality
 async function estimateOutput() {
-    const tokenA = document.getElementById("tokenA").value;
-    const tokenB = document.getElementById("tokenB").value;
-    const amountA = document.getElementById("amountA").value;
+    const token1 = document.getElementById("token1").value;
+    const token2 = document.getElementById("token2").value;
+    const amount1 = document.getElementById("amount1").value;
 
-    if (!amountA || parseFloat(amountA) <= 0) {
+    if (!amount1 || parseFloat(amount1) <= 0) {
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
         return;
     }
 
     try {
-        const reserves = await getReserves(tokenA, tokenB);
+        const reserves = await getReserves(token1, token2);
 
         // Log reserve values for debugging
-        console.log(`Reserves for ${tokenA}-${tokenB}:`, reserves);
+        console.log(`Reserves for ${token1}-${token2}:`, reserves);
 
         if (!reserves || reserves.reserve1 === 0 || reserves.reserve2 === 0) {
             document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
@@ -184,7 +191,7 @@ async function estimateOutput() {
         const { reserve1, reserve2 } = reserves;
 
         // Calculate the estimated output
-        const amountOut = (reserve2 * amountA) / (parseFloat(reserve1) + parseFloat(amountA));
+        const amountOut = (reserve2 * amount1) / (parseFloat(reserve1) + parseFloat(amount1));
 
         // Update the display
         document.getElementById("estimatedOutput").textContent =
@@ -219,6 +226,7 @@ async function getPrice(token) {
         return null;
     }
 }
+
 
 
 
