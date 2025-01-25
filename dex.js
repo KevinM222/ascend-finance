@@ -5,15 +5,20 @@ const signer = provider.getSigner();
 // Define the contract address
 const dexAddress = "0xf2c0E223B5A2A65933EE7F0bbb801c944cFa12C6";
 
-// Load DEX Contract
+// Cached contract instance
+let dexContract = null;
+
+// Function to load the DEX contract
 async function loadDexContract() {
+    if (dexContract) return dexContract; // Return cached instance if already loaded
+
     try {
         console.log("Fetching ABI from ./dexABI.json...");
         const response = await fetch('./dexABI.json');
         const { abi: dexABI } = await response.json();
         console.log("ABI loaded successfully:", dexABI);
 
-        const dexContract = new ethers.Contract(dexAddress, dexABI, signer);
+        dexContract = new ethers.Contract(dexAddress, dexABI, signer);
         console.log("DEX contract initialized:", dexContract);
         return dexContract;
     } catch (error) {
@@ -96,7 +101,6 @@ async function swapTokens() {
     const token1 = document.getElementById("token1").value;
     const token2 = document.getElementById("token2").value;
     const amount1 = document.getElementById("amount1").value;
-    const amount2 = 0;
 
     if (!token1 || !token2 || !amount1) {
         alert("Please select tokens and enter a valid amount.");
@@ -108,13 +112,23 @@ async function swapTokens() {
     }
 
     try {
-        const dexContract = await loadDexContract();
-        if (!dexContract) {
+        const dex = await loadDexContract();
+        if (!dex) {
             alert("DEX contract is not initialized.");
             return;
         }
 
-        const tx = await dexContract.swap(token1, token2, ethers.utils.parseUnits(amount1, 6), amount2);
+        if (typeof dex.swap !== "function") {
+            throw new Error("Swap function not found in the DEX contract.");
+        }
+
+        const tx = await dex.swap(
+            token1,
+            token2,
+            ethers.utils.parseUnits(amount1, 6),
+            0
+        );
+
         await tx.wait();
         alert("Swap successful!");
     } catch (error) {
@@ -122,7 +136,6 @@ async function swapTokens() {
         alert("Swap failed. Check console for details.");
     }
 }
-
 // Reverse token functionality
 function reverseTokens() {
     const token1 = document.getElementById("token1");
@@ -138,18 +151,18 @@ function reverseTokens() {
 // Get reserves functionality
 async function getReserves(token1, token2) {
     try {
-        const dexContract = await loadDexContract();
-        if (!dexContract) return null;
+        const dex = await loadDexContract();
+        if (!dex) return null;
 
         const pairKey = ethers.utils.keccak256(
             ethers.utils.defaultAbiCoder.encode(["string", "string"], [token1, token2])
         );
 
         console.log(`Fetching reserves for pair: ${token1}-${token2}, key: ${pairKey}`);
+        const reserves = await dex.pairs(pairKey);
 
-        const reserves = await dexContract.pairs(pairKey);
-
-        return reserves;
+        console.log(`Reserves fetched for ${token1}-${token2}:`, reserves);
+        return { reserve1: reserves.reserve1, reserve2: reserves.reserve2 };
     } catch (error) {
         console.error("Error fetching reserves:", error);
         return null;
