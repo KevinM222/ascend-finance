@@ -5,6 +5,7 @@ const dexAddress = "0xf2c0E223B5A2A65933EE7F0bbb801c944cFa12C6";
 
 let dexContract = null;
 
+// Load the DEX contract
 async function loadDexContract() {
     if (dexContract) return dexContract;
 
@@ -20,6 +21,7 @@ async function loadDexContract() {
     }
 }
 
+// Load ABI dynamically
 async function loadABI(filePath) {
     try {
         const response = await fetch(filePath);
@@ -61,12 +63,7 @@ function disconnectWallet() {
     document.getElementById("connectWalletButton").disabled = false;
 }
 
-// Attach event listeners
-document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
-document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
-
-
-
+// Load token data from sepolia.json
 async function loadTokenData() {
     try {
         const response = await fetch('./deployments/sepolia.json');
@@ -78,6 +75,7 @@ async function loadTokenData() {
     }
 }
 
+// Get token balance functionality
 async function getTokenBalance(token) {
     try {
         const tokens = await loadTokenData();
@@ -95,6 +93,14 @@ async function getTokenBalance(token) {
     }
 }
 
+// Update balance display
+async function updateBalance() {
+    const token1 = document.getElementById("token1").value;
+    const balance = await getTokenBalance(token1);
+    document.getElementById("balanceDisplay").textContent = `Available Balance: ${balance}`;
+}
+
+// Get reserves for token pair
 async function getReserves(token1, token2) {
     try {
         const dex = await loadDexContract();
@@ -110,6 +116,7 @@ async function getReserves(token1, token2) {
     }
 }
 
+// Estimate output functionality
 async function estimateOutput() {
     const token1 = document.getElementById("token1").value;
     const token2 = document.getElementById("token2").value;
@@ -139,10 +146,57 @@ async function estimateOutput() {
     }
 }
 
-// Attach event listeners
-document.getElementById("swapButton").addEventListener("click", swapTokens);
-document.getElementById("reverseButton").addEventListener("click", reverseTokens);
-document.getElementById("amount1").addEventListener("input", estimateOutput);
-document.getElementById("token1").addEventListener("change", updateBalance);
-document.getElementById("token1").addEventListener("change", estimateOutput);
-document.getElementById("token2").addEventListener("change", estimateOutput);
+// Reverse token functionality
+function reverseTokens() {
+    const token1 = document.getElementById("token1");
+    const token2 = document.getElementById("token2");
+    const tempValue = token1.value;
+    token1.value = token2.value;
+    token2.value = tempValue;
+
+    updateBalance();
+    estimateOutput();
+}
+
+// Swap tokens functionality
+async function swapTokens() {
+    const token1 = document.getElementById("token1").value;
+    const token2 = document.getElementById("token2").value;
+    const amount1 = document.getElementById("amount1").value;
+
+    if (!token1 || !token2 || !amount1) {
+        alert("Please select tokens and enter a valid amount.");
+        return;
+    }
+    if (token1 === token2) {
+        alert("You cannot swap the same tokens. Please select different tokens.");
+        return;
+    }
+
+    try {
+        const dex = await loadDexContract();
+        const tx = await dex.swap(
+            token1,
+            token2,
+            ethers.utils.parseUnits(amount1, 6),
+            0
+        );
+        await tx.wait();
+        alert("Swap successful!");
+    } catch (error) {
+        console.error("Error during swap:", error);
+        alert("Swap failed. Check console for details.");
+    }
+}
+
+// Attach event listeners after DOM content is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
+    document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
+    document.getElementById("swapButton").addEventListener("click", swapTokens);
+    document.getElementById("reverseButton").addEventListener("click", reverseTokens);
+    document.getElementById("amount1").addEventListener("input", estimateOutput);
+    document.getElementById("token1").addEventListener("change", updateBalance);
+    document.getElementById("token1").addEventListener("change", estimateOutput);
+    document.getElementById("token2").addEventListener("change", estimateOutput);
+});
