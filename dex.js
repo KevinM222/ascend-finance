@@ -72,6 +72,14 @@ async function getTokenBalance(token) {
         return "0";
     }
 }
+async function updateBalance() {
+    const tokenA = document.getElementById("tokenA").value;
+
+    const balance = await getTokenBalance(tokenA);
+    document.getElementById("balanceDisplay").textContent = `Available Balance: ${balance}`;
+}
+
+document.getElementById("tokenA").addEventListener("change", updateBalance);
 
 
 // Swap functionality
