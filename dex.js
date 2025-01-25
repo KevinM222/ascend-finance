@@ -25,12 +25,18 @@ async function loadDexContract() {
 async function loadABI(filePath) {
     try {
         const response = await fetch(filePath);
-        return await response.json();
+        const abi = await response.json();
+        console.log(`Loaded ABI from ${filePath}:`, abi); // Debug log
+        if (!Array.isArray(abi.abi)) {
+            throw new Error(`ABI at ${filePath} is not formatted as an array`);
+        }
+        return abi.abi; // Return the array inside the "abi" field
     } catch (error) {
         console.error(`Error loading ABI from ${filePath}:`, error);
         return null;
     }
 }
+
 
 // Wallet connection functionality
 async function connectWallet() {
@@ -78,20 +84,24 @@ async function loadTokenData() {
 // Get token balance functionality
 async function getTokenBalance(token) {
     try {
-        const tokens = await loadTokenData();
+        const tokens = await loadTokenData(); // Load token data
         const tokenData = tokens[token];
         if (!tokenData) throw new Error(`Token address for ${token} not found`);
 
-        const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
+        const erc20ABI = await loadABI('./frontend/MockERC20ABI.json'); // Load the ABI
+        if (!erc20ABI) throw new Error("Failed to load ERC20 ABI");
+
         const tokenContract = new ethers.Contract(tokenData.address, erc20ABI, provider);
         const accounts = await provider.listAccounts();
         const balance = await tokenContract.balanceOf(accounts[0]);
-        return ethers.utils.formatUnits(balance, tokenData.decimals);
+
+        return ethers.utils.formatUnits(balance, tokenData.decimals); // Format balance
     } catch (error) {
         console.error(`Error fetching balance for ${token}:`, error);
         return "0";
     }
 }
+
 
 // Update balance display
 async function updateBalance() {
