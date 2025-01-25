@@ -82,7 +82,7 @@ async function getTokenBalance(token) {
         const tokenData = tokens[token];
         if (!tokenData) throw new Error(`Token address for ${token} not found`);
 
-        const erc20ABI = await loadABI('./MockERC20ABI.json');
+        const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
         const tokenContract = new ethers.Contract(tokenData.address, erc20ABI, provider);
         const accounts = await provider.listAccounts();
         const balance = await tokenContract.balanceOf(accounts[0]);
