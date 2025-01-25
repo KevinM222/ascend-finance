@@ -282,6 +282,35 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "tokenIn",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "tokenOut",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        }
+      ],
+      "name": "estimateOutput",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amountOut",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "fee",
       "outputs": [
@@ -436,6 +465,34 @@
       "inputs": [
         {
           "internalType": "string",
+          "name": "tokenIn",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "tokenOut",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minAmountOut",
+          "type": "uint256"
+        }
+      ],
+      "name": "swap",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
           "name": "",
           "type": "string"
         }
@@ -483,5 +540,6 @@
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ]
+  ],
 }
+

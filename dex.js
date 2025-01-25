@@ -10,7 +10,7 @@ async function loadDexContract() {
     if (dexContract) return dexContract;
 
     try {
-        const response = await fetch('./dexABI.json');
+        const response = await fetch('./frontend/dexABI.json');
         const { abi: dexABI } = await response.json();
         dexContract = new ethers.Contract(dexAddress, dexABI, signer);
         console.log("DEX contract initialized:", dexContract);
@@ -132,22 +132,37 @@ async function estimateOutput() {
     const token2 = document.getElementById("token2").value;
     const amount1 = document.getElementById("amount1").value;
 
+    // Validate input
     if (!amount1 || parseFloat(amount1) <= 0) {
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
         return;
     }
 
     try {
-        const dex = await loadDexContract();
-        const adjustedAmountIn = ethers.utils.parseUnits(amount1, 6); // Assuming 6 decimals for input
-        const estimatedOutput = await dex.estimateOutput(token1, token2, adjustedAmountIn);
+        const dex = await loadDexContract(); // Load the DEX contract
 
-        const tokens = await loadTokenData();
-        const tokenOutData = tokens[token2];
-        const formattedOutput = ethers.utils.formatUnits(estimatedOutput, tokenOutData.decimals);
+        if (!dex.estimateOutput) {
+            throw new Error("estimateOutput function not found on the contract.");
+        }
 
+        // Parse the input amount to the correct format
+        const parsedAmountIn = ethers.utils.parseUnits(amount1, 18); // Assuming 18 decimals for input token
+
+        // Call the contract's estimateOutput function
+        const amountOut = await dex.estimateOutput(
+            parsedAmountIn,
+            token1, // Token symbol (e.g., "USDC")
+            token2  // Token symbol (e.g., "POL")
+        );
+
+        // Format the output amount
+        const tokens = await loadTokenData(); // Load token data
+        const tokenData2 = tokens[token2];
+        const formattedAmountOut = ethers.utils.formatUnits(amountOut, tokenData2.decimals);
+
+        // Display the result
         document.getElementById("estimatedOutput").textContent =
-            `Estimated Output: ${formattedOutput} ${token2.toUpperCase()}`;
+            `Estimated Output: ${formattedAmountOut} ${token2.toUpperCase()}`;
     } catch (error) {
         console.error("Error estimating output:", error);
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
