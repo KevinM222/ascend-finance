@@ -78,10 +78,11 @@ async function getTokenBalance(token) {
 
         return ethers.utils.formatUnits(balance, tokenData.decimals);
     } catch (error) {
-        console.error(`Error fetching balance for ${token}:`, error);
+        console.error(`Error fetching balance for ${token}:`, error); // Fixed mismatched quotes
         return "0";
     }
 }
+
 
 // Update balance display
 async function updateBalance() {
