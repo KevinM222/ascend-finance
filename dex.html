@@ -7,6 +7,8 @@
     <title>Ascend Decentralized Exchange</title>
     <link rel="stylesheet" href="dex-styles.css">
     <link rel="icon" href="favicon_io/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+
 </head>
 <body style="background: url('DEX_background.webp') no-repeat center center fixed; background-size: cover;">
 
@@ -25,12 +27,16 @@
    
     <div class="swap-container">
         <h2>Ascend DEX</h2>
+
         <!-- Wallet Connection -->
         <div class="wallet-container">
-            <button id="connectWalletButton">Connect Wallet</button>
-            <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
-            <button class="settings-button">Slippage Settings</button>
-        </div>
+        <button id="connectWalletButton">Connect Wallet</button>
+        <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+        <button class="settings-button">
+        <i class="fa fa-cog"></i> <!-- Gear Icon -->
+        </button>
+    </div>
+
     
         <!-- Swap Content -->
         <div class="swap-content">
