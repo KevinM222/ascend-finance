@@ -66,7 +66,7 @@ function disconnectWallet() {
 // Load token data from sepolia.json
 async function loadTokenData() {
     try {
-        const response = await fetch('./deployments/sepolia.json');
+        const response = await fetch('./AscendDEX/deployments/sepolia.json');
         const data = await response.json();
         return data.ModularDEX.tokens;
     } catch (error) {
