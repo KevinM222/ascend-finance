@@ -53,6 +53,41 @@ function disconnectWallet() {
     document.getElementById("connectWalletButton").disabled = false;
 }
 
+const erc20ABI = [
+    // balanceOf function
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "type": "function"
+    },
+    // decimals function (optional but useful)
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "type": "function"
+    }
+];
+
+
 //Get token balances functionality
 async function getTokenBalance(token) {
     try {
