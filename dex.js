@@ -72,7 +72,7 @@ async function getTokenBalance(token) {
     }
 }
 
-}
+
 async function updateBalance() {
     const tokenA = document.getElementById("token1").value;
 
