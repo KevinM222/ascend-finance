@@ -161,15 +161,21 @@ async function estimateOutput() {
 
     try {
         const reserves = await getReserves(tokenA, tokenB);
-        if (!reserves) {
+
+        // Log reserve values for debugging
+        console.log(`Reserves for ${tokenA}-${tokenB}:`, reserves);
+
+        if (!reserves || reserves.reserve1 === 0 || reserves.reserve2 === 0) {
             document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
             return;
         }
 
         const { reserve1, reserve2 } = reserves;
+
+        // Calculate the estimated output
         const amountOut = (reserve2 * amountA) / (parseFloat(reserve1) + parseFloat(amountA));
 
-        // Format and display the estimated output
+        // Update the display
         document.getElementById("estimatedOutput").textContent =
             `Estimated Output: ${amountOut.toFixed(6)} ${tokenB.toUpperCase()}`;
     } catch (error) {
@@ -177,6 +183,7 @@ async function estimateOutput() {
         document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
     }
 }
+
 
 
 // Attach event listeners
