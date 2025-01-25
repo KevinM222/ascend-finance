@@ -22,43 +22,48 @@
         </ul>
     </nav>
 
-    <!-- Wallet Connection -->
-    <div class="wallet-container">
-        <button id="connectWalletButton">Connect Wallet</button>
-        <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
-    </div>
-
+   
     <div class="swap-container">
-    <h2>Swap Tokens</h2>
-    <div class="swap-content">
-        <label for="tokenA">From:</label>
-        <select id="tokenA">
-            <option value="asc">ASC</option>
-            <option value="usdc">USDC</option>
-            <option value="eth">ETH</option>
-            <option value="pol">POL</option>
-            <option value="link">LINK</option>
-        </select>
-        <input type="number" id="amountA" placeholder="Amount to swap">
-
-        <!-- Reverse Button -->
-        <button id="reverseButton" class="reverse-button">⇅</button>
-
-        <label for="tokenB">To:</label>
-        <select id="tokenB">
-            <option value="asc">ASC</option>
-            <option value="usdc">USDC</option>
-            <option value="eth">ETH</option>
-            <option value="pol">POL</option>
-            <option value="link">LINK</option>
-        </select>
-
-        <!-- Estimated Output -->
-        <p id="estimatedOutput" class="estimated-output">Estimated Output: --</p>
-
-        <button id="swapButton" class="cta-button">Confirm Swap</button>
+        <h2>Ascend DEX</h2>
+        <!-- Wallet Connection -->
+        <div class="wallet-container">
+            <button id="connectWalletButton">Connect Wallet</button>
+            <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+        </div>
+        
+        <div class="swap-content">
+            <!-- From Token -->
+            <label for="tokenA">From:</label>
+            <select id="tokenA">
+                <option value="asc">ASC</option>
+                <option value="usdc">USDC</option>
+                <option value="eth">ETH</option>
+                <option value="pol">POL</option>
+                <option value="link">LINK</option>
+            </select>
+            <input type="number" id="amountA" placeholder="Amount to swap">
+    
+            <!-- Reverse Button -->
+            <button id="reverseButton" class="reverse-button">⇅</button>
+    
+            <!-- To Token -->
+            <label for="tokenB">To:</label>
+            <select id="tokenB">
+                <option value="asc">ASC</option>
+                <option value="usdc">USDC</option>
+                <option value="eth">ETH</option>
+                <option value="pol">POL</option>
+                <option value="link">LINK</option>
+            </select>
+    
+            <!-- Estimated Output -->
+            <p id="estimatedOutput" class="estimated-output">Estimated Output: --</p>
+    
+            <!-- Swap Button -->
+            <button id="swapButton" class="cta-button">Confirm Swap</button>
+        </div>
     </div>
-</div>
+    
 
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
