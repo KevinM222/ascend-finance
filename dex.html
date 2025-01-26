@@ -7,14 +7,11 @@
     <title>Ascend Decentralized Exchange</title>
     <link rel="stylesheet" href="dex-styles.css">
     <link rel="icon" href="favicon_io/favicon.ico" type="image/x-icon">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="dex.js" defer></script>
-
 </head>
 <body style="background: url('DEX_background.webp') no-repeat center center fixed; background-size: cover;">
-
-<body>
     <!-- Navigation Bar -->
     <nav>
         <ul>
@@ -26,20 +23,18 @@
         </ul>
     </nav>
 
-   
     <div class="swap-container">
         <h2>Ascend DEX</h2>
 
         <!-- Wallet Connection -->
         <div class="wallet-container">
-        <button id="connectWalletButton">Connect Wallet</button>
-        <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
-        <button class="settings-button">
-        <i class="fa fa-cog"></i> <!-- Gear Icon -->
-        </button>
+            <button id="connectWalletButton">Connect Wallet</button>
+            <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+            <button class="settings-button">
+                <i class="fa fa-cog"></i> <!-- Gear Icon -->
+            </button>
         </div>
 
-    
         <!-- Swap Content -->
         <div class="swap-content">
             <h3>Swap Tokens</h3>
@@ -54,10 +49,10 @@
             </select>
             <input type="number" id="amount1" placeholder="Amount to swap">
             <p id="balanceDisplay" class="balance-display">Available Balance: --</p>
-    
+
             <!-- Reverse Button -->
             <button id="reverseButton" class="reverse-button">⇅</button>
-    
+
             <!-- To Token -->
             <label for="token2">To:</label>
             <select id="token2">
@@ -67,53 +62,43 @@
                 <option value="POL">POL</option>
                 <option value="LINK">LINK</option>
             </select>
-    
+
             <!-- Estimated Output -->
             <p id="estimatedOutput" class="estimated-output">Estimated Output: --</p>
-    
+
             <!-- Swap Button -->
             <button id="swapButton" class="cta-button">Confirm Swap</button>
         </div>
-    
-            <!-- Add Liquidity Section -->
-            div class="add-liquidity-content">
-                <h3>Add Liquidity</h3>
-    
-                <!-- Token 1 -->
-                <label for="addToken1">Token 1:</label>
-                <select id="addToken1">
+
+        <!-- Add Liquidity Section -->
+        <div class="add-liquidity-content">
+            <h3>Add Liquidity</h3>
+
+            <!-- Token 1 -->
+            <label for="token1">Token 1:</label>
+            <select id="token1">
                 <option value="ASC">ASC</option>
                 <option value="USDC">USDC</option>
                 <option value="ETH">ETH</option>
                 <option value="POL">POL</option>
                 <option value="LINK">LINK</option>
-                </select>
-                <input type="number" id="addAmount1" placeholder="Amount of Token 1">
+            </select>
+            <input type="number" id="amount1" placeholder="Amount of Token 1">
 
-                <!-- Token 2 -->
-                <label for="addToken2">Token 2:</label>
-                <select id="addToken2">
+            <!-- Token 2 -->
+            <label for="token2">Token 2:</label>
+            <select id="token2">
                 <option value="ASC">ASC</option>
                 <option value="USDC">USDC</option>
-                option value="ETH">ETH</option>
+                <option value="ETH">ETH</option>
                 <option value="POL">POL</option>
                 <option value="LINK">LINK</option>
-                </select>
-                <input type="number" id="addAmount2" placeholder="Amount of Token 2">
+            </select>
+            <input type="number" id="amount2" placeholder="Amount of Token 2">
 
-                <!-- Add Liquidity Button -->
-                <button id="addLiquidityButton" onclick="handleAddLiquidity()">Add Liquidity</button>
-            </div>
-
-
+            <!-- Add Liquidity Button -->
+            <button id="addLiquidityButton" onclick="handleAddLiquidity()">Add Liquidity</button>
         </div>
-    
-    
-    
-
-
-        
     </div>
-    
-    </body>
+</body>
 </html>
