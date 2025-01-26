@@ -185,14 +185,48 @@ async function handleAddLiquidity() {
     }
 }
 
+// Swap tokens functionality
+async function swapTokens() {
+    const token1 = document.getElementById("token1").value;
+    const token2 = document.getElementById("token2").value;
+    const amount1 = document.getElementById("amount1").value;
+
+    if (!token1 || !token2 || !amount1) {
+        alert("Please select tokens and enter a valid amount.");
+        return;
+    }
+    if (token1 === token2) {
+        alert("You cannot swap the same tokens. Please select different tokens.");
+        return;
+    }
+
+    try {
+        const dex = await loadDexContract();
+        const tx = await dex.swap(
+            token1,
+            token2,
+            ethers.utils.parseUnits(amount1, 18), // Adjust decimals for token1
+            0 // Min output (set to 0 for testing)
+        );
+        await tx.wait();
+        alert("Swap successful!");
+    } catch (error) {
+        console.error("Error during swap:", error);
+        alert("Swap failed. Check console for details.");
+    }
+}
+
+
 // Attach event listeners
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
     document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
-    document.getElementById("swapButton").addEventListener("click", swapTokens);
+    document.getElementById("swapButton").addEventListener("click", swapTokens); // Attach swapTokens
     document.getElementById("reverseButton").addEventListener("click", reverseTokens);
     document.getElementById("amount1").addEventListener("input", estimateOutput);
     document.getElementById("token1").addEventListener("change", updateBalance);
     document.getElementById("token1").addEventListener("change", estimateOutput);
     document.getElementById("token2").addEventListener("change", estimateOutput);
 });
+
+
