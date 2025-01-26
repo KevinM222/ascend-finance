@@ -179,11 +179,16 @@ function setPriceFeed(string memory symbol, address priceFeed) external onlyOwne
     require(tokenAddresses[symbol] != address(0), "Token not registered");
     require(priceFeed != address(0), "Invalid price feed address");
 
-    address oldPriceFeed = address(priceFeeds[symbol]); // Store old price feed address
-    priceFeeds[symbol] = AggregatorV3Interface(priceFeed); // Update price feed
+    // Store the old price feed for reference
+    address oldPriceFeed = address(priceFeeds[symbol]);
 
-    emit PriceFeedUpdated(symbol, oldPriceFeed, priceFeed); // Emit event after updating
+    // Update the price feed
+    priceFeeds[symbol] = AggregatorV3Interface(priceFeed);
+
+    // Emit the PriceFeedUpdated event
+    emit PriceFeedUpdated(symbol, oldPriceFeed, priceFeed);
 }
+
 
 
 function getPrice(string memory symbol) public view returns (int256) {
@@ -206,8 +211,6 @@ function removePriceFeed(string memory symbol) external onlyOwner {
     delete priceFeeds[symbol];
 }
 
-event PriceFeedUpdated(string indexed symbol, address oldFeed, address newFeed);
-emit PriceFeedUpdated(symbol, address(priceFeeds[symbol]), priceFeed);
 
 
 
