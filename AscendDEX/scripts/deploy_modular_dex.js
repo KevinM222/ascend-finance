@@ -8,6 +8,9 @@ async function main() {
         throw new Error("Treasury address is missing!");
     }
 
+    // Fee recipient (same as the initial owner for now)
+    const feeRecipient = "0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1";
+
     // Initial owner address
     const initialOwner = "0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1";
 
@@ -17,11 +20,17 @@ async function main() {
 
     // Deploy ModularDEX
     const ModularDEX = await hre.ethers.getContractFactory("ModularDEX");
+    console.log("Deploying ModularDEX contract...");
+
     const modularDEX = await ModularDEX.deploy(
-    treasuryAddress,   // Treasury address
-    feeRecipient,      // Fee recipient address
-    initialOwner       // Initial owner address
+        treasuryAddress,   // Treasury address
+        feeRecipient,      // Fee recipient address
+        initialOwner       // Initial owner address
     );
+
+    await modularDEX.deployed();
+
+    console.log("ModularDEX deployed to:", modularDEX.address);
 
     // Add tokens to ModularDEX
     console.log("Adding tokens to ModularDEX...");
@@ -30,7 +39,7 @@ async function main() {
             console.log(`Adding token: ${symbol}`);
             const tx = await modularDEX.addToken(
                 symbol,
-                config.address.trim(), // Ensure no extra spaces
+                config.address.trim(),
                 config.priceFeed.trim(),
                 config.decimals
             );
@@ -45,7 +54,7 @@ async function main() {
 
     // Update sepolia.json with new ModularDEX address
     sepoliaConfig.ModularDEX.address = modularDEX.address;
-    fs.writeFileSync("./sepolia.json", JSON.stringify(sepoliaConfig, null, 4));
+    fs.writeFileSync("./deployments/sepolia.json", JSON.stringify(sepoliaConfig, null, 4));
     console.log("Updated sepolia.json with new ModularDEX address.");
 }
 
