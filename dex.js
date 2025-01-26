@@ -272,13 +272,16 @@ async function calculateOtherAmount(tokenFrom, tokenTo, amountFrom) {
 
 // Attach event listeners
 document.addEventListener("DOMContentLoaded", () => {
-    // Set default token values for swap and pool
-    document.getElementById("token1").value = "POL"; // Default to POL
-    document.getElementById("token2").value = "ASC"; // Default to ASC
+    // Ensure these elements exist before trying to set their values
+    const token1Element = document.getElementById("token1");
+    const token2Element = document.getElementById("token2");
 
-    // Set default token values for the Add Liquidity section (if applicable)
-    document.getElementById("addToken1").value = "POL"; // Default to POL
-    document.getElementById("addToken2").value = "ASC"; // Default to ASC
+    if (token1Element && token2Element) {
+        token1Element.value = "POL";
+        token2Element.value = "ASC";
+    } else {
+        console.error("Token elements not found. Ensure IDs 'token1' and 'token2' exist in the HTML.");
+    }
 
     document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
     document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
@@ -289,3 +292,4 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("token1").addEventListener("change", estimateOutput);
     document.getElementById("token2").addEventListener("change", estimateOutput);
 });
+
