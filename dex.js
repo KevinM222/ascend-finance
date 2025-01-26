@@ -159,12 +159,12 @@ async function handleAddLiquidity() {
     try {
         const token1 = document.getElementById("token1").value; // Correct ID for Token1
         const token2 = document.getElementById("token2").value; // Correct ID for Token2
-        const amount1 = document.getElementById("amount1").value; // Correct ID for Amount1
-        const amount2 = document.getElementById("amount2").value; // Correct ID for Amount2
+        let amount1 = document.getElementById("amount1").value; // User-provided Amount1
+        let amount2 = document.getElementById("amount2").value; // User-provided Amount2
 
-        // Validate inputs
-        if (!token1 || !token2 || !amount1 || !amount2) {
-            alert("Please fill in all fields.");
+        // Validate token selection
+        if (!token1 || !token2) {
+            alert("Please select both tokens.");
             return;
         }
 
@@ -174,22 +174,40 @@ async function handleAddLiquidity() {
             return;
         }
 
-        console.log({ token1, token2, amount1, amount2 });
-
         // Load token data
         const tokens = await loadTokenData();
 
-        // Check balances
+        // Validate token addresses
+        if (!tokens[token1] || !tokens[token2]) {
+            alert("Invalid tokens selected.");
+            return;
+        }
+
+        // If one amount is missing, calculate it using price feed
+        if (!amount1 && amount2) {
+            amount1 = await calculateOtherAmount(tokens[token2], tokens[token1], amount2);
+            document.getElementById("amount1").value = amount1; // Auto-fill amount1
+        } else if (!amount2 && amount1) {
+            amount2 = await calculateOtherAmount(tokens[token1], tokens[token2], amount1);
+            document.getElementById("amount2").value = amount2; // Auto-fill amount2
+        }
+
+        // Final validation for amounts
+        if (!amount1 || !amount2) {
+            alert("Please fill in both amounts.");
+            return;
+        }
+
+        // Check user wallet balances
         const balance1 = await getTokenBalance(token1);
         const balance2 = await getTokenBalance(token2);
 
-        console.log(`Balances: ${balance1} ${token1}, ${balance2} ${token2}`);
         if (parseFloat(amount1) > parseFloat(balance1) || parseFloat(amount2) > parseFloat(balance2)) {
             alert("Insufficient token balance.");
             return;
         }
 
-        // Approve tokens if necessary
+        // Approve tokens
         const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
         const token1Contract = new ethers.Contract(tokens[token1].address, erc20ABI, signer);
         const token2Contract = new ethers.Contract(tokens[token2].address, erc20ABI, signer);
@@ -201,7 +219,7 @@ async function handleAddLiquidity() {
         await approveTx2.wait();
         console.log("Tokens approved successfully!");
 
-        // Call `addLiquidity` on the DEX contract
+        // Add liquidity to the DEX
         const parsedAmount1 = ethers.utils.parseUnits(amount1, tokens[token1].decimals);
         const parsedAmount2 = ethers.utils.parseUnits(amount2, tokens[token2].decimals);
         const dex = await loadDexContract();
@@ -215,8 +233,6 @@ async function handleAddLiquidity() {
         alert("Failed to add liquidity. Check the console for details.");
     }
 }
-
-
 
 // Swap tokens functionality
 async function swapTokens() {
