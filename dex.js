@@ -97,7 +97,7 @@ async function getTokenBalance(token) {
 
         return ethers.utils.formatUnits(balance, tokenData.decimals);
     } catch (error) {
-        console.error(`Error fetching balance for ${token}:", error);
+        console.error(`Error fetching balance for ${token}:`, error);
         return "0";
     }
 }
@@ -221,6 +221,38 @@ async function handleAddLiquidity() {
     }
 }
 
+// Swap tokens functionality
+async function swapTokens() {
+    try {
+        const token1 = document.getElementById("token1").value;
+        const token2 = document.getElementById("token2").value;
+        const amount1 = document.getElementById("amount1").value;
+
+        if (!token1 || !token2 || !amount1) {
+            alert("Please select tokens and enter a valid amount.");
+            return;
+        }
+
+        if (token1 === token2) {
+            alert("You cannot swap the same tokens. Please select different tokens.");
+            return;
+        }
+
+        const dex = await loadDexContract();
+        const tx = await dex.swap(
+            token1,
+            token2,
+            ethers.utils.parseUnits(amount1, 18), // Adjust decimals for token1
+            0 // Min output (set to 0 for testing)
+        );
+        await tx.wait();
+        alert("Swap successful!");
+    } catch (error) {
+        console.error("Error during swap:", error);
+        alert("Swap failed. Check console for details.");
+    }
+}
+
 // Calculate other token amount based on price
 async function calculateOtherAmount(tokenFrom, tokenTo, amountFrom) {
     try {
@@ -238,41 +270,15 @@ async function calculateOtherAmount(tokenFrom, tokenTo, amountFrom) {
     }
 }
 
-// Swap tokens functionality
-async function swapTokens() {
-    const token1 = document.getElementById("token1").value;
-    const token2 = document.getElementById("token2").value;
-    const amount1 = document.getElementById("amount1").value;
-
-    if (!token1 || !token2 || !amount1) {
-        alert("Please select tokens and enter a valid amount.");
-        return;
-    }
-    if (token1 === token2) {
-        alert("You cannot swap the same tokens. Please select different tokens.");
-        return;
-    }
-
-    try {
-        const dex = await loadDexContract();
-        const tx = await dex.swap(
-            token1,
-            token2,
-            ethers.utils.parseUnits(amount1, 18),
-            0
-        );
-        await tx.wait();
-        alert("Swap successful!");
-    } catch (error) {
-        console.error("Error during swap:", error);
-        alert("Swap failed. Check console for details.");
-    }
-}
-
 // Attach event listeners
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("token1").value = "POL";
-    document.getElementById("token2").value = "ASC";
+    // Set default token values for swap and pool
+    document.getElementById("token1").value = "POL"; // Default to POL
+    document.getElementById("token2").value = "ASC"; // Default to ASC
+
+    // Set default token values for the Add Liquidity section (if applicable)
+    document.getElementById("addToken1").value = "POL"; // Default to POL
+    document.getElementById("addToken2").value = "ASC"; // Default to ASC
 
     document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
     document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
@@ -283,4 +289,3 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("token1").addEventListener("change", estimateOutput);
     document.getElementById("token2").addEventListener("change", estimateOutput);
 });
-
