@@ -265,6 +265,26 @@ async function swapTokens() {
     }
 }
 
+async function calculateOtherAmount(tokenFrom, tokenTo, amountFrom) {
+    try {
+        const dex = await loadDexContract();
+
+        // Use getPrice from price feed to calculate the equivalent amount
+        const priceFrom = await dex.getPrice(tokenFrom.symbol); // Price of tokenFrom
+        const priceTo = await dex.getPrice(tokenTo.symbol); // Price of tokenTo
+
+        // Calculate equivalent amount
+        const calculatedAmount = (amountFrom * priceFrom) / priceTo;
+        console.log(`Calculated equivalent amount: ${calculatedAmount}`);
+        return calculatedAmount.toFixed(6); // Return up to 6 decimal places
+    } catch (error) {
+        console.error("Error calculating other amount:", error);
+        alert("Failed to calculate the required token amount.");
+        return null;
+    }
+}
+
+
 
 // Attach event listeners
 document.addEventListener("DOMContentLoaded", () => {
