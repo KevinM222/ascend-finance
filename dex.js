@@ -225,48 +225,60 @@ async function swapTokens() {
     }
 }
 
-    async function handleAddLiquidity() {
+async function handleAddLiquidity() {
     console.log("handleAddLiquidity function called.");
     try {
-        // Get input values from the DOM
-        const token1 = document.getElementById("addToken1").value;
-        const token2 = document.getElementById("addToken2").value;
-        const amount1 = document.getElementById("addAmount1").value;
-        const amount2 = document.getElementById("addAmount2").value;
+        const token1 = document.getElementById("token1").value;
+        const token2 = document.getElementById("token2").value;
+        const amount1 = document.getElementById("amount1").value;
+        const amount2 = document.getElementById("amount2").value;
+
+        if (!token1 || !token2 || !amount1 || !amount2) {
+            alert("Please fill in all fields.");
+            return;
+        }
 
         console.log({ token1, token2, amount1, amount2 });
 
-        // Validate input
-        if (!token1 || !token2 || token1 === token2) {
-            alert("Please select two different tokens.");
-            return;
-        }
-        if (!amount1 || !amount2) {
-            alert("Please input valid amounts for both tokens.");
+        // Load token data and balances
+        const tokens = await loadTokenData();
+        const balance1 = await getTokenBalance(token1);
+        const balance2 = await getTokenBalance(token2);
+        console.log(`Balances: ${balance1} ${token1}, ${balance2} ${token2}`);
+
+        // Check wallet balance
+        if (parseFloat(amount1) > parseFloat(balance1) || parseFloat(amount2) > parseFloat(balance2)) {
+            alert("Insufficient token balance.");
             return;
         }
 
-        // Load the DEX contract
+        // Approve tokens if necessary
+        const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
+        const token1Contract = new ethers.Contract(tokens[token1].address, erc20ABI, signer);
+        const token2Contract = new ethers.Contract(tokens[token2].address, erc20ABI, signer);
+
+        console.log("Approving tokens...");
+        const approveTx1 = await token1Contract.approve(dexAddress, ethers.utils.parseUnits(amount1, tokens[token1].decimals));
+        await approveTx1.wait();
+        const approveTx2 = await token2Contract.approve(dexAddress, ethers.utils.parseUnits(amount2, tokens[token2].decimals));
+        await approveTx2.wait();
+        console.log("Tokens approved successfully!");
+
+        // Call addLiquidity
+        const parsedAmount1 = ethers.utils.parseUnits(amount1, tokens[token1].decimals);
+        const parsedAmount2 = ethers.utils.parseUnits(amount2, tokens[token2].decimals);
         const dex = await loadDexContract();
-        if (!dex) throw new Error("DEX contract not loaded.");
 
-        // Parse amounts to correct format
-        const parsedAmount1 = ethers.utils.parseUnits(amount1, 18); // Assuming 18 decimals
-        const parsedAmount2 = ethers.utils.parseUnits(amount2, 18);
-
-        // Call the smart contract's addLiquidity function
         const tx = await dex.addLiquidity(token1, token2, parsedAmount1, parsedAmount2);
-        console.log("Transaction sent:", tx.hash);
-
-        // Wait for transaction confirmation
         await tx.wait();
-        console.log("Liquidity added successfully!");
+
         alert("Liquidity added successfully!");
     } catch (error) {
         console.error("Error in handleAddLiquidity:", error);
         alert("Failed to add liquidity. Check the console for details.");
     }
 }
+
 
         // Attach event listeners after DOM content is loaded
         document.addEventListener("DOMContentLoaded", () => {
