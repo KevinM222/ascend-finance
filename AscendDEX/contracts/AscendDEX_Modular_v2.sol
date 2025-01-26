@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "./Treasury.sol"; // link treasury.sol contract
+
 
 contract ModularDEX is Ownable, ReentrancyGuard {
     struct Pair {
@@ -12,6 +14,8 @@ contract ModularDEX is Ownable, ReentrancyGuard {
         uint reserve2;
     }
 
+    
+    address public treasury;
     uint16 public fee = 30; // Fee in basis points (0.3%)
     address public feeRecipient;
     mapping(string => address) public tokenAddresses; // Token registry
@@ -26,13 +30,25 @@ contract ModularDEX is Ownable, ReentrancyGuard {
     event LiquidityAdded(address indexed provider, string token1, string token2, uint amount1, uint amount2);
     event LiquidityRemoved(address indexed provider, string token1, string token2, uint amount1, uint amount2);
     event FeeRecipientUpdated(address oldFeeRecipient, address newFeeRecipient);
+    event PriceFeedUpdated(string indexed symbol, address oldFeed, address newFeed);
 
-    constructor(address _feeRecipient, address initialOwner) Ownable() ReentrancyGuard() {
-        require(_feeRecipient != address(0), "Invalid fee recipient");
-        require(initialOwner != address(0), "Invalid initial owner");
-        feeRecipient = _feeRecipient;
-        _transferOwnership(initialOwner);
+    constructor(address _feeRecipient, address initialOwner, address _treasury) Ownable() ReentrancyGuard() {
+    require(_feeRecipient != address(0), "Invalid fee recipient");
+    require(initialOwner != address(0), "Invalid initial owner");
+    require(_treasury != address(0), "Invalid treasury address");
+
+    feeRecipient = _feeRecipient;
+    treasury = _treasury;
+    _transferOwnership(initialOwner);
     }
+
+    function setTreasury(address _treasury) external onlyOwner {
+    require(_treasury != address(0), "Invalid treasury address");
+    treasury = _treasury;
+    }
+
+
+
 
     function addToken(string memory symbol, address tokenAddress, address priceFeed, uint8 decimals) external onlyOwner {
         require(tokenAddress != address(0), "Invalid token address");

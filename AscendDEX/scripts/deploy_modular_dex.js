@@ -17,12 +17,11 @@ async function main() {
 
     // Deploy ModularDEX
     const ModularDEX = await hre.ethers.getContractFactory("ModularDEX");
-    console.log("Deploying ModularDEX contract...");
-
-    const modularDEX = await ModularDEX.deploy(treasuryAddress, initialOwner);
-    await modularDEX.deployed();
-
-    console.log("ModularDEX deployed to:", modularDEX.address);
+    const modularDEX = await ModularDEX.deploy(
+    treasuryAddress,   // Treasury address
+    feeRecipient,      // Fee recipient address
+    initialOwner       // Initial owner address
+    );
 
     // Add tokens to ModularDEX
     console.log("Adding tokens to ModularDEX...");
