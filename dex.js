@@ -225,36 +225,36 @@ async function swapTokens() {
     }
 }
 
-    async function handleAddLiquidity() {
-     try {
-        // Retrieve user inputs
-        const token1 = document.getElementById("token1").value; // Token 1 symbol
-        const token2 = document.getElementById("token2").value; // Token 2 symbol
-        const amount1 = document.getElementById("amount1").value; // Token 1 amount
-        const amount2 = document.getElementById("amount2").value; // Token 2 amount
+async function handleAddLiquidity() {
+    console.log("handleAddLiquidity function called.");
+    try {
+        const token1 = document.getElementById("token1").value;
+        const token2 = document.getElementById("token2").value;
+        const amount1 = document.getElementById("amount1").value;
+        const amount2 = document.getElementById("amount2").value;
+
+        console.log({ token1, token2, amount1, amount2 });
 
         if (!token1 || !token2 || !amount1 || !amount2) {
             alert("Please fill in all fields.");
             return;
         }
 
-        // Parse amounts to match the token's decimals (assuming 18 decimals here)
         const parsedAmount1 = ethers.utils.parseUnits(amount1, 18);
         const parsedAmount2 = ethers.utils.parseUnits(amount2, 18);
 
-        // Load the DEX contract
-        const dex = await loadDexContract(); // Assuming you have a function to load the DEX contract
+        const dex = await loadDexContract();
 
-        // Call the `addLiquidity` function
         const tx = await dex.addLiquidity(token1, token2, parsedAmount1, parsedAmount2);
-        await tx.wait(); // Wait for the transaction to be mined
+        await tx.wait();
 
         alert("Liquidity added successfully!");
-        } catch (error) {
-        console.error("Error adding liquidity:", error);
+    } catch (error) {
+        console.error("Error in handleAddLiquidity:", error);
         alert("Failed to add liquidity. Check the console for details.");
-     }
+    }
 }
+
 
 
 // Function to add liquidity to the DEX
