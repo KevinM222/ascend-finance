@@ -226,72 +226,50 @@ async function swapTokens() {
 }
 
     async function handleAddLiquidity() {
-        console.log("handleAddLiquidity function called.");
-        try {
-            const token1 = document.getElementById("token1").value;
-            const token2 = document.getElementById("token2").value;
-            const amount1 = document.getElementById("amount1").value;
-            const amount2 = document.getElementById("amount2").value;
-
-            console.log({ token1, token2, amount1, amount2 });
-
-            if (!token1 || !token2 || !amount1 || !amount2) {
-            alert("Please fill in all fields.");
-            return;
-            }
-
-            const parsedAmount1 = ethers.utils.parseUnits(amount1, 18);
-            const parsedAmount2 = ethers.utils.parseUnits(amount2, 18);
-
-            const dex = await loadDexContract();
-
-            const tx = await dex.addLiquidity(token1, token2, parsedAmount1, parsedAmount2);
-            await tx.wait();
-
-            alert("Liquidity added successfully!");
-            
-            } 
-            catch (error) {
-            console.error("Error in handleAddLiquidity:", error);
-            alert("Failed to add liquidity. Check the console for details.");
-        }
-    }   
-
-
-
-
-
-// Function to add liquidity to the DEX
-async function addLiquidity(token1, token2, amount1, amount2) {
+    console.log("handleAddLiquidity function called.");
     try {
-        const dex = await loadDexContract(); // Load the DEX contract
+        // Get input values from the DOM
+        const token1 = document.getElementById("addToken1").value;
+        const token2 = document.getElementById("addToken2").value;
+        const amount1 = document.getElementById("addAmount1").value;
+        const amount2 = document.getElementById("addAmount2").value;
 
-        // Parse amounts to the correct format (adjust decimals as needed)
-        const parsedAmount1 = ethers.utils.parseUnits(amount1, 18); // Adjust decimals for token1
-        const parsedAmount2 = ethers.utils.parseUnits(amount2, 18); // Adjust decimals for token2
+        console.log({ token1, token2, amount1, amount2 });
 
-        // Call the `addLiquidity` function on the contract
-        const tx = await dex.addLiquidity(
-            token1, // Token1 address
-            token2, // Token2 address
-            parsedAmount1, // Token1 amount
-            parsedAmount2  // Token2 amount
-        );
+        // Validate input
+        if (!token1 || !token2 || token1 === token2) {
+            alert("Please select two different tokens.");
+            return;
+        }
+        if (!amount1 || !amount2) {
+            alert("Please input valid amounts for both tokens.");
+            return;
+        }
 
+        // Load the DEX contract
+        const dex = await loadDexContract();
+        if (!dex) throw new Error("DEX contract not loaded.");
+
+        // Parse amounts to correct format
+        const parsedAmount1 = ethers.utils.parseUnits(amount1, 18); // Assuming 18 decimals
+        const parsedAmount2 = ethers.utils.parseUnits(amount2, 18);
+
+        // Call the smart contract's addLiquidity function
+        const tx = await dex.addLiquidity(token1, token2, parsedAmount1, parsedAmount2);
         console.log("Transaction sent:", tx.hash);
-        await tx.wait(); // Wait for the transaction to be mined
-        console.log(`Liquidity added successfully for pair: ${token1} - ${token2}`);
+
+        // Wait for transaction confirmation
+        await tx.wait();
+        console.log("Liquidity added successfully!");
         alert("Liquidity added successfully!");
     } catch (error) {
-        console.error("Error adding liquidity:", error);
-        alert("Failed to add liquidity. Check console for details.");
+        console.error("Error in handleAddLiquidity:", error);
+        alert("Failed to add liquidity. Check the console for details.");
     }
 }
 
-
-
-// Attach event listeners after DOM content is loaded
-document.addEventListener("DOMContentLoaded", () => {
+    // Attach event listeners after DOM content is loaded
+    document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
     document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
     document.getElementById("swapButton").addEventListener("click", swapTokens);
