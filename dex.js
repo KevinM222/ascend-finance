@@ -249,7 +249,8 @@ async function handleAddLiquidity() {
         await tx.wait();
 
         alert("Liquidity added successfully!");
-    } catch (error) {
+        
+        catch (error) {
         console.error("Error in handleAddLiquidity:", error);
         alert("Failed to add liquidity. Check the console for details.");
     }
