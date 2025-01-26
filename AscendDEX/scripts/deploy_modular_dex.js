@@ -12,7 +12,7 @@ async function main() {
     const initialOwner = "0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1";
 
     // Load token data from sepolia.json
-    const sepoliaConfig = JSON.parse(fs.readFileSync("./sepolia.json", "utf8"));
+    const sepoliaConfig = JSON.parse(fs.readFileSync("./deployments/sepolia.json", "utf8"));
     const tokens = sepoliaConfig.ModularDEX.tokens;
 
     // Deploy ModularDEX
