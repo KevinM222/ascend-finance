@@ -268,14 +268,17 @@ async function swapTokens() {
     }
 }
 
-    // Attach event listeners after DOM content is loaded
-    document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
-    document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
-    document.getElementById("swapButton").addEventListener("click", swapTokens);
-    document.getElementById("reverseButton").addEventListener("click", reverseTokens);
-    document.getElementById("amount1").addEventListener("input", estimateOutput);
-    document.getElementById("token1").addEventListener("change", updateBalance);
-    document.getElementById("token1").addEventListener("change", estimateOutput);
-    document.getElementById("token2").addEventListener("change", estimateOutput);
-});
+        // Attach event listeners after DOM content is loaded
+        document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
+        document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
+        document.getElementById("swapButton").addEventListener("click", swapTokens);
+        document.getElementById("reverseButton").addEventListener("click", reverseTokens);
+        document.getElementById("amount1").addEventListener("input", estimateOutput);
+        document.getElementById("token1").addEventListener("change", updateBalance);
+        document.getElementById("token1").addEventListener("change", estimateOutput);
+        document.getElementById("token2").addEventListener("change", estimateOutput);
+        });
+
+
+
