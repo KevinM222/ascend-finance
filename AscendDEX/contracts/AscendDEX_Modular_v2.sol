@@ -133,24 +133,77 @@ function swap(
     uint amountIn,
     uint minAmountOut
 ) public nonReentrant {
+    // Ensure valid tokens
     require(tokenAddresses[tokenIn] != address(0), "Invalid input token");
     require(tokenAddresses[tokenOut] != address(0), "Invalid output token");
     require(amountIn > 0, "Amount must be greater than 0");
 
+    // Fetch reserves
     bytes32 pairKey = _getPairId(tokenIn, tokenOut);
     Pair storage pair = pairs[pairKey];
     require(pair.reserve1 > 0 && pair.reserve2 > 0, "No liquidity");
 
-    uint amountOut = _getAmountOut(amountIn, pair.reserve1, pair.reserve2);
+    // Calculate the fee and net input amount
+    uint feeAmount = (amountIn * fee) / 10000; // Fee in basis points (e.g., 30 = 0.3%)
+    uint netAmountIn = amountIn - feeAmount;   // Net amount after fee deduction
+
+    // Calculate the output amount based on the net input amount
+    uint amountOut = _getAmountOut(netAmountIn, pair.reserve1, pair.reserve2);
     require(amountOut >= minAmountOut, "Insufficient output amount");
 
+    // Slippage tolerance check (optional, useful if not using minAmountOut)
+    uint slippage = ((amountOut - minAmountOut) * 100) / minAmountOut;
+    require(slippage <= 10, "Slippage exceeds tolerance"); // 10% max slippage
+
+    // Transfer the input token from the user
     IERC20(tokenAddresses[tokenIn]).transferFrom(msg.sender, address(this), amountIn);
+
+    // Transfer the fee to the Treasury
+    IERC20(tokenAddresses[tokenIn]).approve(address(treasury), feeAmount);
+    Treasury(treasury).deposit(tokenAddresses[tokenIn], feeAmount);
+
+    // Transfer the output token to the user
     IERC20(tokenAddresses[tokenOut]).transfer(msg.sender, amountOut);
 
-    pair.reserve1 += amountIn;
-    pair.reserve2 -= amountOut;
+    // Update reserves
+    pair.reserve1 += netAmountIn; // Add net input amount to reserve
+    pair.reserve2 -= amountOut;   // Subtract output amount from reserve
 
+    // Emit event
     emit Swap(msg.sender, tokenIn, tokenOut, amountIn, amountOut);
 }
+
+
+
+function setPriceFeed(string memory symbol, address priceFeed) external onlyOwner {
+    require(tokenAddresses[symbol] != address(0), "Token not registered");
+    require(priceFeed != address(0), "Invalid price feed address");
+    priceFeeds[symbol] = AggregatorV3Interface(priceFeed);
+}
+
+function getPrice(string memory symbol) public view returns (int256) {
+    require(address(priceFeeds[symbol]) != address(0), "Price feed not set");
+    (, int256 price, , , ) = priceFeeds[symbol].latestRoundData();
+    return price;
+}
+function getRequiredLiquidityAmount(
+    string memory token1,
+    string memory token2,
+    uint amount1
+) public view returns (uint amount2) {
+    int256 price1 = getPrice(token1);
+    int256 price2 = getPrice(token2);
+    require(price1 > 0 && price2 > 0, "Invalid prices");
+    return (amount1 * uint(price1)) / uint(price2);
+}
+function removePriceFeed(string memory symbol) external onlyOwner {
+    require(address(priceFeeds[symbol]) != address(0), "Price feed not set");
+    delete priceFeeds[symbol];
+}
+
+event PriceFeedUpdated(string indexed symbol, address oldFeed, address newFeed);
+emit PriceFeedUpdated(symbol, address(priceFeeds[symbol]), priceFeed);
+
+
 
 }
