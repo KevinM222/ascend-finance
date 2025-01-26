@@ -178,8 +178,13 @@ function swap(
 function setPriceFeed(string memory symbol, address priceFeed) external onlyOwner {
     require(tokenAddresses[symbol] != address(0), "Token not registered");
     require(priceFeed != address(0), "Invalid price feed address");
-    priceFeeds[symbol] = AggregatorV3Interface(priceFeed);
+
+    address oldPriceFeed = address(priceFeeds[symbol]); // Store old price feed address
+    priceFeeds[symbol] = AggregatorV3Interface(priceFeed); // Update price feed
+
+    emit PriceFeedUpdated(symbol, oldPriceFeed, priceFeed); // Emit event after updating
 }
+
 
 function getPrice(string memory symbol) public view returns (int256) {
     require(address(priceFeeds[symbol]) != address(0), "Price feed not set");
