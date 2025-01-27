@@ -103,37 +103,37 @@ async function getTokenBalance(token) {
 }
 
 // Update balance display
-async function updateBalance() {
+async function updateBalance(tabPrefix) {
     try {
-        const token1 = document.getElementById("token1").value;
+        const token1 = document.getElementById(`${tabPrefix}Token1`).value;
         const balance = await getTokenBalance(token1);
-        document.getElementById("balanceDisplay").textContent = `Available Balance: ${balance}`;
+        document.getElementById(`${tabPrefix}BalanceDisplay`).textContent = `Available Balance: ${balance}`;
     } catch (error) {
         console.error("Error updating balance:", error);
     }
 }
 
 // Reverse token functionality
-function reverseTokens() {
-    const token1 = document.getElementById("token1");
-    const token2 = document.getElementById("token2");
+function reverseTokens(tabPrefix) {
+    const token1 = document.getElementById(`${tabPrefix}Token1`);
+    const token2 = document.getElementById(`${tabPrefix}Token2`);
     const tempValue = token1.value;
     token1.value = token2.value;
     token2.value = tempValue;
 
-    updateBalance();
-    estimateOutput();
+    updateBalance(tabPrefix);
+    estimateOutput(tabPrefix);
 }
 
 // Estimate output functionality
-async function estimateOutput() {
+async function estimateOutput(tabPrefix) {
     try {
-        const token1 = document.getElementById("token1").value;
-        const token2 = document.getElementById("token2").value;
-        const amount1 = document.getElementById("amount1").value;
+        const token1 = document.getElementById(`${tabPrefix}Token1`).value;
+        const token2 = document.getElementById(`${tabPrefix}Token2`).value;
+        const amount1 = document.getElementById(`${tabPrefix}Amount1`).value;
 
         if (!amount1 || parseFloat(amount1) <= 0) {
-            document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
+            document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = "Estimated Output: --";
             return;
         }
 
@@ -146,10 +146,10 @@ async function estimateOutput() {
         const amountOut = await dex.estimateOutput(parsedAmountIn, token1Data.address, token2Data.address);
 
         const formattedAmountOut = ethers.utils.formatUnits(amountOut, token2Data.decimals);
-        document.getElementById("estimatedOutput").textContent = `Estimated Output: ${formattedAmountOut} ${token2.toUpperCase()}`;
+        document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = `Estimated Output: ${formattedAmountOut} ${token2.toUpperCase()}`;
     } catch (error) {
         console.error("Error estimating output:", error);
-        document.getElementById("estimatedOutput").textContent = "Estimated Output: --";
+        document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = "Estimated Output: --";
     }
 }
 
@@ -157,11 +157,13 @@ async function estimateOutput() {
 async function handleAddLiquidity() {
     console.log("handleAddLiquidity function called.");
     try {
-        const token1 = document.getElementById("token1").value;
-        const token2 = document.getElementById("token2").value;
-        let amount1 = document.getElementById("amount1").value;
-        let amount2 = document.getElementById("amount2").value;
+        // Retrieve input values
+        const token1 = document.getElementById("poolToken1").value;
+        const token2 = document.getElementById("poolToken2").value;
+        let amount1 = document.getElementById("poolAmount1").value;
+        let amount2 = document.getElementById("poolAmount2").value;
 
+        // Validate inputs
         if (!token1 || !token2 || (!amount1 && !amount2)) {
             alert("Please fill in all fields.");
             return;
@@ -172,6 +174,7 @@ async function handleAddLiquidity() {
             return;
         }
 
+        // Load token data
         const tokens = await loadTokenData();
 
         if (!tokens[token1] || !tokens[token2]) {
@@ -179,14 +182,16 @@ async function handleAddLiquidity() {
             return;
         }
 
+        // Calculate missing amounts if necessary
         if (!amount1) {
             amount1 = await calculateOtherAmount(tokens[token2], tokens[token1], amount2);
-            document.getElementById("amount1").value = amount1;
+            document.getElementById("poolAmount1").value = amount1;
         } else if (!amount2) {
             amount2 = await calculateOtherAmount(tokens[token1], tokens[token2], amount1);
-            document.getElementById("amount2").value = amount2;
+            document.getElementById("poolAmount2").value = amount2;
         }
 
+        // Check wallet balances
         const balance1 = await getTokenBalance(token1);
         const balance2 = await getTokenBalance(token2);
 
@@ -195,6 +200,7 @@ async function handleAddLiquidity() {
             return;
         }
 
+        // Approve tokens for transfer
         const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
         const token1Contract = new ethers.Contract(tokens[token1].address, erc20ABI, signer);
         const token2Contract = new ethers.Contract(tokens[token2].address, erc20ABI, signer);
@@ -207,6 +213,7 @@ async function handleAddLiquidity() {
 
         console.log("Tokens approved successfully!");
 
+        // Call `addLiquidity` on the contract
         const parsedAmount1 = ethers.utils.parseUnits(amount1, tokens[token1].decimals);
         const parsedAmount2 = ethers.utils.parseUnits(amount2, tokens[token2].decimals);
         const dex = await loadDexContract();
@@ -221,12 +228,13 @@ async function handleAddLiquidity() {
     }
 }
 
+
 // Swap tokens functionality
 async function swapTokens() {
     try {
-        const token1 = document.getElementById("token1").value;
-        const token2 = document.getElementById("token2").value;
-        const amount1 = document.getElementById("amount1").value;
+        const token1 = document.getElementById("swapToken1").value;
+        const token2 = document.getElementById("swapToken2").value;
+        const amount1 = document.getElementById("swapAmount1").value;
 
         if (!token1 || !token2 || !amount1) {
             alert("Please select tokens and enter a valid amount.");
@@ -270,26 +278,34 @@ async function calculateOtherAmount(tokenFrom, tokenTo, amountFrom) {
     }
 }
 
-// Attach event listeners
+// Tab switching functionality
 document.addEventListener("DOMContentLoaded", () => {
-    // Ensure these elements exist before trying to set their values
-    const token1Element = document.getElementById("token1");
-    const token2Element = document.getElementById("token2");
+    const tabs = document.querySelectorAll(".tab-button");
+    const contents = document.querySelectorAll(".tab-content");
 
-    if (token1Element && token2Element) {
-        token1Element.value = "POL";
-        token2Element.value = "ASC";
-    } else {
-        console.error("Token elements not found. Ensure IDs 'token1' and 'token2' exist in the HTML.");
-    }
+    tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+            const target = tab.dataset.target;
 
-    document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
-    document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
+            contents.forEach((content) => {
+                content.style.display = content.id === target ? "block" : "none";
+            });
+        });
+    });
+
+    // Default tab: Swap
+    document.getElementById("swap-tab").style.display = "block";
+
+    // Event listeners for Swap
     document.getElementById("swapButton").addEventListener("click", swapTokens);
-    document.getElementById("reverseButton").addEventListener("click", reverseTokens);
-    document.getElementById("amount1").addEventListener("input", estimateOutput);
-    document.getElementById("token1").addEventListener("change", updateBalance);
-    document.getElementById("token1").addEventListener("change", estimateOutput);
-    document.getElementById("token2").addEventListener("change", estimateOutput);
-});
+    document.getElementById("reverseButton").addEventListener("click", () => reverseTokens("swap"));
+    document.getElementById("swapAmount1").addEventListener("input", () => estimateOutput("swap"));
+    document.getElementById("swapToken1").addEventListener("change", () => updateBalance("swap"));
+    document.getElementById("swapToken2").addEventListener("change", () => estimateOutput("swap"));
 
+    // Event listeners for Pools
+    document.getElementById("addLiquidityButton").addEventListener("click", handleAddLiquidity);
+    document.getElementById("poolAmount1").addEventListener("input", () => estimateOutput("pool"));
+    document.getElementById("poolToken1").addEventListener("change", () => updateBalance("pool"));
+    document.getElementById("poolToken2").addEventListener("change", () => estimateOutput("pool"));
+});
