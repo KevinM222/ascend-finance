@@ -214,17 +214,46 @@ button.cta-button:hover {
 }
 
 /* Add Liquidity Section */
-.add-liquidity-content button {
-    background: linear-gradient(90deg, #00ffcc, #0099ff);
-    color: #ffffff;
-    padding: 1rem 2rem;
-    border-radius: 8px;
+.add-liquidity-content {
+    background: rgba(255, 255, 255, 0.9); /* Styled to match the theme */
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.add-liquidity-content label {
     font-size: 1rem;
+    color: #00ffcc; /* Matches theme */
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.add-liquidity-content select,
+.add-liquidity-content input {
+    width: 80%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #cccccc;
+    margin-bottom: 1rem;
+    background: #f9f9f9;
+    color: #333333;
+    font-size: 1rem;
+}
+
+.add-liquidity-content button {
+    background: linear-gradient(90deg, #00ffcc, #0099ff); /* Matches theme */
+    color: #ffffff; /* White text for contrast */
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
 }
 
 .add-liquidity-content button:hover {
     transform: scale(1.05);
-    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8);
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8); /* Glow effect */
 }
