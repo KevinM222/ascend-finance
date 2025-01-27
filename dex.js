@@ -230,11 +230,36 @@ async function handleAddLiquidity() {
 
 
 // Swap tokens functionality
+// Toggle settings modal
+function toggleSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    modal.style.display = modal.style.display === "none" ? "block" : "none";
+}
+
+// Save settings (for now, just slippage)
+function saveSettings() {
+    const slippage = document.getElementById("globalSlippage").value;
+    if (!slippage || parseFloat(slippage) <= 0) {
+        alert("Please enter a valid slippage tolerance.");
+        return;
+    }
+    localStorage.setItem("slippage", slippage); // Save to local storage
+    alert("Settings saved!");
+    toggleSettingsModal();
+}
+
+// Retrieve slippage from settings
+function getSlippage() {
+    return parseFloat(localStorage.getItem("slippage") || "1"); // Default to 1% if not set
+}
+
+// Use global slippage in functions
 async function swapTokens() {
     try {
-        const token1 = document.getElementById("swapToken1").value;
-        const token2 = document.getElementById("swapToken2").value;
-        const amount1 = document.getElementById("swapAmount1").value;
+        const token1 = document.getElementById("token1").value;
+        const token2 = document.getElementById("token2").value;
+        const amount1 = document.getElementById("amount1").value;
+        const slippage = getSlippage(); // Retrieve saved slippage
 
         if (!token1 || !token2 || !amount1) {
             alert("Please select tokens and enter a valid amount.");
@@ -247,11 +272,23 @@ async function swapTokens() {
         }
 
         const dex = await loadDexContract();
+        const tokens = await loadTokenData();
+        const token1Data = tokens[token1];
+        const token2Data = tokens[token2];
+
+        const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
+
+        // Estimate output and calculate minimum amount with slippage
+        const estimatedAmountOut = await dex.estimateOutput(parsedAmountIn, token1, token2);
+        const slippageAdjustedAmountOut = estimatedAmountOut.sub(
+            estimatedAmountOut.mul(Math.round(slippage * 100)).div(10000)
+        );
+
         const tx = await dex.swap(
             token1,
             token2,
-            ethers.utils.parseUnits(amount1, 18), // Adjust decimals for token1
-            0 // Min output (set to 0 for testing)
+            parsedAmountIn,
+            slippageAdjustedAmountOut
         );
         await tx.wait();
         alert("Swap successful!");
@@ -260,6 +297,7 @@ async function swapTokens() {
         alert("Swap failed. Check console for details.");
     }
 }
+
 
 // Calculate other token amount based on price
 async function calculateOtherAmount(tokenFrom, tokenTo, amountFrom) {

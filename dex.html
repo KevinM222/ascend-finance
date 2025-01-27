@@ -27,13 +27,26 @@
         <h2>Ascend DEX</h2>
 
         <!-- Wallet Connection -->
-        <div class="wallet-container">
-            <button id="connectWalletButton">Connect Wallet</button>
-            <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
-            <button class="settings-button">
-                <i class="fa fa-cog"></i> <!-- Gear Icon -->
-            </button>
-        </div>
+        <!-- Wallet Connection -->
+<div class="wallet-container">
+    <button id="connectWalletButton">Connect Wallet</button>
+    <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+    <button class="settings-button" onclick="toggleSettingsModal()">
+        <i class="fa fa-cog"></i> <!-- Gear Icon -->
+    </button>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="settings-modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Settings</h3>
+        <label for="globalSlippage">Slippage Tolerance (%):</label>
+        <input type="number" id="globalSlippage" placeholder="Enter slippage tolerance" value="1">
+        <button onclick="saveSettings()">Save</button>
+        <button onclick="toggleSettingsModal()">Close</button>
+    </div>
+</div>
+
 
         <!-- Swap Content -->
         <div class="swap-content">
