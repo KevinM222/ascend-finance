@@ -5,7 +5,7 @@ body {
     background: url('DEX_background.webp') no-repeat center center fixed;
     background-size: cover;
     font-family: 'Arial', sans-serif;
-    color: #ffffff;
+    color: #333333; /* Set default text color for better contrast */
     overflow-x: hidden;
 }
 
@@ -15,7 +15,7 @@ nav {
     justify-content: space-around;
     align-items: center;
     padding: 1rem;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
     position: fixed;
     top: 0;
     width: 100%;
@@ -56,7 +56,7 @@ nav ul li a:hover {
     max-width: 900px;
     margin: 8rem auto; /* Adjust to position lower */
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.97); /* Less transparency for better readability */
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
     position: relative; /* Needed for absolute positioning of buttons */
@@ -66,10 +66,10 @@ nav ul li a:hover {
 .wallet-container {
     display: flex;
     justify-content: space-between;
+    width: 100%;
     position: absolute; /* Positioned inside the box */
     top: 1rem;
-    left: 1rem;
-    right: 1rem;
+    padding: 0 1rem;
 }
 
 .wallet-container button {
@@ -140,7 +140,7 @@ nav ul li a:hover {
 /* Tab Content */
 .tab-content {
     width: 100%;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(240, 240, 240, 1); /* Light gray for better contrast */
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -179,62 +179,52 @@ input:focus {
     outline: none;
 }
 
-/* Add Liquidity Section */
-.add-liquidity-content {
-    background: rgba(255, 255, 255, 0.9); /* Styled to match the theme */
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
-}
-
-.add-liquidity-content label {
-    font-size: 1rem;
-    color: #00ffcc;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.add-liquidity-content select,
-.add-liquidity-content input {
-    width: 80%;
-    padding: 0.8rem;
-    border-radius: 8px;
-    border: 1px solid #cccccc;
-    margin-bottom: 1rem;
-}
-
-.add-liquidity-content button {
-    padding: 1rem 2rem;
-    border-radius: 8px;
+/* Buttons */
+button.cta-button {
     background: linear-gradient(90deg, #00ffcc, #0099ff);
     color: #ffffff;
     border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button.cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8);
+}
+
+.reverse-button {
+    margin: 1rem auto;
+    background: #00ffcc;
+    border: none;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.reverse-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+}
+
+/* Add Liquidity Section */
+.add-liquidity-content button {
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    color: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .add-liquidity-content button:hover {
     transform: scale(1.05);
-    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
-}
-
-/* Media Queries */
-@media (max-width: 768px) {
-    .tabs-container {
-        flex-direction: column;
-    }
-
-    .tab-button {
-        font-size: 1rem;
-    }
-
-    .swap-container {
-        flex-direction: column;
-    }
-
-    select,
-    input {
-        width: 100%;
-    }
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8);
 }
