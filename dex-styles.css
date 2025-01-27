@@ -15,12 +15,12 @@ nav {
     justify-content: space-around;
     align-items: center;
     padding: 1rem;
-    background: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+    background: rgba(0, 0, 0, 0.8); /* Slightly darker background */
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 10;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 nav ul {
@@ -54,9 +54,9 @@ nav ul li a:hover {
     align-items: center;
     justify-content: center;
     max-width: 900px;
-    margin: 7rem auto; /* Adjust for fixed navigation bar */
+    margin: 9rem auto 2rem; /* Adjusted to move the box slightly down */
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    background: rgba(255, 255, 255, 0.97); /* Slightly less transparent */
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
@@ -81,8 +81,8 @@ nav ul li a:hover {
     font-size: 1.2rem;
     font-weight: bold;
     transition: transform 0.2s, background 0.2s;
-    border-radius: 8px 8px 0 0; /* Rounded top corners */
-    margin: 0 5px; /* Add space between buttons */
+    border-radius: 8px 8px 0 0;
+    margin: 0 5px;
 }
 
 .tab-button:hover {
@@ -96,15 +96,15 @@ nav ul li a:hover {
     border-bottom: 4px solid #00ffcc;
 }
 
-/* Swap and Pools Section */
+/* Tab Content */
 .tab-content {
     width: 100%;
-    background: rgba(0, 0, 0, 0.05); /* Subtle background */
+    background: rgba(0, 0, 0, 0.05);
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
-    display: none; /* Initially hidden, shown on tab click */
+    display: none;
 }
 
 .tab-content.active {
@@ -173,41 +173,73 @@ button.cta-button:hover {
     box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
 }
 
-/* Slippage Modal */
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 2rem;
+/* Add Liquidity Section */
+.add-liquidity-content {
+    background: #ffffff; /* Fully white background */
     border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 400px;
-    z-index: 1000;
+    padding: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Add slight shadow */
+    text-align: center;
 }
 
-.modal-content h3 {
-    font-size: 1.5rem;
-    color: #0099ff;
-    margin-bottom: 1rem;
-}
-
-.modal-content label,
-.modal-content input {
-    display: block;
-    width: 100%;
-    margin-bottom: 1rem;
+.add-liquidity-content label {
     font-size: 1rem;
+    color: #00ffcc;
+    display: block;
+    margin-bottom: 0.5rem;
 }
 
-.modal-content button {
-    width: 100%;
-    padding: 1rem;
+.add-liquidity-content select,
+.add-liquidity-content input {
+    width: 80%;
+    padding: 0.8rem;
     border-radius: 8px;
-    border: none;
-    cursor: pointer;
+    border: 1px solid #cccccc;
+    margin-bottom: 1rem;
+}
+
+.add-liquidity-content button {
+    padding: 1rem 2rem;
+    border-radius: 8px;
     background: linear-gradient(90deg, #00ffcc, #0099ff);
     color: #ffffff;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.add-liquidity-content button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+}
+
+/* Wallet Buttons */
+.wallet-container button {
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    border: none;
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wallet-container button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+}
+
+.settings-button {
+    font-size: 1.5rem;
+    background: transparent;
+    color: #0099ff;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.settings-button:hover {
+    color: #00ffcc;
+    transform: rotate(20deg);
 }
