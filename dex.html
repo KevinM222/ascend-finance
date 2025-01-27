@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="dex.js" defer></script>
 </head>
-<body style="background: url('DEX_background.webp') no-repeat center center fixed; background-size: cover;">
+<body>
     <!-- Navigation Bar -->
     <nav>
         <ul>
@@ -23,52 +23,44 @@
         </ul>
     </nav>
 
+    <!-- Main DEX Container -->
     <div class="swap-container">
         <h2>Ascend DEX</h2>
 
         <!-- Wallet Connection -->
-        <!-- Wallet Connection -->
-<div class="wallet-container">
-    <button id="connectWalletButton">Connect Wallet</button>
-    <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
-    <button class="settings-button" onclick="toggleSettingsModal()">
-        <i class="fa fa-cog"></i> <!-- Gear Icon -->
-    </button>
-</div>
+        <div class="wallet-container">
+            <button id="connectWalletButton">Connect Wallet</button>
+            <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+        </div>
 
-<!-- Settings Modal -->
-<div id="settingsModal" class="settings-modal" style="display: none;">
-    <div class="modal-content">
-        <h3>Settings</h3>
-        <label for="globalSlippage">Slippage Tolerance (%):</label>
-        <input type="number" id="globalSlippage" placeholder="Enter slippage tolerance" value="1">
-        <button onclick="saveSettings()">Save</button>
-        <button onclick="toggleSettingsModal()">Close</button>
-    </div>
-</div>
+        <!-- Tabs for Swap, Pools, and Settings -->
+        <div class="tabs-container">
+            <button class="tab-button active" data-target="swap-tab">Swap</button>
+            <button class="tab-button" data-target="pools-tab">Pools</button>
+            <button class="tab-button" data-target="settings-tab">Settings</button>
+        </div>
 
-
-        <!-- Swap Content -->
-        <div class="swap-content">
+        <!-- Tab Contents -->
+        <div class="tab-content" id="swap-tab">
             <h3>Swap Tokens</h3>
             <!-- From Token -->
-            <label for="token1">From:</label>
-            <select id="token1">
+            <label for="swapToken1">From:</label>
+            <select id="swapToken1">
                 <option value="ASC">ASC</option>
                 <option value="USDC">USDC</option>
                 <option value="ETH">ETH</option>
                 <option value="POL">POL</option>
                 <option value="LINK">LINK</option>
             </select>
-            <input type="number" id="amount1" placeholder="Amount to swap">
-            <p id="balanceDisplay" class="balance-display">Available Balance: --</p>
+            <input type="number" id="swapAmount1" placeholder="Amount to swap">
+            <p id="swapBalanceDisplay" class="balance-display">Available Balance: --</p>
 
             <!-- Reverse Button -->
             <button id="reverseButton" class="reverse-button">⇅</button>
 
             <!-- To Token -->
-            <label for="token2">To:</label>
-            <select id="token2">
+            <label for="swapToken2">To:</label>
+            <select id="swapToken2">
                 <option value="ASC">ASC</option>
                 <option value="USDC">USDC</option>
                 <option value="ETH">ETH</option>
@@ -77,40 +69,45 @@
             </select>
 
             <!-- Estimated Output -->
-            <p id="estimatedOutput" class="estimated-output">Estimated Output: --</p>
+            <p id="swapEstimatedOutput" class="estimated-output">Estimated Output: --</p>
 
             <!-- Swap Button -->
             <button id="swapButton" class="cta-button">Confirm Swap</button>
         </div>
 
-        <!-- Add Liquidity Section -->
-        <div class="add-liquidity-content">
+        <div class="tab-content" id="pools-tab" style="display: none;">
             <h3>Add Liquidity</h3>
-
             <!-- Token 1 -->
-            <label for="token1">Token 1:</label>
-            <select id="token1">
+            <label for="poolToken1">Token 1:</label>
+            <select id="poolToken1">
                 <option value="ASC">ASC</option>
                 <option value="USDC">USDC</option>
                 <option value="ETH">ETH</option>
                 <option value="POL">POL</option>
                 <option value="LINK">LINK</option>
             </select>
-            <input type="number" id="amount1" placeholder="Amount of Token 1">
+            <input type="number" id="poolAmount1" placeholder="Amount of Token 1">
 
             <!-- Token 2 -->
-            <label for="token2">Token 2:</label>
-            <select id="token2">
+            <label for="poolToken2">Token 2:</label>
+            <select id="poolToken2">
                 <option value="ASC">ASC</option>
                 <option value="USDC">USDC</option>
                 <option value="ETH">ETH</option>
                 <option value="POL">POL</option>
                 <option value="LINK">LINK</option>
             </select>
-            <input type="number" id="amount2" placeholder="Amount of Token 2">
+            <input type="number" id="poolAmount2" placeholder="Amount of Token 2">
 
             <!-- Add Liquidity Button -->
-            <button id="addLiquidityButton" onclick="handleAddLiquidity()">Add Liquidity</button>
+            <button id="addLiquidityButton">Add Liquidity</button>
+        </div>
+
+        <div class="tab-content" id="settings-tab" style="display: none;">
+            <h3>Settings</h3>
+            <label for="slippageTolerance">Slippage Tolerance:</label>
+            <input id="slippageTolerance" type="number" min="0" max="100" step="0.1" placeholder="Enter slippage %">
+            <button id="saveSettingsButton" class="cta-button">Save Settings</button>
         </div>
     </div>
 </body>
