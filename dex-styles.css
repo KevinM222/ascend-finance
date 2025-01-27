@@ -6,7 +6,7 @@ body {
     background-size: cover;
     font-family: 'Arial', sans-serif;
     color: #ffffff;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
 }
 
 /* Navigation Bar */
@@ -15,7 +15,7 @@ nav {
     justify-content: space-around;
     align-items: center;
     padding: 1rem;
-    background: rgba(0, 0, 0, 0.8); /* Slightly darker background */
+    background: rgba(0, 0, 0, 0.8);
     position: fixed;
     top: 0;
     width: 100%;
@@ -47,16 +47,29 @@ nav ul li a:hover {
     color: #00ffcc;
 }
 
+/* Main DEX Container */
+.swap-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 900px;
+    margin: 8rem auto; /* Adjust to position lower */
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    position: relative; /* Needed for absolute positioning of buttons */
+}
+
 /* Wallet Buttons */
 .wallet-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    position: fixed;
+    position: absolute; /* Positioned inside the box */
     top: 1rem;
-    width: 100%;
-    padding: 0 2rem;
-    z-index: 11;
+    left: 1rem;
+    right: 1rem;
 }
 
 .wallet-container button {
@@ -89,21 +102,6 @@ nav ul li a:hover {
     transform: rotate(20deg);
 }
 
-/* Main DEX Container */
-.swap-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-width: 900px;
-    margin: 10rem auto 2rem; /* Adjusted to move the box slightly down */
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.95); /* Slightly less transparent */
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    color: #333333; /* Default text color for better visibility */
-}
-
 /* Tabs Styling */
 .tabs-container {
     display: flex;
@@ -124,7 +122,7 @@ nav ul li a:hover {
     font-size: 1.2rem;
     font-weight: bold;
     transition: transform 0.2s, background 0.2s;
-    border-radius: 8px 8px 0 0;
+    border-radius: 8px 8px 0 0; /* Rounded top corners */
     margin: 0 5px;
 }
 
@@ -147,7 +145,7 @@ nav ul li a:hover {
     padding: 2rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
-    display: none;
+    display: none; /* Initially hidden, shown on tab click */
 }
 
 .tab-content.active {
@@ -157,7 +155,7 @@ nav ul li a:hover {
 /* Labels and Input Fields */
 label {
     font-size: 1.1rem;
-    color: #00ffcc;
+    color: #0099ff;
     margin-bottom: 0.5rem;
     display: block;
 }
@@ -181,44 +179,9 @@ input:focus {
     outline: none;
 }
 
-/* Buttons */
-button.cta-button {
-    background: linear-gradient(90deg, #00ffcc, #0099ff);
-    color: #ffffff;
-    border: none;
-    padding: 1rem 2.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-button.cta-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8);
-}
-
-/* Reverse Button */
-.reverse-button {
-    margin: 1rem auto;
-    background: #00ffcc;
-    border: none;
-    color: #ffffff;
-    padding: 0.5rem 1rem;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.reverse-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
-}
-
 /* Add Liquidity Section */
 .add-liquidity-content {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.9); /* Styled to match the theme */
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
@@ -254,45 +217,6 @@ button.cta-button:hover {
 .add-liquidity-content button:hover {
     transform: scale(1.05);
     box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
-}
-
-/* Slippage Modal */
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 400px;
-    z-index: 1000;
-}
-
-.modal-content h3 {
-    font-size: 1.5rem;
-    color: #0099ff;
-    margin-bottom: 1rem;
-}
-
-.modal-content label,
-.modal-content input {
-    display: block;
-    width: 100%;
-    margin-bottom: 1rem;
-    font-size: 1rem;
-}
-
-.modal-content button {
-    width: 100%;
-    padding: 1rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    background: linear-gradient(90deg, #00ffcc, #0099ff);
-    color: #ffffff;
 }
 
 /* Media Queries */
