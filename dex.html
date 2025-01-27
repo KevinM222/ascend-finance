@@ -31,16 +31,18 @@
         <div class="wallet-container">
             <button id="connectWalletButton">Connect Wallet</button>
             <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+            <button class="settings-button" id="settingsButton">
+                <i class="fa fa-cog"></i>
+            </button>
         </div>
 
-        <!-- Tabs for Swap, Pools, and Settings -->
+        <!-- Tabs for Swap and Pools -->
         <div class="tabs-container">
-            <button class="tab-button active" data-target="swap-tab">Swap</button>
+            <button class="tab-button active" data-target="swap-tab">Swaps</button>
             <button class="tab-button" data-target="pools-tab">Pools</button>
-            <button class="tab-button" data-target="settings-tab">Settings</button>
         </div>
 
-        <!-- Tab Contents -->
+        <!-- Swap Tab -->
         <div class="tab-content" id="swap-tab">
             <h3>Swap Tokens</h3>
             <!-- From Token -->
@@ -75,6 +77,7 @@
             <button id="swapButton" class="cta-button">Confirm Swap</button>
         </div>
 
+        <!-- Pools Tab -->
         <div class="tab-content" id="pools-tab" style="display: none;">
             <h3>Add Liquidity</h3>
             <!-- Token 1 -->
@@ -102,12 +105,16 @@
             <!-- Add Liquidity Button -->
             <button id="addLiquidityButton">Add Liquidity</button>
         </div>
+    </div>
 
-        <div class="tab-content" id="settings-tab" style="display: none;">
-            <h3>Settings</h3>
+    <!-- Slippage Modal -->
+    <div id="slippageModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Slippage Settings</h3>
             <label for="slippageTolerance">Slippage Tolerance:</label>
             <input id="slippageTolerance" type="number" min="0" max="100" step="0.1" placeholder="Enter slippage %">
             <button id="saveSettingsButton" class="cta-button">Save Settings</button>
+            <button id="closeSettingsButton" class="cta-button secondary">Close</button>
         </div>
     </div>
 </body>
