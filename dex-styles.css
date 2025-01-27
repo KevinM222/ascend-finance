@@ -1,43 +1,75 @@
-/* General Box Styling for Swap and Pools */
-.swap-content,
-.add-liquidity-content {
-    flex: 1 1 48%;
-    margin: 1rem;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #f9f9f9, #ffffff); /* Light gradient for depth */
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    background: url('DEX_background.webp') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Arial', sans-serif;
+    color: #ffffff;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Navigation Bar */
+nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+}
+
+nav ul {
+    display: flex;
+    justify-content: space-around;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 80%;
+}
+
+nav ul li {
     text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s; /* Interaction effects */
 }
 
-.swap-content:hover,
-.add-liquidity-content:hover {
-    transform: scale(1.02); /* Slight enlarge on hover */
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25); /* Enhanced shadow */
+nav ul li a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.1rem;
+    transition: color 0.3s;
 }
 
-/* Swap and Pools Titles */
-.swap-content h3,
-.add-liquidity-content h3 {
-    font-size: 1.8rem;
-    color: #0099ff; /* Match theme color */
+nav ul li a:hover {
+    color: #00ffcc;
+}
+
+/* Main DEX Container */
+.swap-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 900px;
+    margin: 7rem auto; /* Adjust for fixed navigation bar */
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* Tabs Styling */
+.tabs-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    border-bottom: 2px solid #cccccc;
     margin-bottom: 1rem;
 }
 
-/* Swap Section */
-.swap-content {
-    background: linear-gradient(135deg, #e3f2fd, #ffffff); /* Subtle blue gradient */
-    border: 1px solid #00bcd4; /* Accent border */
-}
-
-/* Pools Section */
-.add-liquidity-content {
-    background: linear-gradient(135deg, #e8f5e9, #ffffff); /* Subtle green gradient */
-    border: 1px solid #00ffcc; /* Accent border */
-}
-
-/* Tabs Button */
 .tab-button {
     flex: 1;
     text-align: center;
@@ -46,9 +78,11 @@
     color: #ffffff;
     border: none;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: bold;
     transition: transform 0.2s, background 0.2s;
+    border-radius: 8px 8px 0 0; /* Rounded top corners */
+    margin: 0 5px; /* Add space between buttons */
 }
 
 .tab-button:hover {
@@ -62,19 +96,81 @@
     border-bottom: 4px solid #00ffcc;
 }
 
-/* Slippage Gear Button */
-.settings-button {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem; /* Size for the gear icon */
-    color: #00bcd4; /* Theme color */
-    cursor: pointer;
-    transition: transform 0.2s, color 0.2s;
+/* Swap and Pools Section */
+.tab-content {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.05); /* Subtle background */
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: none; /* Initially hidden, shown on tab click */
 }
 
-.settings-button:hover {
-    transform: rotate(20deg); /* Subtle rotation on hover */
-    color: #00ffcc; /* Match theme */
+.tab-content.active {
+    display: block;
+}
+
+/* Labels and Input Fields */
+label {
+    font-size: 1.1rem;
+    color: #00ffcc;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+select,
+input {
+    width: 80%;
+    max-width: 300px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #cccccc;
+    background: #f9f9f9;
+    color: #333333;
+    margin-bottom: 1rem;
+}
+
+select:focus,
+input:focus {
+    border-color: #00ffcc;
+    outline: none;
+}
+
+/* Buttons */
+button.cta-button {
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button.cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8);
+}
+
+/* Reverse Button */
+.reverse-button {
+    margin: 1rem auto;
+    background: #00ffcc;
+    border: none;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.reverse-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
 }
 
 /* Slippage Modal */
@@ -83,56 +179,35 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: linear-gradient(135deg, #f9f9f9, #ffffff); /* Match other sections */
+    background: rgba(255, 255, 255, 0.9);
     padding: 2rem;
     border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    width: 80%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    width: 90%;
     max-width: 400px;
     z-index: 1000;
 }
 
 .modal-content h3 {
     font-size: 1.5rem;
-    color: #0099ff; /* Match theme color */
+    color: #0099ff;
     margin-bottom: 1rem;
-    text-align: center;
 }
 
-.modal-content label {
-    font-size: 1rem;
-    color: #555555;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
+.modal-content label,
 .modal-content input {
+    display: block;
     width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
-    border: 1px solid #cccccc;
-    border-radius: 8px;
     margin-bottom: 1rem;
+    font-size: 1rem;
 }
 
-/* Buttons */
-.modal-content button.cta-button {
+.modal-content button {
     width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
+    padding: 1rem;
     border-radius: 8px;
-    background: linear-gradient(90deg, #00ffcc, #0099ff);
-    color: #ffffff;
     border: none;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.modal-content button.cta-button.secondary {
-    background: #ff6b6b;
-}
-
-.modal-content button.cta-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    color: #ffffff;
 }
