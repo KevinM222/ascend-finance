@@ -367,10 +367,21 @@ document.addEventListener("DOMContentLoaded", () => {
     //add event listener for connectwalletbutton
     document.addEventListener("DOMContentLoaded", () => {
         const connectWalletButton = document.getElementById("connectWalletButton");
-        const disconnectWalletButton = document.getElementById("disconnectWalletButton");
+        const settingsButton = document.getElementById("settingsButton");
     
-        connectWalletButton.addEventListener("click", connectWallet);
-        disconnectWalletButton.addEventListener("click", disconnectWallet);
+        if (connectWalletButton) {
+            console.log("Connect Wallet button found and event listener attached.");
+            connectWalletButton.addEventListener("click", connectWallet);
+        } else {
+            console.error("Connect Wallet button not found.");
+        }
+    
+        if (settingsButton) {
+            console.log("Settings button found and event listener attached.");
+            settingsButton.addEventListener("click", toggleSettingsModal);
+        } else {
+            console.error("Settings button not found.");
+        }
     });
     
 });
