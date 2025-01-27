@@ -62,16 +62,18 @@ nav ul li a:hover {
     position: relative; /* Needed for absolute positioning of buttons */
 }
 
-/* Wallet Buttons */
+/* Wallet Buttons - Inside the DEX Box */
 .wallet-container {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
-    position: absolute; /* Positioned inside the box */
+    justify-content: space-between; /* Space them evenly */
+    position: absolute; /* Position inside the DEX box */
     top: 1rem;
-    padding: 0 1rem;
+    left: 2%; /* Move closer together by adjusting left */
+    right: 2%; /* Move closer together by adjusting right */
+    width: 96%; /* Adjusted to ensure proper spacing inside the box */
 }
 
+/* Wallet Buttons General Styling */
 .wallet-container button {
     background: linear-gradient(90deg, #00ffcc, #0099ff);
     border: none;
@@ -88,6 +90,7 @@ nav ul li a:hover {
     box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
 }
 
+/* Settings Button (Gear Icon) */
 .settings-button {
     font-size: 1.5rem;
     background: transparent;
@@ -101,6 +104,7 @@ nav ul li a:hover {
     color: #00ffcc;
     transform: rotate(20deg);
 }
+
 
 /* Tabs Styling */
 .tabs-container {
