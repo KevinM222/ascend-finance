@@ -47,6 +47,48 @@ nav ul li a:hover {
     color: #00ffcc;
 }
 
+/* Wallet Buttons */
+.wallet-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 1rem;
+    width: 100%;
+    padding: 0 2rem;
+    z-index: 11;
+}
+
+.wallet-container button {
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    border: none;
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wallet-container button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+}
+
+.settings-button {
+    font-size: 1.5rem;
+    background: transparent;
+    color: #0099ff;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.settings-button:hover {
+    color: #00ffcc;
+    transform: rotate(20deg);
+}
+
 /* Main DEX Container */
 .swap-container {
     display: flex;
@@ -54,11 +96,12 @@ nav ul li a:hover {
     align-items: center;
     justify-content: center;
     max-width: 900px;
-    margin: 9rem auto 2rem; /* Adjusted to move the box slightly down */
+    margin: 10rem auto 2rem; /* Adjusted to move the box slightly down */
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.97); /* Slightly less transparent */
+    background: rgba(255, 255, 255, 0.95); /* Slightly less transparent */
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    color: #333333; /* Default text color for better visibility */
 }
 
 /* Tabs Styling */
@@ -175,10 +218,10 @@ button.cta-button:hover {
 
 /* Add Liquidity Section */
 .add-liquidity-content {
-    background: #ffffff; /* Fully white background */
+    background: #ffffff;
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Add slight shadow */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
 }
 
@@ -213,33 +256,61 @@ button.cta-button:hover {
     box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
 }
 
-/* Wallet Buttons */
-.wallet-container button {
-    background: linear-gradient(90deg, #00ffcc, #0099ff);
-    border: none;
-    color: #ffffff;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+/* Slippage Modal */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
 }
 
-.wallet-container button:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
-}
-
-.settings-button {
+.modal-content h3 {
     font-size: 1.5rem;
-    background: transparent;
     color: #0099ff;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s, color 0.2s;
+    margin-bottom: 1rem;
 }
 
-.settings-button:hover {
-    color: #00ffcc;
-    transform: rotate(20deg);
+.modal-content label,
+.modal-content input {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    color: #ffffff;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .tabs-container {
+        flex-direction: column;
+    }
+
+    .tab-button {
+        font-size: 1rem;
+    }
+
+    .swap-container {
+        flex-direction: column;
+    }
+
+    select,
+    input {
+        width: 100%;
+    }
 }
