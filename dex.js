@@ -346,4 +346,23 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("poolAmount1").addEventListener("input", () => estimateOutput("pool"));
     document.getElementById("poolToken1").addEventListener("change", () => updateBalance("pool"));
     document.getElementById("poolToken2").addEventListener("change", () => estimateOutput("pool"));
+
+    // Attach event listeners for slippage settings
+document.addEventListener("DOMContentLoaded", () => {
+    const settingsButton = document.getElementById("settingsButton");
+    const slippageModal = document.getElementById("slippageModal");
+    const closeSettingsButton = document.getElementById("closeSettingsButton");
+
+    settingsButton.addEventListener("click", () => {
+        slippageModal.style.display = "block";
+    });
+
+    closeSettingsButton.addEventListener("click", () => {
+        slippageModal.style.display = "none";
+    });
+
+    // Save slippage settings
+    document.getElementById("saveSettingsButton").addEventListener("click", saveSettings);
+});
+
 });

@@ -71,55 +71,137 @@ nav ul li a:hover {
     box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
 }
 
-/* Tabs Container */
+/* Tabs Styling */
 .tabs-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #cccccc;
 }
 
 .tab-button {
     flex: 1;
     text-align: center;
     padding: 1rem;
-    cursor: pointer;
-    font-size: 1.2rem;
-    background: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
     color: #ffffff;
     border: none;
-    outline: none;
-    transition: background 0.3s, color 0.3s;
-    border-radius: 8px 8px 0 0;
-}
-
-.tab-button.active {
-    background: #00ffcc;
-    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.1rem;
     font-weight: bold;
-    border-top: 3px solid #0099ff;
-    box-shadow: 0px -4px 10px rgba(0, 255, 255, 0.5);
+    transition: transform 0.2s, background 0.2s;
 }
 
 .tab-button:hover {
-    background: rgba(0, 255, 255, 0.2);
-    color: #00ffcc;
+    background: linear-gradient(90deg, #0099ff, #00ffcc);
+    transform: scale(1.05);
 }
 
-/* Tab Content */
-.tab-content {
-    display: none;
+.tab-button.active {
+    background: #ffffff;
+    color: #0099ff;
+    border-bottom: 4px solid #00ffcc;
+}
+
+/* Modal for Slippage Settings */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 0 0 16px 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 400px;
+    z-index: 1000;
 }
 
-.tab-content.active {
-    display: block;
+.modal-content h3 {
+    font-size: 1.5rem;
+    color: #0099ff;
+    margin-bottom: 1rem;
+    text-align: center;
 }
+
+.modal-content label {
+    font-size: 1rem;
+    color: #555555;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.modal-content button.cta-button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.modal-content button.cta-button.secondary {
+    background: #ff6b6b;
+}
+
+.modal-content button.cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+}
+
+/* Add Liquidity Section */
+.add-liquidity-content {
+    background: #f9f9f9;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.add-liquidity-content label {
+    font-size: 1rem;
+    color: #00ffcc;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.add-liquidity-content select,
+.add-liquidity-content input {
+    width: 80%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #cccccc;
+    margin-bottom: 1rem;
+}
+
+.add-liquidity-content button {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    color: #ffffff;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.add-liquidity-content button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+}
+
 
 /* Swap Container */
 .swap-container {
