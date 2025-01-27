@@ -77,35 +77,37 @@
             <button id="swapButton" class="cta-button">Confirm Swap</button>
         </div>
 
-        <!-- Pools Tab -->
+        <!<!-- Pools Tab -->
         <div class="tab-content" id="pools-tab" style="display: none;">
             <h3>Add Liquidity</h3>
-            <!-- Token 1 -->
-            <label for="poolToken1">Token 1:</label>
-            <select id="poolToken1">
-                <option value="ASC">ASC</option>
-                <option value="USDC">USDC</option>
-                <option value="ETH">ETH</option>
-                <option value="POL">POL</option>
-                <option value="LINK">LINK</option>
-            </select>
-            <input type="number" id="poolAmount1" placeholder="Amount of Token 1">
-
-            <!-- Token 2 -->
-            <label for="poolToken2">Token 2:</label>
-            <select id="poolToken2">
-                <option value="ASC">ASC</option>
-                <option value="USDC">USDC</option>
-                <option value="ETH">ETH</option>
-                <option value="POL">POL</option>
-                <option value="LINK">LINK</option>
-            </select>
-            <input type="number" id="poolAmount2" placeholder="Amount of Token 2">
-
-            <!-- Add Liquidity Button -->
-            <button id="addLiquidityButton">Add Liquidity</button>
+            <div class="add-liquidity-content">
+                <!-- Token 1 -->
+                <label for="poolToken1">Token 1:</label>
+                <select id="poolToken1">
+                    <option value="ASC">ASC</option>
+                    <option value="USDC">USDC</option>
+                    <option value="ETH">ETH</option>
+                    <option value="POL">POL</option>
+                    <option value="LINK">LINK</option>
+                </select>
+                <input type="number" id="poolAmount1" placeholder="Amount of Token 1">
+        
+                <!-- Token 2 -->
+                <label for="poolToken2">Token 2:</label>
+                <select id="poolToken2">
+                    <option value="ASC">ASC</option>
+                    <option value="USDC">USDC</option>
+                    <option value="ETH">ETH</option>
+                    <option value="POL">POL</option>
+                    <option value="LINK">LINK</option>
+                </select>
+                <input type="number" id="poolAmount2" placeholder="Amount of Token 2">
+        
+                <!-- Add Liquidity Button -->
+                <button id="addLiquidityButton" onclick="handleAddLiquidity()">Add Liquidity</button>
+            </div>
         </div>
-    </div>
+        
 
     <!-- Slippage Modal -->
     <div id="slippageModal" class="modal" style="display: none;">
