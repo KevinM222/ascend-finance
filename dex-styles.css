@@ -71,109 +71,54 @@ nav ul li a:hover {
     box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
 }
 
-/* Disconnect Wallet Button */
-.wallet-container #disconnectWalletButton {
-    background: linear-gradient(90deg, #ff6b6b, #a94cff);
-    color: #ffffff;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.wallet-container #disconnectWalletButton:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 0px 10px rgba(255, 107, 107, 0.8);
-}
-
-/* Gear Icon (Slippage Settings Button) */
-.settings-button {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    color: #ffffff;
-    cursor: pointer;
-    transition: transform 0.2s, color 0.2s;
-}
-
-.settings-button:hover {
-    transform: rotate(20deg);
-    color: #00ffcc;
-}
-
-/* Settings Modal */
-.settings-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 400px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #ffffff;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-    z-index: 20;
-}
-
-.settings-modal .modal-content {
+/* Tabs Container */
+.tabs-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
 }
 
-.settings-modal h3 {
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
+.tab-button {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    border: none;
+    outline: none;
+    transition: background 0.3s, color 0.3s;
+    border-radius: 8px 8px 0 0;
+}
+
+.tab-button.active {
+    background: #00ffcc;
+    color: #ffffff;
+    font-weight: bold;
+    border-top: 3px solid #0099ff;
+    box-shadow: 0px -4px 10px rgba(0, 255, 255, 0.5);
+}
+
+.tab-button:hover {
+    background: rgba(0, 255, 255, 0.2);
     color: #00ffcc;
 }
 
-.settings-modal label {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
+/* Tab Content */
+.tab-content {
+    display: none;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
     color: #ffffff;
 }
 
-.settings-modal input {
-    width: 80%;
-    padding: 0.8rem;
-    font-size: 1rem;
-    border: 1px solid #00ffcc;
-    border-radius: 8px;
-    background: #333333;
-    color: #ffffff;
-    margin-bottom: 1rem;
-}
-
-.settings-modal button {
-    background: linear-gradient(90deg, #00ffcc, #0099ff);
-    color: #ffffff;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin: 0.5rem 0;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.settings-modal button:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
-}
-
-/* Backdrop */
-.settings-modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 15;
+.tab-content.active {
+    display: block;
 }
 
 /* Swap Container */
@@ -227,16 +172,6 @@ input:focus {
     outline: none;
 }
 
-/* Balance Display */
-.balance-display {
-    font-size: 0.9rem;
-    color: #555;
-    text-align: left;
-    margin: -0.5rem auto 1rem;
-    width: 80%;
-    max-width: 300px;
-}
-
 /* Buttons */
 button.cta-button {
     background: linear-gradient(90deg, #00ffcc, #0099ff);
@@ -284,6 +219,14 @@ button.cta-button:hover {
 
 /* Media Queries */
 @media (max-width: 768px) {
+    .tabs-container {
+        flex-direction: column;
+    }
+
+    .tab-button {
+        font-size: 1rem;
+    }
+
     .swap-container {
         flex-direction: column;
     }
