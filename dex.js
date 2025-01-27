@@ -363,6 +363,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Save slippage settings
     document.getElementById("saveSettingsButton").addEventListener("click", saveSettings);
+
+    //add event listener for connectwalletbutton
+    document.addEventListener("DOMContentLoaded", () => {
+        const connectWalletButton = document.getElementById("connectWalletButton");
+        const disconnectWalletButton = document.getElementById("disconnectWalletButton");
+    
+        connectWalletButton.addEventListener("click", connectWallet);
+        disconnectWalletButton.addEventListener("click", disconnectWallet);
+    });
+    
 });
 
 });
