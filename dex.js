@@ -1,8 +1,7 @@
 // Load dependencies
-
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
-const dexAddress = "0xFe47e61f416ff96eCb783b471c7395aBefabb702"; // Assuming this is your contract address on Sepolia
+const dexAddress = "0xFe47e61f416ff96eCb783b471c7395aBefabb702";
 console.log("MetaMask Ethereum provider:", window.ethereum);
 
 let dexContract = null;
@@ -25,25 +24,17 @@ async function loadDexContract() {
 }
 
 // Load ABI dynamically
-let erc20ABI = null;
-
 async function loadABI(filePath) {
-    if (erc20ABI) return erc20ABI;
     try {
         const response = await fetch(filePath);
         const abi = await response.json();
         console.log(`Loaded ABI from ${filePath}:`, abi);
-        if (!Array.isArray(abi.abi)) {
-            throw new Error(`ABI at ${filePath} is not formatted as an array`);
-        }
-        erc20ABI = abi.abi; // Cache the ABI
-        return erc20ABI;
+        return abi.abi;
     } catch (error) {
         console.error(`Error loading ABI from ${filePath}:`, error);
         return null;
     }
 }
-
 
 // Wallet connection functionality
 async function connectWallet() {
@@ -53,12 +44,7 @@ async function connectWallet() {
             const accounts = await provider.listAccounts();
             const walletAddress = accounts[0];
 
-            // Verify network (Sepolia)
             const network = await provider.getNetwork();
-            if (network.chainId !== 11155111) { // Sepolia's chain ID
-                alert("Please switch to Sepolia Testnet to use this DApp.");
-                return;
-            }
             console.log(`Connected to network: ${network.name}, chainId: ${network.chainId}`);
 
             document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
@@ -66,7 +52,7 @@ async function connectWallet() {
             document.getElementById("connectWalletButton").disabled = true;
         } catch (error) {
             console.error("Failed to connect wallet:", error);
-            alert("Failed to connect wallet. Please check if MetaMask is installed and you're on the Sepolia network.");
+            alert("Failed to connect wallet.");
         }
     } else {
         alert("MetaMask is not installed. Please install it to use this DApp.");
@@ -85,7 +71,6 @@ async function loadTokenData() {
     try {
         const response = await fetch('./AscendDEX/deployments/sepolia.json');
         const data = await response.json();
-        console.log("Loaded token data:", data.ModularDEX.tokens);
         return data.ModularDEX.tokens;
     } catch (error) {
         console.error("Error loading token data:", error);
@@ -93,19 +78,14 @@ async function loadTokenData() {
     }
 }
 
-
-// Get token balance functionality
+// Get token balance
 async function getTokenBalance(token) {
     try {
         const tokens = await loadTokenData();
         const tokenData = tokens[token];
-        if (!tokenData || !tokenData.address) {
-            throw new Error(`Invalid token data for ${token}: ${JSON.stringify(tokenData)}`);
-        }
+        if (!tokenData) throw new Error(`Token address for ${token} not found`);
 
         const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
-        if (!erc20ABI) throw new Error("Failed to load ERC20 ABI");
-
         const tokenContract = new ethers.Contract(tokenData.address, erc20ABI, provider);
         const accounts = await provider.listAccounts();
         const balance = await tokenContract.balanceOf(accounts[0]);
@@ -117,148 +97,143 @@ async function getTokenBalance(token) {
     }
 }
 
-
 // Update balance display
 async function updateBalance(tabPrefix) {
     try {
         const token1 = document.getElementById(`${tabPrefix}Token1`).value;
-        const balanceDisplay = document.getElementById(`${tabPrefix}BalanceDisplay`);
-        
-        if (!balanceDisplay) {
-            console.warn(`Balance display element not found for prefix ${tabPrefix}`);
-            return;
-        }
-
         const balance = await getTokenBalance(token1);
-        balanceDisplay.textContent = `Available Balance: ${balance}`;
+        document.getElementById(`${tabPrefix}BalanceDisplay`).textContent = `Available Balance: ${balance}`;
     } catch (error) {
         console.error("Error updating balance:", error);
     }
 }
 
+// Reverse tokens in Swap or Pool tabs
+function reverseTokens(tabPrefix) {
+    const token1 = document.getElementById(`${tabPrefix}Token1`);
+    const token2 = document.getElementById(`${tabPrefix}Token2`);
+    const tempValue = token1.value;
+    token1.value = token2.value;
+    token2.value = tempValue;
 
-// Initialize page with default tokens
-async function initializePage() {
-    const tokens = await loadTokenData();
-    if(tokens) {
-        document.getElementById("swapToken1").value = "POL"; // Default input token
-        document.getElementById("swapToken2").value = "ASC"; // Default output token
-        document.getElementById("poolToken1").value = "POL";
-        document.getElementById("poolToken2").value = "ASC";
-        
-        updateBalance("swap", "POL"); // Update POL balance for swap
-        updateBalance("swap", "ASC"); // Update ASC balance for swap
-        updateBalance("pool", "POL"); // Update POL balance for pool
-        updateBalance("pool", "ASC"); // Update ASC balance for pool
-    }
+    updateBalance(tabPrefix);
+    estimateOutput(tabPrefix);
 }
 
-// Tab switching functionality
-document.addEventListener("DOMContentLoaded", () => {
-    const tabs = document.querySelectorAll(".tab-button");
-    const contents = document.querySelectorAll(".tab-content");
+// Estimate token output for swaps or pools
+async function estimateOutput(tabPrefix) {
+    try {
+        const token1 = document.getElementById(`${tabPrefix}Token1`).value;
+        const token2 = document.getElementById(`${tabPrefix}Token2`).value;
+        const amount1 = document.getElementById(`${tabPrefix}Amount1`).value;
 
-    tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-            const target = tab.dataset.target;
-
-            contents.forEach((content) => {
-                content.style.display = content.id === target ? "block" : "none";
-            });
-        });
-    });
-
-    async function swapTokens() {
-        try {
-            const token1 = document.getElementById("swapToken1").value;
-            const token2 = document.getElementById("swapToken2").value;
-            const amount1 = document.getElementById("swapAmount1").value;
-    
-            if (!token1 || !token2 || !amount1) {
-                alert("Please select tokens and enter a valid amount.");
-                return;
-            }
-    
-            if (token1 === token2) {
-                alert("You cannot swap the same tokens. Please select different tokens.");
-                return;
-            }
-    
-            const dex = await loadDexContract();
-            const tokens = await loadTokenData();
-    
-            const token1Data = tokens[token1];
-            const token2Data = tokens[token2];
-            if (!token1Data || !token2Data) {
-                alert("Invalid token data.");
-                return;
-            }
-    
-            const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
-    
-            // Estimate output amount
-            const estimatedAmountOut = await dex.estimateOutput(parsedAmountIn, token1Data.address, token2Data.address);
-    
-            // Calculate minimum amount out with slippage
-            const slippageAdjustedAmountOut = estimatedAmountOut.sub(
-                estimatedAmountOut.mul(Math.round(slippage * 100)).div(10000)
-            );
-    
-            console.log(`Estimated Output: ${ethers.utils.formatUnits(estimatedAmountOut, token2Data.decimals)}`);
-            console.log(`Minimum Output (with ${slippage}% slippage): ${ethers.utils.formatUnits(slippageAdjustedAmountOut, token2Data.decimals)}`);
-    
-            // Approve token1 for the DEX
-            const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
-            const token1Contract = new ethers.Contract(token1Data.address, erc20ABI, signer);
-    
-            console.log("Approving token1...");
-            const approveTx = await token1Contract.approve(dexAddress, parsedAmountIn);
-            await approveTx.wait();
-    
-            console.log("Approval successful!");
-    
-            // Execute the swap
-            console.log("Executing swap...");
-            const tx = await dex.swap(
-                token1,
-                token2,
-                parsedAmountIn,
-                slippageAdjustedAmountOut
-            );
-            await tx.wait();
-    
-            alert("Swap successful!");
-        } catch (error) {
-            console.error("Error during swap:", error);
-            alert("Swap failed. Check the console for details.");
+        if (!amount1 || parseFloat(amount1) <= 0) {
+            document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = "Estimated Output: --";
+            return;
         }
-    }
 
-    // Save settings
+        const dex = await loadDexContract();
+        const tokens = await loadTokenData();
+        const token1Data = tokens[token1];
+        const token2Data = tokens[token2];
+
+        const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
+        const amountOut = await dex.estimateOutput(parsedAmountIn, token1Data.address, token2Data.address);
+
+        const formattedAmountOut = ethers.utils.formatUnits(amountOut, token2Data.decimals);
+        document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = `Estimated Output: ${formattedAmountOut} ${token2.toUpperCase()}`;
+    } catch (error) {
+        console.error("Error estimating output:", error);
+        document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = "Estimated Output: --";
+    }
+}
+
+// Add liquidity functionality
+async function handleAddLiquidity() {
+    try {
+        const token1 = document.getElementById("poolToken1").value;
+        const token2 = document.getElementById("poolToken2").value;
+        const amount1 = document.getElementById("poolAmount1").value;
+        const amount2 = document.getElementById("poolAmount2").value;
+
+        if (!token1 || !token2 || token1 === token2 || !amount1 || !amount2) {
+            alert("Invalid input. Ensure all fields are filled and tokens are different.");
+            return;
+        }
+
+        const tokens = await loadTokenData();
+        const token1Data = tokens[token1];
+        const token2Data = tokens[token2];
+
+        const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
+        const token1Contract = new ethers.Contract(token1Data.address, erc20ABI, signer);
+        const token2Contract = new ethers.Contract(token2Data.address, erc20ABI, signer);
+
+        await token1Contract.approve(dexAddress, ethers.utils.parseUnits(amount1, token1Data.decimals));
+        await token2Contract.approve(dexAddress, ethers.utils.parseUnits(amount2, token2Data.decimals));
+
+        const dex = await loadDexContract();
+        await dex.addLiquidity(token1, token2, ethers.utils.parseUnits(amount1, token1Data.decimals), ethers.utils.parseUnits(amount2, token2Data.decimals));
+
+        alert("Liquidity added successfully!");
+    } catch (error) {
+        console.error("Error adding liquidity:", error);
+        alert("Failed to add liquidity. Check console for details.");
+    }
+}
+
+// Slippage and swap functionality
+let slippage = 1;
+
+function toggleSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    modal.style.display = modal.style.display === "none" ? "block" : "none";
+}
+
 function saveSettings() {
-    const newSlippage = document.getElementById("globalSlippage").value;
-    if (!newSlippage || parseFloat(newSlippage) <= 0) {
-        alert("Please enter a valid slippage tolerance.");
-        return;
+    const slippageInput = document.getElementById("globalSlippage").value;
+    if (slippageInput && parseFloat(slippageInput) > 0) {
+        slippage = parseFloat(slippageInput);
+        alert("Settings saved!");
+    } else {
+        alert("Invalid slippage value.");
     }
-    slippage = parseFloat(newSlippage);
-    localStorage.setItem("slippage", slippage);
-    alert("Settings saved!");
-    toggleSettingsModal();
 }
 
-// Retrieve slippage
-function getSlippage() {
-    return parseFloat(localStorage.getItem("slippage") || "1"); // Default to 1% if not set
+// Swap tokens
+async function swapTokens() {
+    try {
+        const token1 = document.getElementById("swapToken1").value;
+        const token2 = document.getElementById("swapToken2").value;
+        const amount1 = document.getElementById("swapAmount1").value;
+
+        if (!token1 || !token2 || token1 === token2 || !amount1) {
+            alert("Invalid input. Ensure all fields are filled and tokens are different.");
+            return;
+        }
+
+        const tokens = await loadTokenData();
+        const token1Data = tokens[token1];
+        const token2Data = tokens[token2];
+
+        const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
+        const minAmountOut = parsedAmountIn.mul(100 - slippage).div(100);
+
+        const dex = await loadDexContract();
+        await dex.swap(token1, token2, parsedAmountIn, minAmountOut, slippage);
+
+        alert("Swap completed successfully!");
+    } catch (error) {
+        console.error("Error swapping tokens:", error);
+        alert("Failed to complete swap. Check console for details.");
+    }
 }
 
-
-    
-    // Event listeners
-    document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
-    document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
+// Tab switching and initialization
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("swap-tab").style.display = "block";
     document.getElementById("settingsButton").addEventListener("click", toggleSettingsModal);
     document.getElementById("saveSettingsButton").addEventListener("click", saveSettings);
-
-    initializePage(); // Call this function when the page loads
+    document.getElementById("swapButton").addEventListener("click", swapTokens);
+    document.getElementById("addLiquidityButton").addEventListener("click", handleAddLiquidity);
 });

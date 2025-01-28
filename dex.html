@@ -36,10 +36,11 @@
             </button>
         </div>
 
-        <!-- Tabs for Swap and Pools -->
+        <!-- Tabs for Swap, Pools, and Token Management -->
         <div class="tabs-container">
             <button class="tab-button active" data-target="swap-tab">Swaps</button>
             <button class="tab-button" data-target="pools-tab">Pools</button>
+            <button class="tab-button" data-target="manage-tokens-tab">Manage Tokens</button>
         </div>
 
         <!-- Swap Tab -->
@@ -47,13 +48,7 @@
             <h3>Swap Tokens</h3>
             <!-- From Token -->
             <label for="swapToken1">From:</label>
-            <select id="swapToken1">
-                <option value="ASC">ASC</option>
-                <option value="USDC">USDC</option>
-                <option value="ETH">ETH</option>
-                <option value="POL" selected>POL</option>
-                <option value="LINK">LINK</option>
-            </select>
+            <select id="swapToken1"></select>
             <input type="number" id="swapAmount1" placeholder="Amount to swap">
             <p id="swapBalanceDisplay" class="balance-display">Available Balance: --</p>
 
@@ -62,13 +57,7 @@
 
             <!-- To Token -->
             <label for="swapToken2">To:</label>
-            <select id="swapToken2">
-                <option value="ASC" selected>ASC</option>
-                <option value="USDC">USDC</option>
-                <option value="ETH">ETH</option>
-                <option value="POL">POL</option>
-                <option value="LINK">LINK</option>
-            </select>
+            <select id="swapToken2"></select>
 
             <!-- Estimated Output -->
             <p id="swapEstimatedOutput" class="estimated-output">Estimated Output: --</p>
@@ -77,38 +66,58 @@
             <button id="swapButton" class="cta-button">Confirm Swap</button>
         </div>
 
-        <!<!-- Pools Tab -->
+        <!-- Pools Tab -->
         <div class="tab-content" id="pools-tab" style="display: none;">
             <h3>Add Liquidity</h3>
             <div class="add-liquidity-content">
                 <!-- Token 1 -->
                 <label for="poolToken1">Token 1:</label>
-                <select id="poolToken1">
-                    <option value="ASC">ASC</option>
-                    <option value="USDC">USDC</option>
-                    <option value="ETH">ETH</option>
-                    <option value="POL" selected>POL</option>
-                    <option value="LINK">LINK</option>
-                </select>
+                <select id="poolToken1"></select>
                 <input type="number" id="poolAmount1" placeholder="Amount of Token 1">
         
                 <!-- Token 2 -->
                 <label for="poolToken2">Token 2:</label>
-                <select id="poolToken2">
-                    <option value="ASC" selected>ASC</option>
-                    <option value="USDC">USDC</option>
-                    <option value="ETH">ETH</option>
-                    <option value="POL">POL</option>
-                    <option value="LINK">LINK</option>
-                </select>
+                <select id="poolToken2"></select>
                 <input type="number" id="poolAmount2" placeholder="Amount of Token 2">
         
                 <!-- Add Liquidity Button -->
-                <button id="addLiquidityButton" onclick="handleAddLiquidity()">Add Liquidity</button>
+                <button id="addLiquidityButton" class="cta-button">Add Liquidity</button>
+
+                <!-- Remove Liquidity -->
+                <h3>Remove Liquidity</h3>
+                <label for="removeToken1">Token 1:</label>
+                <select id="removeToken1"></select>
+                <label for="removeToken2">Token 2:</label>
+                <select id="removeToken2"></select>
+                <input type="number" id="removeLiquidityAmount" placeholder="Amount to remove">
+                <button id="removeLiquidityButton" class="cta-button secondary">Remove Liquidity</button>
             </div>
         </div>
-        
 
+        <!-- Manage Tokens Tab -->
+        <div class="tab-content" id="manage-tokens-tab" style="display: none;">
+            <h3>Manage Tokens</h3>
+
+            <!-- Add Token -->
+            <h4>Add Token</h4>
+            <label for="tokenSymbol">Token Symbol:</label>
+            <input id="tokenSymbol" type="text" placeholder="e.g., USDT">
+            <label for="tokenAddress">Token Address:</label>
+            <input id="tokenAddress" type="text" placeholder="Contract address">
+            <label for="priceFeed">Price Feed:</label>
+            <input id="priceFeed" type="text" placeholder="Chainlink price feed address">
+            <label for="tokenDecimals">Token Decimals:</label>
+            <input id="tokenDecimals" type="number" placeholder="Decimals">
+            <button id="addTokenButton" class="cta-button">Add Token</button>
+
+            <!-- Remove Token -->
+            <h4>Remove Token</h4>
+            <label for="removeTokenSymbol">Token Symbol:</label>
+            <input id="removeTokenSymbol" type="text" placeholder="e.g., USDT">
+            <button id="removeTokenButton" class="cta-button secondary">Remove Token</button>
+        </div>
+
+        <!-- Slippage Modal -->
         <div id="settingsModal" class="modal" style="display: none;">
             <div class="modal-content">
                 <h3>Slippage Settings</h3>
@@ -118,6 +127,6 @@
                 <button id="closeSettingsButton" class="cta-button secondary">Close</button>
             </div>
         </div>
-        
+    </div>
 </body>
 </html>
