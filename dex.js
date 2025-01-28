@@ -1,5 +1,5 @@
 // Load dependencies
-const { ethers } = require("ethers");
+
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
 const dexAddress = "0xFe47e61f416ff96eCb783b471c7395aBefabb702"; // Assuming this is your contract address on Sepolia
