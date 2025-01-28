@@ -604,6 +604,11 @@
           "internalType": "uint256",
           "name": "minAmountOut",
           "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "slippageTolerance",
+          "type": "uint256"
         }
       ],
       "name": "swap",
