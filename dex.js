@@ -36,16 +36,24 @@ async function loadABI(filePath) {
     }
 }
 
-if (window.ethereum) {
-    const web3 = new Web3(window.ethereum);
-    try {
-        await window.ethereum.enable(); // Request access to MetaMask
-        // Now you can interact with MetaMask
-    } catch (error) {
-        console.error('User denied account access');
+async function connectWallet() {
+    if (window.ethereum) {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const accounts = await provider.listAccounts();
+            const walletAddress = accounts[0];
+
+            // Display wallet address
+            document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+        } catch (error) {
+            console.error("Failed to connect wallet:", error);
+            alert("Failed to connect wallet.");
+        }
+    } else {
+        alert("MetaMask is not installed. Please install it to use this DApp.");
     }
-} else {
-    console.log('MetaMask is not installed');
 }
 
 
