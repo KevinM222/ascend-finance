@@ -36,6 +36,19 @@ async function loadABI(filePath) {
     }
 }
 
+if (window.ethereum) {
+    const web3 = new Web3(window.ethereum);
+    try {
+        await window.ethereum.enable(); // Request access to MetaMask
+        // Now you can interact with MetaMask
+    } catch (error) {
+        console.error('User denied account access');
+    }
+} else {
+    console.log('MetaMask is not installed');
+}
+
+
 // Wallet connection functionality
 async function connectWallet() {
     if (window.ethereum) {

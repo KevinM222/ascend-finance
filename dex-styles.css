@@ -286,3 +286,20 @@ button.cta-button:hover {
     position: relative;
     width: 100%;
 }
+@media only screen and (max-width: 768px) {
+    /* Remove background and toolbar on mobile */
+    body {
+        background: none;
+    }
+
+    nav {
+        display: none; /* Hides the toolbar */
+    }
+
+    .swap-container {
+        margin: 2rem auto; /* Adjust the margin for better fit */
+        padding: 1rem; /* Adjust padding for mobile view */
+        max-width: 100%; /* Make sure it fills the screen */
+        box-shadow: none; /* Optional: Remove shadow for cleaner look */
+    }
+}
