@@ -51,7 +51,7 @@
                 <option value="ASC">ASC</option>
                 <option value="USDC">USDC</option>
                 <option value="ETH">ETH</option>
-                <option value="POL">POL</option>
+                <option value="POL" selected>POL</option>
                 <option value="LINK">LINK</option>
             </select>
             <input type="number" id="swapAmount1" placeholder="Amount to swap">
@@ -63,7 +63,7 @@
             <!-- To Token -->
             <label for="swapToken2">To:</label>
             <select id="swapToken2">
-                <option value="ASC">ASC</option>
+                <option value="ASC" selected>ASC</option>
                 <option value="USDC">USDC</option>
                 <option value="ETH">ETH</option>
                 <option value="POL">POL</option>
@@ -87,7 +87,7 @@
                     <option value="ASC">ASC</option>
                     <option value="USDC">USDC</option>
                     <option value="ETH">ETH</option>
-                    <option value="POL">POL</option>
+                    <option value="POL" selected>POL</option>
                     <option value="LINK">LINK</option>
                 </select>
                 <input type="number" id="poolAmount1" placeholder="Amount of Token 1">
@@ -95,7 +95,7 @@
                 <!-- Token 2 -->
                 <label for="poolToken2">Token 2:</label>
                 <select id="poolToken2">
-                    <option value="ASC">ASC</option>
+                    <option value="ASC" selected>ASC</option>
                     <option value="USDC">USDC</option>
                     <option value="ETH">ETH</option>
                     <option value="POL">POL</option>
@@ -109,15 +109,15 @@
         </div>
         
 
-    <!-- Slippage Modal -->
-    <div id="slippageModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3>Slippage Settings</h3>
-            <label for="slippageTolerance">Slippage Tolerance:</label>
-            <input id="slippageTolerance" type="number" min="0" max="100" step="0.1" placeholder="Enter slippage %">
-            <button id="saveSettingsButton" class="cta-button">Save Settings</button>
-            <button id="closeSettingsButton" class="cta-button secondary">Close</button>
+        <div id="settingsModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Slippage Settings</h3>
+                <label for="globalSlippage">Slippage Tolerance (%):</label>
+                <input id="globalSlippage" type="number" min="0" step="0.1" placeholder="Enter slippage tolerance">
+                <button id="saveSettingsButton" class="cta-button">Save Settings</button>
+                <button id="closeSettingsButton" class="cta-button secondary">Close</button>
+            </div>
         </div>
-    </div>
+        
 </body>
 </html>

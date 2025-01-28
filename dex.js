@@ -25,7 +25,10 @@ async function loadDexContract() {
 }
 
 // Load ABI dynamically
+let erc20ABI = null;
+
 async function loadABI(filePath) {
+    if (erc20ABI) return erc20ABI;
     try {
         const response = await fetch(filePath);
         const abi = await response.json();
@@ -33,12 +36,14 @@ async function loadABI(filePath) {
         if (!Array.isArray(abi.abi)) {
             throw new Error(`ABI at ${filePath} is not formatted as an array`);
         }
-        return abi.abi;
+        erc20ABI = abi.abi; // Cache the ABI
+        return erc20ABI;
     } catch (error) {
         console.error(`Error loading ABI from ${filePath}:`, error);
         return null;
     }
 }
+
 
 // Wallet connection functionality
 async function connectWallet() {
@@ -80,6 +85,7 @@ async function loadTokenData() {
     try {
         const response = await fetch('./AscendDEX/deployments/sepolia.json');
         const data = await response.json();
+        console.log("Loaded token data:", data.ModularDEX.tokens);
         return data.ModularDEX.tokens;
     } catch (error) {
         console.error("Error loading token data:", error);
@@ -87,12 +93,15 @@ async function loadTokenData() {
     }
 }
 
+
 // Get token balance functionality
 async function getTokenBalance(token) {
     try {
         const tokens = await loadTokenData();
         const tokenData = tokens[token];
-        if (!tokenData) throw new Error(`Token address for ${token} not found`);
+        if (!tokenData || !tokenData.address) {
+            throw new Error(`Invalid token data for ${token}: ${JSON.stringify(tokenData)}`);
+        }
 
         const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
         if (!erc20ABI) throw new Error("Failed to load ERC20 ABI");
@@ -108,15 +117,25 @@ async function getTokenBalance(token) {
     }
 }
 
+
 // Update balance display
-async function updateBalance(tabPrefix, token) {
+async function updateBalance(tabPrefix) {
     try {
-        const balance = await getTokenBalance(token);
-        document.getElementById(`${tabPrefix}BalanceDisplay`).textContent = `Available Balance: ${balance}`;
+        const token1 = document.getElementById(`${tabPrefix}Token1`).value;
+        const balanceDisplay = document.getElementById(`${tabPrefix}BalanceDisplay`);
+        
+        if (!balanceDisplay) {
+            console.warn(`Balance display element not found for prefix ${tabPrefix}`);
+            return;
+        }
+
+        const balance = await getTokenBalance(token1);
+        balanceDisplay.textContent = `Available Balance: ${balance}`;
     } catch (error) {
         console.error("Error updating balance:", error);
     }
 }
+
 
 // Initialize page with default tokens
 async function initializePage() {
@@ -149,29 +168,92 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Default tab: Swap
-    document.getElementById("swap-tab").style.display = "block";
-
-    // Slippage settings
-    let slippage = 1; // Default slippage 1%
-
-    function toggleSettingsModal() {
-        const modal = document.getElementById("settingsModal");
-        modal.style.display = modal.style.display === "none" ? "block" : "none";
-    }
-
-    function saveSettings() {
-        const newSlippage = document.getElementById("globalSlippage").value;
-        if (!newSlippage || parseFloat(newSlippage) <= 0) {
-            alert("Please enter a valid slippage tolerance.");
-            return;
+    async function swapTokens() {
+        try {
+            const token1 = document.getElementById("swapToken1").value;
+            const token2 = document.getElementById("swapToken2").value;
+            const amount1 = document.getElementById("swapAmount1").value;
+    
+            if (!token1 || !token2 || !amount1) {
+                alert("Please select tokens and enter a valid amount.");
+                return;
+            }
+    
+            if (token1 === token2) {
+                alert("You cannot swap the same tokens. Please select different tokens.");
+                return;
+            }
+    
+            const dex = await loadDexContract();
+            const tokens = await loadTokenData();
+    
+            const token1Data = tokens[token1];
+            const token2Data = tokens[token2];
+            if (!token1Data || !token2Data) {
+                alert("Invalid token data.");
+                return;
+            }
+    
+            const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
+    
+            // Estimate output amount
+            const estimatedAmountOut = await dex.estimateOutput(parsedAmountIn, token1Data.address, token2Data.address);
+    
+            // Calculate minimum amount out with slippage
+            const slippageAdjustedAmountOut = estimatedAmountOut.sub(
+                estimatedAmountOut.mul(Math.round(slippage * 100)).div(10000)
+            );
+    
+            console.log(`Estimated Output: ${ethers.utils.formatUnits(estimatedAmountOut, token2Data.decimals)}`);
+            console.log(`Minimum Output (with ${slippage}% slippage): ${ethers.utils.formatUnits(slippageAdjustedAmountOut, token2Data.decimals)}`);
+    
+            // Approve token1 for the DEX
+            const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
+            const token1Contract = new ethers.Contract(token1Data.address, erc20ABI, signer);
+    
+            console.log("Approving token1...");
+            const approveTx = await token1Contract.approve(dexAddress, parsedAmountIn);
+            await approveTx.wait();
+    
+            console.log("Approval successful!");
+    
+            // Execute the swap
+            console.log("Executing swap...");
+            const tx = await dex.swap(
+                token1,
+                token2,
+                parsedAmountIn,
+                slippageAdjustedAmountOut
+            );
+            await tx.wait();
+    
+            alert("Swap successful!");
+        } catch (error) {
+            console.error("Error during swap:", error);
+            alert("Swap failed. Check the console for details.");
         }
-        slippage = parseFloat(newSlippage);
-        localStorage.setItem("slippage", slippage);
-        alert("Settings saved!");
-        toggleSettingsModal();
     }
 
+    // Save settings
+function saveSettings() {
+    const newSlippage = document.getElementById("globalSlippage").value;
+    if (!newSlippage || parseFloat(newSlippage) <= 0) {
+        alert("Please enter a valid slippage tolerance.");
+        return;
+    }
+    slippage = parseFloat(newSlippage);
+    localStorage.setItem("slippage", slippage);
+    alert("Settings saved!");
+    toggleSettingsModal();
+}
+
+// Retrieve slippage
+function getSlippage() {
+    return parseFloat(localStorage.getItem("slippage") || "1"); // Default to 1% if not set
+}
+
+
+    
     // Event listeners
     document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
     document.getElementById("disconnectWalletButton").addEventListener("click", disconnectWallet);
