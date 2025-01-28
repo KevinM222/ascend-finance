@@ -36,29 +36,57 @@ async function loadABI(filePath) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Connect Wallet Button click event
+    document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
+    // Disconnect Wallet Button click event
+    document.getElementById('disconnectWalletButton').addEventListener('click', disconnectWallet);
+});
+
+// Connect Wallet function
 async function connectWallet() {
     if (window.ethereum) {
         try {
+            // Check the current network (ensure it's Sepolia)
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+
+            if (chainId !== '0xaa36a7') {
+                // Prompt the user to switch to Sepolia network
+                alert("Please switch to the Sepolia test network in MetaMask.");
+                return;
+            }
+
+            // Request account access from MetaMask
             await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+            // Create an Ethereum provider
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
-            const accounts = await provider.listAccounts();
-            const walletAddress = accounts[0];
 
-            const network = await provider.getNetwork();
-            console.log(`Connected to network: ${network.name}, chainId: ${network.chainId}`);
+            // Get the wallet address
+            const walletAddress = await signer.getAddress();
 
+            // Update UI: Disable Connect button, Show Wallet Address, Show Disconnect Button
             document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-            document.getElementById("disconnectWalletButton").style.display = "inline-block";
             document.getElementById("connectWalletButton").disabled = true;
+            document.getElementById("disconnectWalletButton").style.display = "inline-block";
         } catch (error) {
-            console.error("Failed to connect wallet:", error);
-            alert("Failed to connect wallet.");
+            console.error("Error connecting to wallet:", error);
+            alert("Failed to connect wallet. Please try again.");
         }
     } else {
-        alert("MetaMask is not installed. Please install it to use this DApp.");
+        alert("MetaMask is not installed. Please install it to connect your wallet.");
     }
 }
+
+// Disconnect Wallet function
+function disconnectWallet() {
+    // Logic to disconnect wallet (UI reset here)
+    document.getElementById("connectWalletButton").textContent = "Connect Wallet";
+    document.getElementById("disconnectWalletButton").style.display = "none";
+    document.getElementById("connectWalletButton").disabled = false;
+}
+
 
 
 
