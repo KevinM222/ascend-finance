@@ -45,26 +45,6 @@ async function connectWallet() {
             const accounts = await provider.listAccounts();
             const walletAddress = accounts[0];
 
-            // Display wallet address
-            document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-        } catch (error) {
-            console.error("Failed to connect wallet:", error);
-            alert("Failed to connect wallet.");
-        }
-    } else {
-        alert("MetaMask is not installed. Please install it to use this DApp.");
-    }
-}
-
-
-// Wallet connection functionality
-async function connectWallet() {
-    if (window.ethereum) {
-        try {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const accounts = await provider.listAccounts();
-            const walletAddress = accounts[0];
-
             const network = await provider.getNetwork();
             console.log(`Connected to network: ${network.name}, chainId: ${network.chainId}`);
 
@@ -80,12 +60,7 @@ async function connectWallet() {
     }
 }
 
-// Disconnect wallet functionality
-function disconnectWallet() {
-    document.getElementById("connectWalletButton").textContent = "Connect Wallet";
-    document.getElementById("disconnectWalletButton").style.display = "none";
-    document.getElementById("connectWalletButton").disabled = false;
-}
+
 
 // Load token data from sepolia.json
 async function loadTokenData() {
@@ -302,30 +277,32 @@ async function populateTokenDropdowns() {
         const poolToken2 = document.getElementById("poolToken2");
 
         // Clear existing options
-        [swapToken1, swapToken2, poolToken1, poolToken2].forEach(dropdown => {
-            dropdown.innerHTML = "";
+        [swapToken1, swapToken2, poolToken1, poolToken2].forEach(dropdown => dropdown.innerHTML = "");
+
+        // Populate the dropdowns
+        Object.keys(tokens).forEach(token => {
+            const option1 = document.createElement("option");
+            option1.value = token;
+            option1.textContent = token;
+            swapToken1.appendChild(option1);
+
+            const option2 = document.createElement("option");
+            option2.value = token;
+            option2.textContent = token;
+            swapToken2.appendChild(option2);
+
+            const option3 = document.createElement("option");
+            option3.value = token;
+            option3.textContent = token;
+            poolToken1.appendChild(option3);
+
+            const option4 = document.createElement("option");
+            option4.value = token;
+            option4.textContent = token;
+            poolToken2.appendChild(option4);
         });
-
-        for (const tokenSymbol in tokens) {
-            const option = document.createElement("option");
-            option.value = tokenSymbol;
-            option.textContent = tokenSymbol;
-
-            // Append to all relevant drop-downs
-            swapToken1.appendChild(option.cloneNode(true));
-            swapToken2.appendChild(option.cloneNode(true));
-            poolToken1.appendChild(option.cloneNode(true));
-            poolToken2.appendChild(option.cloneNode(true));
-        }
-
-        // Set default values (e.g., POL/ASC)
-        swapToken1.value = "POL";
-        swapToken2.value = "ASC";
-        poolToken1.value = "POL";
-        poolToken2.value = "ASC";
-
     } catch (error) {
-        console.error("Error populating token drop-downs:", error);
+        console.error("Error populating token dropdowns:", error);
     }
 }
 
