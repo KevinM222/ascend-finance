@@ -270,6 +270,48 @@ document.addEventListener("DOMContentLoaded", () => {
         settingsModal.style.display = "none";
     });
 });
+// Dynamically populate token drop-downs
+async function populateTokenDropdowns() {
+    try {
+        const tokens = await loadTokenData();
+
+        const swapToken1 = document.getElementById("swapToken1");
+        const swapToken2 = document.getElementById("swapToken2");
+        const poolToken1 = document.getElementById("poolToken1");
+        const poolToken2 = document.getElementById("poolToken2");
+
+        // Clear existing options
+        [swapToken1, swapToken2, poolToken1, poolToken2].forEach(dropdown => {
+            dropdown.innerHTML = "";
+        });
+
+        for (const tokenSymbol in tokens) {
+            const option = document.createElement("option");
+            option.value = tokenSymbol;
+            option.textContent = tokenSymbol;
+
+            // Append to all relevant drop-downs
+            swapToken1.appendChild(option.cloneNode(true));
+            swapToken2.appendChild(option.cloneNode(true));
+            poolToken1.appendChild(option.cloneNode(true));
+            poolToken2.appendChild(option.cloneNode(true));
+        }
+
+        // Set default values (e.g., POL/ASC)
+        swapToken1.value = "POL";
+        swapToken2.value = "ASC";
+        poolToken1.value = "POL";
+        poolToken2.value = "ASC";
+
+    } catch (error) {
+        console.error("Error populating token drop-downs:", error);
+    }
+}
+
+// Call this function when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+    populateTokenDropdowns();
+});
 
 
 
