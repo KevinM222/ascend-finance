@@ -200,6 +200,17 @@ function saveSettings() {
     }
 }
 
+function updateSlippageValue(value) {
+    document.getElementById("slippageValueDisplay").textContent = `Current Slippage: ${value}%`;
+}
+
+document.getElementById("saveSettingsButton").addEventListener("click", () => {
+    const slippage = parseFloat(document.getElementById("slippageRange").value);
+    localStorage.setItem("slippage", slippage);
+    alert(`Slippage tolerance set to ${slippage}%`);
+    document.getElementById("settingsModal").style.display = "none";
+});
+
 // Swap tokens
 async function swapTokens() {
     try {
@@ -227,7 +238,41 @@ async function swapTokens() {
         console.error("Error swapping tokens:", error);
         alert("Failed to complete swap. Check console for details.");
     }
-}
+}// Tab switching functionality
+document.addEventListener("DOMContentLoaded", () => {
+    const tabs = document.querySelectorAll(".tab-button");
+    const contents = document.querySelectorAll(".tab-content");
+
+    tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+            const target = tab.dataset.target;
+
+            tabs.forEach((t) => t.classList.remove("active")); // Remove active class from all tabs
+            tab.classList.add("active"); // Add active class to the clicked tab
+
+            contents.forEach((content) => {
+                content.style.display = content.id === target ? "block" : "none";
+            });
+        });
+    });
+
+    // Default tab: Show Swap Tab
+    document.querySelector('[data-target="swap-tab"]').click();
+});
+
+// Settings Modal Toggle
+document.addEventListener("DOMContentLoaded", () => {
+    const settingsModal = document.getElementById("settingsModal");
+    const closeSettingsButton = document.getElementById("closeSettingsButton");
+
+    // Event listener for the Close button in the modal
+    closeSettingsButton.addEventListener("click", () => {
+        settingsModal.style.display = "none";
+    });
+});
+
+
+
 
 // Tab switching and initialization
 document.addEventListener("DOMContentLoaded", () => {
