@@ -147,7 +147,8 @@ function swap(
     string memory tokenIn,
     string memory tokenOut,
     uint amountIn,
-    uint minAmountOut
+    uint minAmountOut,
+    uint slippageTolerance // Add this parameter
 ) public nonReentrant {
     // Ensure valid tokens
     require(tokenAddresses[tokenIn] != address(0), "Invalid input token");
@@ -167,9 +168,9 @@ function swap(
     uint amountOut = _getAmountOut(netAmountIn, pair.reserve1, pair.reserve2);
     require(amountOut >= minAmountOut, "Insufficient output amount");
 
-    // Slippage tolerance check (optional, useful if not using minAmountOut)
+    // Slippage tolerance check (using the user-provided value)
     uint slippage = ((amountOut - minAmountOut) * 100) / minAmountOut;
-    require(slippage <= 10, "Slippage exceeds tolerance"); // 10% max slippage
+    require(slippage <= slippageTolerance, "Slippage exceeds tolerance");
 
     // Transfer the input token from the user
     IERC20(tokenAddresses[tokenIn]).transferFrom(msg.sender, address(this), amountIn);
@@ -188,6 +189,7 @@ function swap(
     // Emit event
     emit Swap(msg.sender, tokenIn, tokenOut, amountIn, amountOut);
 }
+
 
 
 
