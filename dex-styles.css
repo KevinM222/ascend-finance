@@ -261,28 +261,28 @@ button.cta-button:hover {
     transform: scale(1.05);
     box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8); /* Glow effect */
 }
+
 /* Modal Background */
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background: rgba(0, 0, 0, 0.8); /* Dark overlay */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 20;
 }
 
-/* Modal Content Styling */
 .modal-content {
     background: #ffffff;
     padding: 2rem;
     border-radius: 16px;
-    width: 90%;
-    max-width: 500px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
     text-align: center;
+    position: relative;
+    width: 100%;
 }
-
