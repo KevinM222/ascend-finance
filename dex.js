@@ -1,3 +1,6 @@
+let provider;
+let signer;
+
 // Load dependencies
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
@@ -5,6 +8,7 @@ const dexAddress = "0xFe47e61f416ff96eCb783b471c7395aBefabb702";
 console.log("MetaMask Ethereum provider:", window.ethereum);
 
 let dexContract = null;
+
 
 // Load the DEX contract
 async function loadDexContract() {
@@ -69,8 +73,7 @@ async function connectWallet() {
             const walletAddress = accounts[0];
             console.log("Wallet Address:", walletAddress);
 
-            // ✅ Log where provider and signer are being assigned
-            console.log("Initializing provider and signer...");
+            // ✅ Fix: Assign instead of redeclaring provider and signer
             provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
 
@@ -93,6 +96,7 @@ async function connectWallet() {
         alert("MetaMask is not installed. Please install it to connect your wallet.");
     }
 }
+
 
 
 
