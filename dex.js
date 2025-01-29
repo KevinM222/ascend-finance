@@ -334,38 +334,36 @@ document.addEventListener("DOMContentLoaded", () => {
 async function populateTokenDropdowns() {
     try {
         const tokens = await loadTokenData();
+        if (!tokens || Object.keys(tokens).length === 0) {
+            console.error("populateTokenDropdowns: No tokens found.");
+            return;
+        }
 
         const swapToken1 = document.getElementById("swapToken1");
         const swapToken2 = document.getElementById("swapToken2");
         const poolToken1 = document.getElementById("poolToken1");
         const poolToken2 = document.getElementById("poolToken2");
 
+        if (!swapToken1 || !swapToken2) {
+            console.error("populateTokenDropdowns: Token dropdown elements not found.");
+            return;
+        }
+
         // Clear existing options
         [swapToken1, swapToken2, poolToken1, poolToken2].forEach(dropdown => dropdown.innerHTML = "");
 
         // Populate the dropdowns
         Object.keys(tokens).forEach(token => {
-            const option1 = document.createElement("option");
-            option1.value = token;
-            option1.textContent = token;
-            swapToken1.appendChild(option1);
-
-            const option2 = document.createElement("option");
-            option2.value = token;
-            option2.textContent = token;
-            swapToken2.appendChild(option2);
-
-            const option3 = document.createElement("option");
-            option3.value = token;
-            option3.textContent = token;
-            poolToken1.appendChild(option3);
-
-            const option4 = document.createElement("option");
-            option4.value = token;
-            option4.textContent = token;
-            poolToken2.appendChild(option4);
+            [swapToken1, swapToken2, poolToken1, poolToken2].forEach(dropdown => {
+                const option = document.createElement("option");
+                option.value = token;
+                option.textContent = token;
+                dropdown.appendChild(option);
+            });
         });
 
+        console.log("Token dropdowns populated.");
+        
         // ✅ Call setDefaultPair only after tokens are populated
         setDefaultPair();
 
