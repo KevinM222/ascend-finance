@@ -105,21 +105,35 @@ async function loadTokenData() {
 // Get token balance
 async function getTokenBalance(token) {
     try {
+        if (!provider) {
+            console.warn(`Skipping balance fetch for ${token}: No wallet connected.`);
+            return "0";  // Prevents unnecessary errors
+        }
+
         const tokens = await loadTokenData();
         const tokenData = tokens[token];
-        if (!tokenData) throw new Error(`Token address for ${token} not found`);
+
+        if (!tokenData) {
+            throw new Error(`Token address for ${token} not found`);
+        }
 
         const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
         const tokenContract = new ethers.Contract(tokenData.address, erc20ABI, provider);
-        const accounts = await provider.listAccounts();
-        const balance = await tokenContract.balanceOf(accounts[0]);
 
+        const accounts = await provider.listAccounts();
+        if (accounts.length === 0) {
+            console.warn(`Skipping balance fetch for ${token}: No wallet connected.`);
+            return "0";  // No connected account
+        }
+
+        const balance = await tokenContract.balanceOf(accounts[0]);
         return ethers.utils.formatUnits(balance, tokenData.decimals);
     } catch (error) {
         console.error(`Error fetching balance for ${token}:`, error);
         return "0";
     }
 }
+
 
 // Update balance display
 async function updateBalance(tabPrefix) {
@@ -399,18 +413,25 @@ function setDefaultPair() {
     let inputElement = document.getElementById('swapToken1');
     let outputElement = document.getElementById('swapToken2');
 
-    if (inputElement && outputElement) {
-        inputElement.value = 'POL';  // Set default input token to POL
-        outputElement.value = 'ASC'; // Set default output token to ASC
-        updateSwapDetails();  // ✅ Now this function is defined
-    } else {
-        console.error("setDefaultPair: One or both elements not found!");
+    if (!inputElement || !outputElement) {
+        console.error("setDefaultPair: Token dropdowns not found.");
+        return;
     }
+
+    // Ensure tokens are populated before setting defaults
+    if (inputElement.options.length === 0 || outputElement.options.length === 0) {
+        console.error("setDefaultPair: Token dropdowns are empty.");
+        return;
+    }
+
+    inputElement.value = 'POL';  // Set default input token to POL
+    outputElement.value = 'ASC'; // Set default output token to ASC
+
+    console.log("Default pair set: POL -> ASC");
+
+    updateSwapDetails(); // Ensure this only runs when tokens are available
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    setDefaultPair();
-});
 
 
 
