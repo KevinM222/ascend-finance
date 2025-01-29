@@ -70,18 +70,18 @@ async function connectWallet() {
             provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
 
-            // Fetch ETH balance
+            // 🔹 Fetch ETH balance (Still used for transactions)
             const balanceWei = await provider.getBalance(walletAddress);
             const balanceEth = ethers.utils.formatEther(balanceWei);
 
-            // Update UI with wallet info
+            // Update UI with wallet info (but remove ETH balance display)
             document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
             document.getElementById("connectWalletButton").disabled = true;
             document.getElementById("disconnectWalletButton").style.display = "inline-block";
-           
+
             console.log("Wallet Connected:", walletAddress);
             console.log("Chain ID:", chainId);
-            console.log("ETH Balance:", balanceEth);
+            console.log("ETH Balance (Hidden from UI):", balanceEth);
 
         } catch (error) {
             console.error("Error connecting to wallet:", error);
@@ -91,6 +91,7 @@ async function connectWallet() {
         alert("MetaMask is not installed. Please install it to connect your wallet.");
     }
 }
+
 
 function disconnectWallet() {
     // Reset UI when disconnecting
