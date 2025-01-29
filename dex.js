@@ -47,29 +47,43 @@ document.addEventListener('DOMContentLoaded', function () {
 async function connectWallet() {
     if (window.ethereum) {
         try {
-            // Check the current network (ensure it's Sepolia)
+            // Check if MetaMask is on Sepolia network
             const chainId = await window.ethereum.request({ method: 'eth_chainId' });
 
             if (chainId !== '0xaa36a7') {
-                // Prompt the user to switch to Sepolia network
                 alert("Please switch to the Sepolia test network in MetaMask.");
                 return;
             }
 
-            // Request account access from MetaMask
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            // Request wallet access
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-            // Create an Ethereum provider
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
+            if (accounts.length === 0) {
+                console.warn("No accounts found. Please check MetaMask.");
+                return;
+            }
 
-            // Get the wallet address
-            const walletAddress = await signer.getAddress();
+            // Store the connected wallet address
+            const walletAddress = accounts[0];
 
-            // Update UI: Disable Connect button, Show Wallet Address, Show Disconnect Button
+            // Initialize provider and signer
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+
+            // Fetch ETH balance
+            const balanceWei = await provider.getBalance(walletAddress);
+            const balanceEth = ethers.utils.formatEther(balanceWei);
+
+            // Update UI with wallet info
             document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
             document.getElementById("connectWalletButton").disabled = true;
             document.getElementById("disconnectWalletButton").style.display = "inline-block";
+            document.getElementById("walletBalance").textContent = `Balance: ${balanceEth} ETH`;
+
+            console.log("Wallet Connected:", walletAddress);
+            console.log("Chain ID:", chainId);
+            console.log("ETH Balance:", balanceEth);
+
         } catch (error) {
             console.error("Error connecting to wallet:", error);
             alert("Failed to connect wallet. Please try again.");
@@ -79,12 +93,14 @@ async function connectWallet() {
     }
 }
 
-// Disconnect Wallet function
 function disconnectWallet() {
-    // Logic to disconnect wallet (UI reset here)
+    // Reset UI when disconnecting
     document.getElementById("connectWalletButton").textContent = "Connect Wallet";
     document.getElementById("disconnectWalletButton").style.display = "none";
     document.getElementById("connectWalletButton").disabled = false;
+    document.getElementById("walletBalance").textContent = "Balance: --";
+
+    console.log("Wallet disconnected.");
 }
 
 
