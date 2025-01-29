@@ -351,6 +351,10 @@ async function populateTokenDropdowns() {
             option4.textContent = token;
             poolToken2.appendChild(option4);
         });
+
+        // ✅ Call setDefaultPair only after tokens are populated
+        setDefaultPair();
+
     } catch (error) {
         console.error("Error populating token dropdowns:", error);
     }
@@ -358,9 +362,16 @@ async function populateTokenDropdowns() {
 
 function updateSwapDetails() {
     try {
-        const token1 = document.getElementById("swapToken1").value;
-        const token2 = document.getElementById("swapToken2").value;
-        const amount1 = document.getElementById("swapAmount1").value;
+        const token1Element = document.getElementById("swapToken1");
+        const token2Element = document.getElementById("swapToken2");
+
+        if (!token1Element || !token2Element) {
+            console.error("updateSwapDetails: Token dropdowns not found in the DOM.");
+            return;
+        }
+
+        const token1 = token1Element.value;
+        const token2 = token2Element.value;
 
         if (!token1 || !token2) {
             console.error("updateSwapDetails: One or both tokens not selected.");
@@ -373,12 +384,11 @@ function updateSwapDetails() {
         // Update balance display
         updateBalance("swap");
 
-        console.log(`Swap details updated: ${token1} -> ${token2}, Amount: ${amount1}`);
+        console.log(`Swap details updated: ${token1} -> ${token2}`);
     } catch (error) {
         console.error("Error updating swap details:", error);
     }
 }
-
 
 // Call this function when the page loads
 document.addEventListener("DOMContentLoaded", () => {
