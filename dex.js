@@ -366,12 +366,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function setDefaultPair() {
-    // Defaulting to POL/ASC pair on page load
-    document.getElementById('inputToken').value = 'POL';  // Set default input token to POL
-    document.getElementById('outputToken').value = 'ASC'; // Set default output token to ASC
-    // Update UI for swapping
-    updateSwapDetails();
+    let inputElement = document.getElementById('swapToken1');
+    let outputElement = document.getElementById('swapToken2');
+
+    if (inputElement && outputElement) {
+        inputElement.value = 'POL';  // Set default input token to POL
+        outputElement.value = 'ASC'; // Set default output token to ASC
+        updateSwapDetails();
+    } else {
+        console.error("setDefaultPair: One or both elements not found!");
+    }
 }
+
 
 
 
