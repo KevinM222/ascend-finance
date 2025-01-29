@@ -356,6 +356,30 @@ async function populateTokenDropdowns() {
     }
 }
 
+function updateSwapDetails() {
+    try {
+        const token1 = document.getElementById("swapToken1").value;
+        const token2 = document.getElementById("swapToken2").value;
+        const amount1 = document.getElementById("swapAmount1").value;
+
+        if (!token1 || !token2) {
+            console.error("updateSwapDetails: One or both tokens not selected.");
+            return;
+        }
+
+        // Call estimateOutput to update estimated swap amount
+        estimateOutput("swap");
+
+        // Update balance display
+        updateBalance("swap");
+
+        console.log(`Swap details updated: ${token1} -> ${token2}, Amount: ${amount1}`);
+    } catch (error) {
+        console.error("Error updating swap details:", error);
+    }
+}
+
+
 // Call this function when the page loads
 document.addEventListener("DOMContentLoaded", () => {
     populateTokenDropdowns();
@@ -368,7 +392,7 @@ function setDefaultPair() {
     if (inputElement && outputElement) {
         inputElement.value = 'POL';  // Set default input token to POL
         outputElement.value = 'ASC'; // Set default output token to ASC
-        updateSwapDetails();
+        updateSwapDetails();  // ✅ Now this function is defined
     } else {
         console.error("setDefaultPair: One or both elements not found!");
     }
