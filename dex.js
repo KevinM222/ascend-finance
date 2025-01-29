@@ -78,8 +78,7 @@ async function connectWallet() {
             document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
             document.getElementById("connectWalletButton").disabled = true;
             document.getElementById("disconnectWalletButton").style.display = "inline-block";
-            document.getElementById("walletBalance").textContent = `Balance: ${balanceEth} ETH`;
-
+           
             console.log("Wallet Connected:", walletAddress);
             console.log("Chain ID:", chainId);
             console.log("ETH Balance:", balanceEth);
