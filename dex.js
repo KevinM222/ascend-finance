@@ -361,10 +361,6 @@ document.addEventListener("DOMContentLoaded", () => {
     populateTokenDropdowns();
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    setDefaultPair();
-});
-
 function setDefaultPair() {
     let inputElement = document.getElementById('swapToken1');
     let outputElement = document.getElementById('swapToken2');
@@ -378,7 +374,9 @@ function setDefaultPair() {
     }
 }
 
-
+document.addEventListener('DOMContentLoaded', function () {
+    setDefaultPair();
+});
 
 
 
