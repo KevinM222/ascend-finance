@@ -172,7 +172,7 @@ async function estimateOutput(tabPrefix) {
     }
 }
 
-// Add liquidity functionality
+// Add liquidity with gas management
 async function handleAddLiquidity() {
     try {
         const token1 = document.getElementById("poolToken1").value;
@@ -197,7 +197,15 @@ async function handleAddLiquidity() {
         await token2Contract.approve(dexAddress, ethers.utils.parseUnits(amount2, token2Data.decimals));
 
         const dex = await loadDexContract();
-        await dex.addLiquidity(token1, token2, ethers.utils.parseUnits(amount1, token1Data.decimals), ethers.utils.parseUnits(amount2, token2Data.decimals));
+
+        // Custom gas settings for adding liquidity
+        const gasLimit = 250000; // Adjust based on complexity
+        const gasPrice = await provider.getGasPrice();
+
+        await dex.addLiquidity(token1, token2, ethers.utils.parseUnits(amount1, token1Data.decimals), ethers.utils.parseUnits(amount2, token2Data.decimals), {
+            gasLimit: gasLimit,
+            gasPrice: gasPrice
+        });
 
         alert("Liquidity added successfully!");
     } catch (error) {
@@ -205,6 +213,7 @@ async function handleAddLiquidity() {
         alert("Failed to add liquidity. Check console for details.");
     }
 }
+
 
 // Slippage and swap functionality
 let slippage = 1;
@@ -235,7 +244,8 @@ document.getElementById("saveSettingsButton").addEventListener("click", () => {
     document.getElementById("settingsModal").style.display = "none";
 });
 
-// Swap tokens
+
+// Swap tokens with custom gas settings
 async function swapTokens() {
     try {
         const token1 = document.getElementById("swapToken1").value;
@@ -255,14 +265,26 @@ async function swapTokens() {
         const minAmountOut = parsedAmountIn.mul(100 - slippage).div(100);
 
         const dex = await loadDexContract();
-        await dex.swap(token1, token2, parsedAmountIn, minAmountOut, slippage);
+
+        // Custom gas settings
+        const gasLimit = 200000; // Adjust this depending on the function complexity
+        const gasPrice = await provider.getGasPrice(); // You can also set this manually
+
+        await dex.swap(token1, token2, parsedAmountIn, minAmountOut, slippage, {
+            gasLimit: gasLimit,
+            gasPrice: gasPrice // Use current gas price
+        });
 
         alert("Swap completed successfully!");
     } catch (error) {
         console.error("Error swapping tokens:", error);
         alert("Failed to complete swap. Check console for details.");
     }
-}// Tab switching functionality
+}
+
+
+
+// Tab switching functionality
 document.addEventListener("DOMContentLoaded", () => {
     const tabs = document.querySelectorAll(".tab-button");
     const contents = document.querySelectorAll(".tab-content");
