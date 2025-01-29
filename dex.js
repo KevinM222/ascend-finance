@@ -339,6 +339,18 @@ document.addEventListener("DOMContentLoaded", () => {
     populateTokenDropdowns();
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    setDefaultPair();
+});
+
+function setDefaultPair() {
+    // Defaulting to POL/ASC pair on page load
+    document.getElementById('inputToken').value = 'POL';  // Set default input token to POL
+    document.getElementById('outputToken').value = 'ASC'; // Set default output token to ASC
+    // Update UI for swapping
+    updateSwapDetails();
+}
+
 
 
 
