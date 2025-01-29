@@ -45,17 +45,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Connect Wallet function
 async function connectWallet() {
+    console.log("connectWallet() function started...");
+
     if (window.ethereum) {
         try {
-            // Check if MetaMask is on Sepolia network
+            console.log("Checking network...");
             const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            console.log("Chain ID:", chainId);
 
             if (chainId !== '0xaa36a7') {
                 alert("Please switch to the Sepolia test network in MetaMask.");
                 return;
             }
 
-            // Request wallet access
+            console.log("Requesting accounts...");
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
             if (accounts.length === 0) {
@@ -63,34 +66,34 @@ async function connectWallet() {
                 return;
             }
 
-            // Store the connected wallet address
             const walletAddress = accounts[0];
+            console.log("Wallet Address:", walletAddress);
 
-            // Initialize provider and signer
+            // ✅ Log where provider and signer are being assigned
+            console.log("Initializing provider and signer...");
             provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
 
-            // 🔹 Fetch ETH balance (Still used for transactions)
+            console.log("Fetching ETH balance...");
             const balanceWei = await provider.getBalance(walletAddress);
             const balanceEth = ethers.utils.formatEther(balanceWei);
+            console.log("ETH Balance:", balanceEth);
 
-            // Update UI with wallet info (but remove ETH balance display)
+            // Update UI
             document.getElementById("connectWalletButton").textContent = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
             document.getElementById("connectWalletButton").disabled = true;
             document.getElementById("disconnectWalletButton").style.display = "inline-block";
 
-            console.log("Wallet Connected:", walletAddress);
-            console.log("Chain ID:", chainId);
-            console.log("ETH Balance (Hidden from UI):", balanceEth);
+            console.log("Wallet Connected Successfully.");
 
         } catch (error) {
             console.error("Error connecting to wallet:", error);
-            alert("Failed to connect wallet. Please try again.");
         }
     } else {
         alert("MetaMask is not installed. Please install it to connect your wallet.");
     }
 }
+
 
 
 function disconnectWallet() {
