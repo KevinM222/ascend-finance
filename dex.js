@@ -253,37 +253,6 @@ async function handleAddLiquidity() {
 }
 
 
-// Slippage and swap functionality
-let slippage = 1;
-
-function toggleSettingsModal() {
-    const modal = document.getElementById("settingsModal");
-    modal.style.display = modal.style.display === "none" ? "block" : "none";
-}
-
-function saveSettings() {
-    const slippageInput = document.getElementById("globalSlippage").value;
-    if (slippageInput && parseFloat(slippageInput) > 0) {
-        slippage = parseFloat(slippageInput);
-        alert("Settings saved!");
-    } else {
-        alert("Invalid slippage value.");
-    }
-}
-
-function updateSlippageValue(value) {
-    document.getElementById("slippageValueDisplay").textContent = `Current Slippage: ${value}%`;
-}
-
-document.getElementById("saveSettingsButton").addEventListener("click", () => {
-    const slippage = parseFloat(document.getElementById("slippageRange").value);
-    localStorage.setItem("slippage", slippage);
-    alert(`Slippage tolerance set to ${slippage}%`);
-    document.getElementById("settingsModal").style.display = "none";
-});
-
-
-// Swap tokens with custom gas settings
 async function swapTokens() {
     try {
         const token1 = document.getElementById("swapToken1").value;
@@ -300,25 +269,40 @@ async function swapTokens() {
         const token2Data = tokens[token2];
 
         const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
-        const minAmountOut = parsedAmountIn.mul(100 - slippage).div(100);
-
+        
+        // 🔄 Fetch Estimated Output (Prevents Min Output Errors)
         const dex = await loadDexContract();
+        const estimatedOutput = await dex.estimateOutput(token1, token2, parsedAmountIn);
 
-        // Custom gas settings
-        const gasLimit = 200000; // Adjust this depending on the function complexity
-        const gasPrice = await provider.getGasPrice(); // You can also set this manually
+        if (estimatedOutput.eq(0)) {
+            console.error("❌ Swap rejected: No estimated output available.");
+            alert("Swap failed: Insufficient liquidity.");
+            return;
+        }
 
-        await dex.swap(token1, token2, parsedAmountIn, minAmountOut, slippage, {
+        // ✅ Apply Dynamic Slippage (Prevents Transaction Reverts)
+        const slippageTolerance = slippage || 1; // Default 1% if not set
+        const minAmountOut = estimatedOutput.mul(100 - slippageTolerance).div(100);
+
+        console.log(`🔄 Estimated Output: ${ethers.utils.formatUnits(estimatedOutput, token2Data.decimals)}`);
+        console.log(`⚠️ Minimum Output Allowed (After Slippage): ${ethers.utils.formatUnits(minAmountOut, token2Data.decimals)}`);
+
+        // 🔄 Execute Swap with Gas Management
+        const gasLimit = 200000; 
+        const gasPrice = await provider.getGasPrice(); 
+
+        await dex.swap(token1, token2, parsedAmountIn, minAmountOut, slippageTolerance, {
             gasLimit: gasLimit,
-            gasPrice: gasPrice // Use current gas price
+            gasPrice: gasPrice
         });
 
-        alert("Swap completed successfully!");
+        alert(`✅ Successfully swapped ${amount1} ${token1} for ${token2}.`);
     } catch (error) {
-        console.error("Error swapping tokens:", error);
-        alert("Failed to complete swap. Check console for details.");
+        console.error("❌ Error swapping tokens:", error);
+        alert("Swap failed. Check console for details.");
     }
 }
+
 
 
 
