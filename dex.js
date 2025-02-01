@@ -155,31 +155,30 @@ async function updateBalance(tabPrefix) {
 // Estimating Output for Swaps/Pools (UI Update)
 // =========================
 async function estimateOutput(tabPrefix) {
-    try {
-      const token1 = document.getElementById(`${tabPrefix}Token1`).value;
-      const token2 = document.getElementById(`${tabPrefix}Token2`).value;
-      const amount1 = document.getElementById(`${tabPrefix}Amount1`).value;
-      if (!amount1 || parseFloat(amount1) <= 0) {
-        document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = "Estimated Output: --";
-        return;
-      }
-      const dex = await loadDexContract();
-      const tokens = await loadTokenData();
-      const token1Data = tokens[token1];
-      const token2Data = tokens[token2];
-      const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
-      // Call estimateOutput with token symbols as required by the ABI
-      const amountOut = await dex.estimateOutput(token1, token2, parsedAmountIn);
-      // Format using 18 decimals because the contract normalizes to 18 decimals.
-      const formattedAmountOut = ethers.utils.formatUnits(amountOut, 18);
-      document.getElementById(`${tabPrefix}EstimatedOutput`).textContent =
-        `Estimated Output: ${formattedAmountOut} ${token2.toUpperCase()}`;
-    } catch (error) {
-      console.error("Error estimating output:", error);
+  try {
+    const token1 = document.getElementById(`${tabPrefix}Token1`).value;
+    const token2 = document.getElementById(`${tabPrefix}Token2`).value;
+    const amount1 = document.getElementById(`${tabPrefix}Amount1`).value;
+    if (!amount1 || parseFloat(amount1) <= 0) {
       document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = "Estimated Output: --";
+      return;
     }
+    const dex = await loadDexContract();
+    const tokens = await loadTokenData();
+    const token1Data = tokens[token1];
+    const token2Data = tokens[token2];
+    const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
+    // Call estimateOutput with token symbols as defined in the ABI
+    const amountOut = await dex.estimateOutput(token1, token2, parsedAmountIn);
+    // Format using 18 decimals because the contract normalizes amounts to 18 decimals
+    const formattedAmountOut = ethers.utils.formatUnits(amountOut, 18);
+    document.getElementById(`${tabPrefix}EstimatedOutput`).textContent =
+      `Estimated Output: ${formattedAmountOut} ${token2.toUpperCase()}`;
+  } catch (error) {
+    console.error("Error estimating output:", error);
+    document.getElementById(`${tabPrefix}EstimatedOutput`).textContent = "Estimated Output: --";
   }
-  
+}
 
 // =========================
 // Add Liquidity Function
@@ -223,43 +222,42 @@ async function handleAddLiquidity() {
 // Swap Function
 // =========================
 async function swapTokens() {
-    try {
-      const token1 = document.getElementById("swapToken1").value;
-      const token2 = document.getElementById("swapToken2").value;
-      const amount1 = document.getElementById("swapAmount1").value;
-      if (!token1 || !token2 || token1 === token2 || !amount1) {
-        alert("Invalid input. Ensure all fields are filled and tokens are different.");
-        return;
-      }
-      const tokens = await loadTokenData();
-      const token1Data = tokens[token1];
-      const token2Data = tokens[token2];
-      const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
-      const dex = await loadDexContract();
-      // Call estimateOutput with token symbols per ABI
-      const estimatedOutput = await dex.estimateOutput(token1, token2, parsedAmountIn);
-      if (estimatedOutput.eq(0)) {
-        console.error("❌ Swap rejected: No estimated output available.");
-        alert("Swap failed: Insufficient liquidity.");
-        return;
-      }
-      const slippageTolerance = slippage || 1; // Use global slippage value (default 1%)
-      const minAmountOut = estimatedOutput.mul(100 - slippageTolerance).div(100);
-      console.log(`🔄 Estimated Output: ${ethers.utils.formatUnits(estimatedOutput, 18)}`);
-      console.log(`⚠️ Minimum Output Allowed (After ${slippageTolerance}% Slippage): ${ethers.utils.formatUnits(minAmountOut, 18)}`);
-      const gasLimit = 200000;
-      const gasPrice = await provider.getGasPrice();
-      await dex.swap(token1, token2, parsedAmountIn, minAmountOut, slippageTolerance, {
-        gasLimit: gasLimit,
-        gasPrice: gasPrice
-      });
-      alert(`✅ Successfully swapped ${amount1} ${token1} for ${token2}.`);
-    } catch (error) {
-      console.error("❌ Error swapping tokens:", error);
-      alert("Swap failed. Check console for details.");
+  try {
+    const token1 = document.getElementById("swapToken1").value;
+    const token2 = document.getElementById("swapToken2").value;
+    const amount1 = document.getElementById("swapAmount1").value;
+    if (!token1 || !token2 || token1 === token2 || !amount1) {
+      alert("Invalid input. Ensure all fields are filled and tokens are different.");
+      return;
     }
+    const tokens = await loadTokenData();
+    const token1Data = tokens[token1];
+    const token2Data = tokens[token2];
+    const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
+    const dex = await loadDexContract();
+    // Call estimateOutput with token symbols per ABI
+    const estimatedOutput = await dex.estimateOutput(token1, token2, parsedAmountIn);
+    if (estimatedOutput.eq(0)) {
+      console.error("❌ Swap rejected: No estimated output available.");
+      alert("Swap failed: Insufficient liquidity.");
+      return;
+    }
+    const slippageTolerance = slippage || 1;
+    const minAmountOut = estimatedOutput.mul(100 - slippageTolerance).div(100);
+    console.log(`🔄 Estimated Output: ${ethers.utils.formatUnits(estimatedOutput, 18)}`);
+    console.log(`⚠️ Minimum Output Allowed (After ${slippageTolerance}% Slippage): ${ethers.utils.formatUnits(minAmountOut, 18)}`);
+    const gasLimit = 200000;
+    const gasPrice = await provider.getGasPrice();
+    await dex.swap(token1, token2, parsedAmountIn, minAmountOut, slippageTolerance, {
+      gasLimit: gasLimit,
+      gasPrice: gasPrice
+    });
+    alert(`✅ Successfully swapped ${amount1} ${token1} for ${token2}.`);
+  } catch (error) {
+    console.error("❌ Error swapping tokens:", error);
+    alert("Swap failed. Check console for details.");
   }
-  
+}
 
 // =========================
 // Utility Functions (Reverse, Update UI, Set Default Pair)
