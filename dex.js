@@ -1,8 +1,9 @@
-// -------------------------
-// Provider and Contract Setup
-// -------------------------
+// =========================
+// Provider, Signer, and Global Variables
+// =========================
 let provider;
 let signer;
+let slippage = 1; // Global slippage value (default 1%)
 
 provider = new ethers.providers.Web3Provider(window.ethereum);
 signer = provider.getSigner();
@@ -12,9 +13,9 @@ console.log("MetaMask Ethereum provider:", window.ethereum);
 
 let dexContract = null;
 
-// -------------------------
+// =========================
 // Load DEX Contract
-// -------------------------
+// =========================
 async function loadDexContract() {
   if (dexContract) return dexContract;
   try {
@@ -30,9 +31,9 @@ async function loadDexContract() {
   }
 }
 
-// -------------------------
+// =========================
 // Load ABI Dynamically (for ERC20 tokens)
-// -------------------------
+// =========================
 async function loadABI(filePath) {
   try {
     const response = await fetch(filePath);
@@ -45,9 +46,9 @@ async function loadABI(filePath) {
   }
 }
 
-// -------------------------
+// =========================
 // Wallet Connection Functions
-// -------------------------
+// =========================
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
   document.getElementById('disconnectWalletButton').addEventListener('click', disconnectWallet);
@@ -100,9 +101,9 @@ function disconnectWallet() {
   console.log("Wallet disconnected.");
 }
 
-// -------------------------
+// =========================
 // Token Data and Balance Functions
-// -------------------------
+// =========================
 async function loadTokenData() {
   try {
     const response = await fetch('./AscendDEX/deployments/sepolia.json');
@@ -150,11 +151,9 @@ async function updateBalance(tabPrefix) {
   }
 }
 
-// -------------------------
-// Swap and Liquidity Estimation Functions
-// -------------------------
-
-// Estimate Output for UI updates (used in swap UI)
+// =========================
+// Estimating Output for Swaps/Pools (UI Update)
+// =========================
 async function estimateOutput(tabPrefix) {
   try {
     const token1 = document.getElementById(`${tabPrefix}Token1`).value;
@@ -169,7 +168,7 @@ async function estimateOutput(tabPrefix) {
     const token1Data = tokens[token1];
     const token2Data = tokens[token2];
     const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
-    // Correct call: pass token symbols as defined in the ABI
+    // Call estimateOutput with token symbols per ABI
     const amountOut = await dex.estimateOutput(token1, token2, parsedAmountIn);
     const formattedAmountOut = ethers.utils.formatUnits(amountOut, token2Data.decimals);
     document.getElementById(`${tabPrefix}EstimatedOutput`).textContent =
@@ -180,9 +179,9 @@ async function estimateOutput(tabPrefix) {
   }
 }
 
-// -------------------------
+// =========================
 // Add Liquidity Function
-// -------------------------
+// =========================
 async function handleAddLiquidity() {
   try {
     const token1 = document.getElementById("poolToken1").value;
@@ -218,9 +217,9 @@ async function handleAddLiquidity() {
   }
 }
 
-// -------------------------
+// =========================
 // Swap Function
-// -------------------------
+// =========================
 async function swapTokens() {
   try {
     const token1 = document.getElementById("swapToken1").value;
@@ -235,7 +234,7 @@ async function swapTokens() {
     const token2Data = tokens[token2];
     const parsedAmountIn = ethers.utils.parseUnits(amount1, token1Data.decimals);
     const dex = await loadDexContract();
-    // Call estimateOutput using token symbols per the ABI
+    // Call estimateOutput with token symbols per ABI
     const estimatedOutput = await dex.estimateOutput(token1, token2, parsedAmountIn);
     if (estimatedOutput.eq(0)) {
       console.error("❌ Swap rejected: No estimated output available.");
@@ -259,9 +258,9 @@ async function swapTokens() {
   }
 }
 
-// -------------------------
-// UI and Utility Functions
-// -------------------------
+// =========================
+// Utility Functions (Reverse, Update UI, Set Default Pair)
+// =========================
 function reverseTokens(tabPrefix) {
   const token1 = document.getElementById(`${tabPrefix}Token1`);
   const token2 = document.getElementById(`${tabPrefix}Token2`);
@@ -305,15 +304,15 @@ function setDefaultPair() {
     console.error("setDefaultPair: Token dropdowns are empty.");
     return;
   }
-  inputElement.value = 'POL';
-  outputElement.value = 'ASC';
+  inputElement.value = 'POL';  // Default input token to POL
+  outputElement.value = 'ASC'; // Default output token to ASC
   console.log("Default pair set: POL -> ASC");
   updateSwapDetails();
 }
 
-// -------------------------
-// Event Listeners and Initialization
-// -------------------------
+// =========================
+// Tab Switching and Initialization
+// =========================
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tab-button");
   const contents = document.querySelectorAll(".tab-content");
