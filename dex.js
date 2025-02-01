@@ -444,7 +444,6 @@ function setDefaultPair() {
 // Tab switching and initialization
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("swap-tab").style.display = "block";
-    document.getElementById("saveSettingsButton").addEventListener("click", saveSettings);
-    document.getElementById("swapButton").addEventListener("click", swapTokens);
+     document.getElementById("swapButton").addEventListener("click", swapTokens);
     document.getElementById("addLiquidityButton").addEventListener("click", handleAddLiquidity);
 });
