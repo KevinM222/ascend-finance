@@ -272,7 +272,7 @@ async function swapTokens() {
         
         // 🔄 Fetch Estimated Output (Prevents Min Output Errors)
         const dex = await loadDexContract();
-        const estimatedOutput = await dex.estimateOutput(token1, token2, parsedAmountIn);
+        const amountOut = await dex.estimateOutput(token1, token2, parsedAmountIn);
 
         if (estimatedOutput.eq(0)) {
             console.error("❌ Swap rejected: No estimated output available.");
