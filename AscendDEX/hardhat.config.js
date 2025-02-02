@@ -16,15 +16,29 @@ task("block-number", "Prints the current block number").setAction(async (taskArg
 });
 
 module.exports = {
-    solidity: {
-        version: "0.8.0",
-        settings: {
-            optimizer: {
-                enabled: true,
-                runs: 200,
+    module.exports = {
+        solidity: {
+          compilers: [
+            {
+              version: "0.8.19",
+              settings: {
+                optimizer: { enabled: true, runs: 200 }
+              }
             },
+            {
+              version: "0.8.0",
+              settings: {
+                optimizer: { enabled: true, runs: 200 }
+              }
+            }
+          ],
+          overrides: {
+            "contracts/Treasury.sol": { version: "0.8.0" },
+            "contracts/ModularDEX.sol": { version: "0.8.0" },
+            "contracts/MockERC20.sol": { version: "0.8.0" },
+            "contracts/MockPriceFeeds.sol": { version: "0.8.0" }
+          }
         },
-    },
     networks: {
         hardhat: {
             chainId: 31337, // If using local node
