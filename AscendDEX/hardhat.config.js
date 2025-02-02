@@ -16,40 +16,39 @@ task("block-number", "Prints the current block number").setAction(async (taskArg
 });
 
 module.exports = {
-    module.exports = {
-        solidity: {
-          compilers: [
-            {
-              version: "0.8.19",
-              settings: {
-                optimizer: { enabled: true, runs: 200 }
-              }
-            },
-            {
-              version: "0.8.0",
-              settings: {
-                optimizer: { enabled: true, runs: 200 }
-              }
-            }
-          ],
-          overrides: {
-            "contracts/Treasury.sol": { version: "0.8.0" },
-            "contracts/ModularDEX.sol": { version: "0.8.0" },
-            "contracts/MockERC20.sol": { version: "0.8.0" },
-            "contracts/MockPriceFeeds.sol": { version: "0.8.0" }
-          }
-        },
-    networks: {
-        hardhat: {
-            chainId: 31337, // If using local node
-        },
-        sepolia: {
-            url: process.env.SEPOLIA_RPC_URL,
-            chainId: 11155111,
-            accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-        },
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.19",
+        settings: {
+          optimizer: { enabled: true, runs: 200 }
+        }
+      },
+      {
+        version: "0.8.0",
+        settings: {
+          optimizer: { enabled: true, runs: 200 }
+        }
+      }
+    ],
+    overrides: {
+      "contracts/Treasury.sol": { version: "0.8.0" },
+      "contracts/ModularDEX.sol": { version: "0.8.0" },
+      "contracts/MockERC20.sol": { version: "0.8.0" },
+      "contracts/MockPriceFeeds.sol": { version: "0.8.0" }
+    }
+  },
+  networks: {
+    hardhat: {
+      chainId: 31337, // If using a local node
     },
-    etherscan: {
-        apiKey: process.env.ETHERSCAN_API_KEY,
+    sepolia: {
+      url: process.env.SEPOLIA_RPC_URL,
+      chainId: 11155111,
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
 };
