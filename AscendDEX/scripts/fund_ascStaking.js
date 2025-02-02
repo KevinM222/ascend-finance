@@ -1,14 +1,13 @@
 // scripts/fund_ascStaking.js
 
 async function main() {
-    // Get the deployer account from Hardhat
     const [deployer] = await ethers.getSigners();
     console.log("Funding AscStaking using account:", deployer.address);
   
-    // ASC token contract address (from Polyscan)
+    // ASC token contract address (TestASC token deployed on Sepolia)
     const ascTokenAddress = "0x4456B0F017F6bF9b0aa7a0ac3d3F224902a1937A";
     
-    // Full ABI for the token (as obtained from Polyscan)
+    // Full ABI for the ASC token (as obtained from Polyscan)
     const ascTokenAbi = [
       {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
       {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
