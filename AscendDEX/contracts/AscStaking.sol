@@ -36,10 +36,10 @@ contract AscStaking is Ownable {
     uint256 public constant TWO_YEARS    = 730 days;
 
     // Minimum staked amounts (in ASC, 18 decimals)
-    uint256 public constant MIN_LOCK_AMOUNT        = 1000 * 1e18;  // Minimum for locked staking to get higher yield
-    uint256 public constant FEE_DISCOUNT_THRESHOLD = 10000 * 1e18; // Minimum to qualify for fee discount
+    uint256 public constant MIN_LOCK_AMOUNT         = 1000 * 1e18;   // Minimum for locked staking to get higher yield
+    uint256 public constant FEE_DISCOUNT_THRESHOLD  = 10000 * 1e18;  // Minimum to qualify for fee discount
 
-    // Fee discount tiers (if staked >= FEE_DISCOUNT_THRESHOLD)
+    // Fee discount tiers (only if staked >= FEE_DISCOUNT_THRESHOLD)
     // For example, 10% discount if staked is between 10k and 50k, 20% if staked >= 50k.
     uint16 public constant TIER1_DISCOUNT  = 10;  // 10% discount
     uint16 public constant TIER2_DISCOUNT  = 20;  // 20% discount
@@ -188,7 +188,6 @@ contract AscStaking is Ownable {
         require(ascToken.transfer(msg.sender, amount), "Transfer failed");
         emit AscUnstaked(msg.sender, amount);
     }
-    event AscUnstaked(address indexed user, uint256 amount);
 
     /**
      * @dev Returns the fee reduction percentage for a user based on their staked amount.
