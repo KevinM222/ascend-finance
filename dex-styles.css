@@ -150,6 +150,10 @@ nav ul li a:hover {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
     display: none; /* Initially hidden, shown on tab click */
+    #staking-tab {
+        display: block !important; /* Force it to be visible */
+    }
+    
 }
 
 .tab-content.active {
@@ -263,6 +267,10 @@ button.cta-button:hover {
 }
 
 .remove-liquidity-content {
+    display: block !important;
+}
+
+.remove-liquidity-content {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 16px;
     padding: 2rem;
@@ -338,7 +346,8 @@ button.cta-button:hover {
     padding: 2rem;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
-    margin-top: 2rem;
+    display: block !important;
+    margin-top: 1rem;
 }
 
 .staking-container label {
@@ -390,6 +399,11 @@ button.cta-button:hover {
 
 
 @media only screen and (max-width: 768px) {
+    
+    #staking-tab, .remove-liquidity-content {
+        display: block !important;
+    }
+
     body {
         background: none;
     }
