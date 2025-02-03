@@ -7,7 +7,7 @@ async function main() {
     console.log("Account balance:", (await deployer.getBalance()).toString());
   
     // ASC token contract address (replace with your deployed token address)
-    const ascTokenAddress = "0x4456B0F017F6bF9b0aa7a0ac3d3F224902a1937A";
+    const ascTokenAddress = "0xf6c59C630b1bC07594D695c12b3E5f5F632E23dA";
   
     // Define the pre-allocated reward pool for staking rewards: 300,000,000 ASC (18 decimals)
     const stakingRewardPool = ethers.utils.parseUnits("300000000", 18);
