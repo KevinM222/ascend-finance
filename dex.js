@@ -8,7 +8,11 @@ let slippage = 1; // Global slippage value (default 1%)
 provider = new ethers.providers.Web3Provider(window.ethereum);
 signer = provider.getSigner();
 
-const dexAddress = "0xFe47e61f416ff96eCb783b471c7395aBefabb702";
+const dexAddress = "0xFe47e61f416ff96eCb783b471c7395aBefabb702"; // DEX Contract
+const stakingAddress = "0xA7548a806e7006151dB26C8596f891013d414bB7"; // Staking Contract
+const rewardsAddress = "0xa2D979bF900C1Ccf153A2Ba6BB249B9e85a95690"; // Rewards Contract
+const ascTokenAddress = "0xf6c59C630b1bC07594D695c12b3E5f5F632E23dA"; // Test ASC Token
+
 console.log("MetaMask Ethereum provider:", window.ethereum);
 
 let dexContract = null;
@@ -32,7 +36,7 @@ async function loadDexContract() {
 }
 
 // =========================
-// Load ABI Dynamically (for ERC20 tokens)
+// Load ABI Dynamically
 // =========================
 async function loadABI(filePath) {
   try {
@@ -58,28 +62,19 @@ async function connectWallet() {
   console.log("connectWallet() function started...");
   if (window.ethereum) {
     try {
-      console.log("Checking network...");
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      console.log("Chain ID:", chainId);
       if (chainId !== '0xaa36a7') {
         alert("Please switch to the Sepolia test network in MetaMask.");
         return;
       }
-      console.log("Requesting accounts...");
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       if (accounts.length === 0) {
         console.warn("No accounts found. Please check MetaMask.");
         return;
       }
       const walletAddress = accounts[0];
-      console.log("Wallet Address:", walletAddress);
-      // Reassign provider and signer
       provider = new ethers.providers.Web3Provider(window.ethereum);
       signer = provider.getSigner();
-      console.log("Fetching ETH balance...");
-      const balanceWei = await provider.getBalance(walletAddress);
-      const balanceEth = ethers.utils.formatEther(balanceWei);
-      console.log("ETH Balance:", balanceEth);
       document.getElementById("connectWalletButton").textContent =
         `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
       document.getElementById("connectWalletButton").disabled = true;
@@ -97,9 +92,80 @@ function disconnectWallet() {
   document.getElementById("connectWalletButton").textContent = "Connect Wallet";
   document.getElementById("disconnectWalletButton").style.display = "none";
   document.getElementById("connectWalletButton").disabled = false;
-  document.getElementById("walletBalance").textContent = "Balance: --";
   console.log("Wallet disconnected.");
 }
+
+// =========================
+// Staking & Rewards Functions
+// =========================
+async function stakeASC(amount, lockDuration) {
+  try {
+    const ascStaking = new ethers.Contract(stakingAddress, stakingABI, signer);
+    const ascToken = new ethers.Contract(ascTokenAddress, erc20ABI, signer);
+    const parsedAmount = ethers.utils.parseUnits(amount, 18);
+    await ascToken.approve(stakingAddress, parsedAmount).then(tx => tx.wait());
+    await ascStaking.stake(parsedAmount, lockDuration).then(tx => tx.wait());
+    alert(`✅ Successfully staked ${amount} ASC!`);
+  } catch (error) {
+    console.error("Error staking ASC:", error);
+  }
+}
+
+async function claimRewards() {
+  try {
+    const ascStaking = new ethers.Contract(stakingAddress, stakingABI, signer);
+    await ascStaking.claimRewards().then(tx => tx.wait());
+    alert("✅ Rewards claimed successfully!");
+  } catch (error) {
+    console.error("Error claiming rewards:", error);
+  }
+}
+
+async function unstakeASC(amount) {
+  try {
+    const ascStaking = new ethers.Contract(stakingAddress, stakingABI, signer);
+    const parsedAmount = ethers.utils.parseUnits(amount, 18);
+    await ascStaking.unstake(parsedAmount).then(tx => tx.wait());
+    alert(`✅ Successfully unstaked ${amount} ASC!`);
+  } catch (error) {
+    console.error("Error unstaking ASC:", error);
+  }
+}
+
+// =========================
+// Remove Liquidity
+// =========================
+async function removeLiquidity() {
+  try {
+    const token1 = document.getElementById("removeToken1").value;
+    const token2 = document.getElementById("removeToken2").value;
+    const amount = document.getElementById("removeLiquidityAmount").value;
+    const parsedAmount = ethers.utils.parseUnits(amount, 18);
+    const dex = await loadDexContract();
+    await dex.removeLiquidity(token1, token2, parsedAmount).then(tx => tx.wait());
+    alert("✅ Successfully removed liquidity.");
+  } catch (error) {
+    console.error("Error removing liquidity:", error);
+  }
+}
+
+// =========================
+// UI Event Listeners
+// =========================
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("stakeButton").addEventListener("click", () => {
+    const amount = document.getElementById("stakeAmount").value;
+    const lockDuration = document.getElementById("lockDuration").value;
+    stakeASC(amount, lockDuration);
+  });
+  document.getElementById("claimRewardsButton").addEventListener("click", claimRewards);
+  document.getElementById("unstakeButton").addEventListener("click", () => {
+    const amount = document.getElementById("unstakeAmount").value;
+    unstakeASC(amount);
+  });
+  document.getElementById("removeLiquidityButton").addEventListener("click", removeLiquidity);
+});
+
 
 // =========================
 // Token Data and Balance Functions

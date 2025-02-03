@@ -20,6 +20,8 @@
             <li><a href="whitepaper.html">Whitepaper</a></li>
             <li><a href="https://polygonscan.com/token/0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a" target="_blank">ASC Token</a></li>
             <li><a href="dex.html">Decentralized Exchange</a></li>
+            <li><a href="#" id="stakingTabLink">Staking & Rewards</a></li>
+            
         </ul>
     </nav>
 
@@ -34,7 +36,7 @@
             <button class="settings-button" id="settingsButton">
                 <i class="fa fa-cog"></i>
             </button>
-            
+        
         </div>
 
         <!-- Tabs for Swap, Pools, and Token Management -->
@@ -66,11 +68,45 @@
             <!-- Swap Button -->
             <button id="swapButton" class="cta-button">Confirm Swap</button>
         </div>
+    
+            <!-- Staking & Rewards Tab -->
+            <div class="tab-content" id="staking-tab" style="display: none;">
+                <h3>Staking & Rewards</h3>
 
-        <!-- Pools Tab -->
-        <div class="tab-content" id="pools-tab" style="display: none;">
-            <h3>Add Liquidity</h3>
-            <div class="add-liquidity-content">
+                <!-- Stake ASC -->
+                <h4>Stake ASC</h4>
+                <label for="stakeAmount">Amount to Stake:</label>
+                <input type="number" id="stakeAmount" placeholder="Amount">
+                <label for="stakeLock">Lock Duration:</label>
+                <select id="stakeLock">
+                <option value="0">No Lock (2% APY)</option>
+                <option value="2592000">1 Month (5% APY)</option>
+                <option value="7776000">3 Months (8% APY)</option>
+                <option value="15552000">6 Months (12% APY)</option>
+                <option value="31536000">1 Year (16% APY)</option>
+                <option value="63072000">2 Years (20% APY)</option>
+                </select>
+                <button id="stakeButton" class="cta-button">Stake ASC</button>
+
+                <!-- Unstake ASC -->
+                <h4>Unstake ASC</h4>
+                <label for="unstakeAmount">Amount to Unstake:</label>
+                <input type="number" id="unstakeAmount" placeholder="Amount">
+                <button id="unstakeButton" class="cta-button secondary">Unstake ASC</button>
+
+                <!-- Claim Rewards -->
+                <h4>Claim Rewards</h4>
+                <p id="rewardBalance">Rewards Earned: --</p>
+                <button id="claimRewardsButton" class="cta-button">Claim Rewards</button>
+
+                <!-- Reinvest Rewards -->
+                <button id="reinvestRewardsButton" class="cta-button secondary">Reinvest Rewards</button>
+                </div>
+
+                <!-- Pools Tab -->
+                <div class="tab-content" id="pools-tab" style="display: none;">
+                <h3>Add Liquidity</h3>
+                <div class="add-liquidity-content">
                 <!-- Token 1 -->
                 <label for="poolToken1">Token 1:</label>
                 <select id="poolToken1"></select>
@@ -86,12 +122,13 @@
 
                 <!-- Remove Liquidity -->
                 <h3>Remove Liquidity</h3>
-                <label for="removeToken1">Token 1:</label>
-                <select id="removeToken1"></select>
-                <label for="removeToken2">Token 2:</label>
-                <select id="removeToken2"></select>
-                <input type="number" id="removeLiquidityAmount" placeholder="Amount to remove">
+                <p id="lpBalanceDisplay">Your LP Balance: --</p>
+                <label for="removeLPToken">Select LP Token:</label>
+                <select id="removeLPToken"></select>
+                <label for="removeLiquidityAmount">Amount to Remove:</label>
+                <input type="number" id="removeLiquidityAmount" placeholder="Amount">
                 <button id="removeLiquidityButton" class="cta-button secondary">Remove Liquidity</button>
+
             </div>
         </div>
 
