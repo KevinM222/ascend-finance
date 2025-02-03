@@ -49,7 +49,7 @@ async function main() {
     const ascToken = new ethers.Contract(ascTokenAddress, ascTokenAbi, deployer);
   
     // Replace with your actual deployed AscStaking contract address:
-    const ascStakingAddress = "0x2dFAb85508618735435046D125fD2A769D485c64";
+    const ascStakingAddress = "0xA7548a806e7006151dB26C8596f891013d414bB7";
   
     // Define the amount to mint: 300,000,000 ASC (with 18 decimals)
     const amountToMint = ethers.utils.parseUnits("300000000", 18);
