@@ -95,6 +95,8 @@ function disconnectWallet() {
   console.log("Wallet disconnected.");
 }
 
+
+
 // =========================
 // Staking & Rewards Functions
 // =========================
@@ -398,6 +400,12 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("addLiquidityButton").addEventListener("click", handleAddLiquidity);
 });
 
+document.getElementById("stakingTabLink").addEventListener("click", function (event) {
+  event.preventDefault(); // Prevents the page from jumping to the top
+  document.querySelector("[data-target='staking-tab']").click(); // Simulates clicking the Staking tab button
+});
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const settingsModal = document.getElementById("settingsModal");
   const closeSettingsButton = document.getElementById("closeSettingsButton");
@@ -405,6 +413,11 @@ document.addEventListener("DOMContentLoaded", () => {
     settingsModal.style.display = "none";
   });
 });
+
+document.querySelector("[data-target='pools-tab']").addEventListener("click", () => {
+  loadLiquidityPairs(); // Ensure liquidity pairs populate when opening the Pools tab
+});
+
 
 async function populateTokenDropdowns() {
   try {
