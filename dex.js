@@ -450,6 +450,11 @@ document.getElementById("stakingTabLink").addEventListener("click", function (ev
   document.querySelector("[data-target='staking-tab']").click(); // Simulates clicking the Staking tab button
 });
 
+document.querySelector("[data-target='pools-tab']").addEventListener("click", async () => {
+  console.log("Pools tab clicked. Loading liquidity pairs...");
+  await loadLiquidityPairs();
+});
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const settingsModal = document.getElementById("settingsModal");
@@ -499,26 +504,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadLiquidityPairs() {
   try {
-    const rewardsABI = await loadRewardsABI(); // Ensure ABI is loaded
+    console.log("🔄 Loading liquidity pairs...");
+
+    // Load the Rewards Contract ABI
+    if (!rewardsABI) {
+      await loadRewardsABI(); // Ensure ABI is loaded
+    }
+
     const rewardsContract = new ethers.Contract(rewardsAddress, rewardsABI, signer);
 
-    console.log("Fetching user liquidity from rewards contract...");
-    
-    const userAddress = await signer.getAddress(); // Get the connected wallet address
-    const liquidityAmount = await rewardsContract.userLiquidity(userAddress); // ✅ Correct Function
+    // Get the connected user's address
+    const userAddress = await signer.getAddress();
+    console.log("Connected wallet address:", userAddress);
 
-    console.log("User Liquidity:", ethers.utils.formatUnits(liquidityAmount, 18)); // Convert from Wei
+    // Fetch user's liquidity from the rewards contract
+    const liquidityAmount = await rewardsContract.userLiquidity(userAddress);
+    console.log("✅ Liquidity fetched from rewards contract:", liquidityAmount.toString());
 
+    // Check if the user has liquidity
+    if (liquidityAmount.eq(0)) {
+      console.warn("⚠️ User has no liquidity to display.");
+      return;
+    }
+
+    // Convert the liquidity amount to a human-readable format
+    const formattedLiquidity = ethers.utils.formatUnits(liquidityAmount, 18);
+
+    // Populate the LP token dropdown
     const lpDropdown = document.getElementById("removeLPToken");
+    if (!lpDropdown) {
+      console.error("❌ LP Token dropdown not found.");
+      return;
+    }
+
     lpDropdown.innerHTML = ""; // Clear previous options
 
-    // Populate the dropdown with the user's liquidity balance
     const option = document.createElement("option");
-    option.value = liquidityAmount;
-    option.textContent = `Your Liquidity: ${ethers.utils.formatUnits(liquidityAmount, 18)} LP Tokens`;
+    option.value = liquidityAmount.toString();
+    option.textContent = `Your Liquidity: ${formattedLiquidity} LP Tokens`;
     lpDropdown.appendChild(option);
 
-    console.log("Liquidity pairs loaded successfully.");
+    console.log("✅ Liquidity pairs loaded successfully.");
   } catch (error) {
     console.error("❌ Error loading liquidity pairs:", error);
   }
