@@ -499,31 +499,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadLiquidityPairs() {
   try {
-    const dex = await loadDexContract();
+    const rewardsABI = await loadRewardsABI(); // Ensure ABI is loaded
+    const rewardsContract = new ethers.Contract(rewardsAddress, rewardsABI, signer);
 
-    // Dropdown where LP pairs should appear
+    console.log("Fetching user liquidity from rewards contract...");
+    
+    const userAddress = await signer.getAddress(); // Get the connected wallet address
+    const liquidityAmount = await rewardsContract.userLiquidity(userAddress); // ✅ Correct Function
+
+    console.log("User Liquidity:", ethers.utils.formatUnits(liquidityAmount, 18)); // Convert from Wei
+
     const lpDropdown = document.getElementById("removeLPToken");
     lpDropdown.innerHTML = ""; // Clear previous options
 
-    // Fetch liquidity pairs from the contract
-    const tokenPairs = await dex.getUserLiquidity(); // Ensure this function exists in your ABI
-
-    // Populate the dropdown
-    tokenPairs.forEach(pair => {
-      const option = document.createElement("option");
-      option.value = pair;
-      option.textContent = pair; // Modify based on your contract's return values
-      lpDropdown.appendChild(option);
-    });
+    // Populate the dropdown with the user's liquidity balance
+    const option = document.createElement("option");
+    option.value = liquidityAmount;
+    option.textContent = `Your Liquidity: ${ethers.utils.formatUnits(liquidityAmount, 18)} LP Tokens`;
+    lpDropdown.appendChild(option);
 
     console.log("Liquidity pairs loaded successfully.");
   } catch (error) {
     console.error("❌ Error loading liquidity pairs:", error);
   }
 }
-document.querySelector("[data-target='pools-tab']").addEventListener("click", () => {
-  loadLiquidityPairs(); // Ensure liquidity pairs populate when opening the Pools tab
-});
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
