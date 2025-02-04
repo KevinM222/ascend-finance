@@ -340,6 +340,18 @@ function reverseTokens(tabPrefix) {
   estimateOutput(tabPrefix);
 }
 
+async function loadStakingABI() {
+  try {
+    const response = await fetch('./frontend/stakingABI.json'); // Ensure this path is correct
+    const abiData = await response.json();
+    return abiData.abi;
+  } catch (error) {
+    console.error("Error loading staking ABI:", error);
+    return null;
+  }
+}
+
+
 function updateSwapDetails() {
   try {
     const token1Element = document.getElementById("swapToken1");
@@ -414,9 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-document.querySelector("[data-target='pools-tab']").addEventListener("click", () => {
-  loadLiquidityPairs(); // Ensure liquidity pairs populate when opening the Pools tab
-});
+
 
 
 async function populateTokenDropdowns() {
@@ -453,3 +463,32 @@ async function populateTokenDropdowns() {
 document.addEventListener("DOMContentLoaded", () => {
   populateTokenDropdowns();
 });
+
+async function loadLiquidityPairs() {
+  try {
+    const dex = await loadDexContract();
+
+    // Dropdown where LP pairs should appear
+    const lpDropdown = document.getElementById("removeLPToken");
+    lpDropdown.innerHTML = ""; // Clear previous options
+
+    // Fetch liquidity pairs from the contract
+    const tokenPairs = await dex.liquidityAmount(); // Ensure this function exists in your ABI
+
+    // Populate the dropdown
+    tokenPairs.forEach(pair => {
+      const option = document.createElement("option");
+      option.value = pair;
+      option.textContent = pair; // Modify based on your contract's return values
+      lpDropdown.appendChild(option);
+    });
+
+    console.log("Liquidity pairs loaded successfully.");
+  } catch (error) {
+    console.error("❌ Error loading liquidity pairs:", error);
+  }
+}
+document.querySelector("[data-target='pools-tab']").addEventListener("click", () => {
+  loadLiquidityPairs(); // Ensure liquidity pairs populate when opening the Pools tab
+});
+
