@@ -157,7 +157,7 @@ async function removeLiquidity() {
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("stakeButton").addEventListener("click", () => {
     const amount = document.getElementById("stakeAmount").value;
-    const lockDuration = document.getElementById("lockDuration").value;
+    const lockDuration = document.getElementById("stakeLock").value;
     stakeASC(amount, lockDuration);
   });
   document.getElementById("claimRewardsButton").addEventListener("click", claimRewards);
