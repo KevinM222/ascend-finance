@@ -473,7 +473,7 @@ async function loadLiquidityPairs() {
     lpDropdown.innerHTML = ""; // Clear previous options
 
     // Fetch liquidity pairs from the contract
-    const tokenPairs = await dex.liquidityAmount(); // Ensure this function exists in your ABI
+    const tokenPairs = await dex.getUserLiquidity(); // Ensure this function exists in your ABI
 
     // Populate the dropdown
     tokenPairs.forEach(pair => {
