@@ -50,6 +50,21 @@ async function loadABI(filePath) {
   }
 }
 
+let ascTokenABI = null;
+
+async function loadAscTokenABI() {
+  try {
+    const response = await fetch('./frontend/TestASCabi.json');
+    const { abi: abiData } = await response.json();
+    ascTokenABI = abiData;
+    console.log("ASC Token ABI loaded:", ascTokenABI);
+    return ascTokenABI;
+  } catch (error) {
+    console.error("Failed to load ASC Token ABI:", error);
+    return null;
+  }
+}
+
 // =========================
 // Wallet Connection Functions
 // =========================
@@ -102,12 +117,11 @@ function disconnectWallet() {
 // =========================
 async function stakeASC(amount, lockDuration) {
   try {
+    if (!stakingABI) await loadStakingABI();
+    if (!ascTokenABI) await loadAscTokenABI();
     const ascStaking = new ethers.Contract(stakingAddress, stakingABI, signer);
-    const ascToken = new ethers.Contract(ascTokenAddress, erc20ABI, signer);
-    const parsedAmount = ethers.utils.parseUnits(amount, 18);
-    await ascToken.approve(stakingAddress, parsedAmount).then(tx => tx.wait());
-    await ascStaking.stake(parsedAmount, lockDuration).then(tx => tx.wait());
-    alert(`✅ Successfully staked ${amount} ASC!`);
+    const ascToken = new ethers.Contract(ascTokenAddress, ascTokenABI, signer);
+    // ... rest of the function
   } catch (error) {
     console.error("Error staking ASC:", error);
   }
@@ -340,13 +354,17 @@ function reverseTokens(tabPrefix) {
   estimateOutput(tabPrefix);
 }
 
+let stakingABI = null;
+
 async function loadStakingABI() {
   try {
-    const response = await fetch('./frontend/stakingABI.json'); // Ensure this path is correct
-    const abiData = await response.json();
-    return abiData.abi;
+    const response = await fetch('./frontend/AscStakingABI.json');
+    const { abi: abiData } = await response.json();
+    stakingABI = abiData;
+    console.log("Staking ABI loaded:", stakingABI);
+    return stakingABI;
   } catch (error) {
-    console.error("Error loading staking ABI:", error);
+    console.error("Failed to load Staking ABI:", error);
     return null;
   }
 }
@@ -371,6 +389,21 @@ function updateSwapDetails() {
     console.log(`Swap details updated: ${token1} -> ${token2}`);
   } catch (error) {
     console.error("Error updating swap details:", error);
+  }
+}
+
+let rewardsABI = null;
+
+async function loadRewardsABI() {
+  try {
+    const response = await fetch('./frontend/AscRewardsABI.json');
+    const { abi: abiData } = await response.json();
+    rewardsABI = abiData;
+    console.log("Rewards ABI loaded:", rewardsABI);
+    return rewardsABI;
+  } catch (error) {
+    console.error("Failed to load Rewards ABI:", error);
+    return null;
   }
 }
 
@@ -492,3 +525,16 @@ document.querySelector("[data-target='pools-tab']").addEventListener("click", ()
   loadLiquidityPairs(); // Ensure liquidity pairs populate when opening the Pools tab
 });
 
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await Promise.all([
+      loadStakingABI(),
+      loadRewardsABI(),
+      loadAscTokenABI()
+    ]);
+    console.log("All ABIs loaded.");
+  } catch (error) {
+    console.error("Failed to load some ABIs:", error);
+  }
+  // Other initialization code
+});
