@@ -506,7 +506,6 @@ async function loadLiquidityPairs() {
   try {
     console.log("🔄 Loading liquidity pairs...");
 
-    // Load the Rewards Contract ABI
     if (!rewardsABI) {
       await loadRewardsABI(); // Ensure ABI is loaded
     }
@@ -517,38 +516,67 @@ async function loadLiquidityPairs() {
     const userAddress = await signer.getAddress();
     console.log("Connected wallet address:", userAddress);
 
-    // Fetch user's liquidity from the rewards contract
-    const liquidityAmount = await rewardsContract.userLiquidity(userAddress);
-    console.log("✅ Liquidity fetched from rewards contract:", liquidityAmount.toString());
+    // ✅ Dynamically load all registered tokens from your DEX
+    const tokens = await loadTokenData(); // Fetch all available tokens
+    const tokenKeys = Object.keys(tokens); // Get token symbols
 
-    // Check if the user has liquidity
-    if (liquidityAmount.eq(0)) {
-      console.warn("⚠️ User has no liquidity to display.");
-      return;
+    // Store valid liquidity pairs
+    const liquidityPairs = [];
+
+    // 🔄 Loop through all tokens to find existing liquidity pairs
+    for (let i = 0; i < tokenKeys.length; i++) {
+      for (let j = i + 1; j < tokenKeys.length; j++) {
+        const token1 = tokens[tokenKeys[i]].address;
+        const token2 = tokens[tokenKeys[j]].address;
+
+        // Compute `pairId` (must match Solidity logic)
+        const pairId = ethers.utils.keccak256(
+          ethers.utils.defaultAbiCoder.encode(["address", "address"], [token1, token2])
+        );
+
+        // Fetch user's liquidity for this pair
+        const liquidityAmount = await rewardsContract.userLiquidity(userAddress, pairId);
+
+        // Only add pairs where the user has liquidity
+        if (!liquidityAmount.eq(0)) {
+          liquidityPairs.push({
+            pairId,
+            token1,
+            token2,
+            amount: liquidityAmount
+          });
+        }
+      }
     }
 
-    // Convert the liquidity amount to a human-readable format
-    const formattedLiquidity = ethers.utils.formatUnits(liquidityAmount, 18);
-
-    // Populate the LP token dropdown
+    // ✅ Populate the LP dropdown
     const lpDropdown = document.getElementById("removeLPToken");
     if (!lpDropdown) {
       console.error("❌ LP Token dropdown not found.");
       return;
     }
-
+    
     lpDropdown.innerHTML = ""; // Clear previous options
 
-    const option = document.createElement("option");
-    option.value = liquidityAmount.toString();
-    option.textContent = `Your Liquidity: ${formattedLiquidity} LP Tokens`;
-    lpDropdown.appendChild(option);
+    if (liquidityPairs.length === 0) {
+      console.warn("⚠️ No liquidity pairs found for the user.");
+      return;
+    }
+
+    liquidityPairs.forEach(pair => {
+      const option = document.createElement("option");
+      option.value = pair.pairId;
+      option.textContent = `Liquidity Pair: ${pair.token1} / ${pair.token2} (${ethers.utils.formatUnits(pair.amount, 18)} LP)`;
+      lpDropdown.appendChild(option);
+    });
 
     console.log("✅ Liquidity pairs loaded successfully.");
   } catch (error) {
     console.error("❌ Error loading liquidity pairs:", error);
   }
 }
+
+
 
 
 document.addEventListener('DOMContentLoaded', async () => {
