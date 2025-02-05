@@ -1,7 +1,7 @@
 // loadContract.js
-const ethers = require('ethers');
+import { ethers } from 'ethers';
 
-const rewardsAddress = "0xa2D979bF900C1Ccf153A2Ba6BB249B9e85a95690"; // Your rewards contract address
+const rewardsAddress = "0xa2D979bF900C1Ccf153A2Ba6BB249B9e85a95690";
 const rewardsABI = await fetch("./AscRewardsABI.json").then(res => res.json());
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
