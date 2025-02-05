@@ -12,7 +12,7 @@ const rewardsAddress = "0xa2D979bF900C1Ccf153A2Ba6BB249B9e85a95690";
 const rewardsABI = JSON.parse(fs.readFileSync(path.resolve('../frontend/AscRewardsABI.json')));
 
 // Use Infura provider with the project ID from the .env file
-const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`);
+const provider = new ethers.providers.JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`);
 
 // Create a wallet using the private key from the .env file and connect it to the provider
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
