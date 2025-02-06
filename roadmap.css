@@ -33,7 +33,33 @@ header {
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    padding: 10px 20px; /* Adds space to prevent overlap */
 }
+
+/* Ensure tagline doesn’t push nav */
+.tagline {
+    font-size: 1rem;
+    max-width: 60%;
+    text-align: right;
+    white-space: nowrap;
+    margin-left: 20px; /* Creates spacing from logo */
+}
+
+/* Reduce tagline size on mobile */
+@media (max-width: 768px) {
+    .tagline {
+        font-size: 0.8rem; /* Make it smaller */
+        max-width: 50%; /* Prevent it from taking too much space */
+        text-align: right;
+        margin-left: auto; /* Auto-adjust spacing */
+    }
+
+    .logo-container {
+        flex-wrap: nowrap;
+        padding: 5px 10px; /* Slightly smaller padding */
+    }
+}
+
 
 /* Reduce tagline size on mobile */
 @media (max-width: 768px) {
