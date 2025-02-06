@@ -88,10 +88,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const POL_USD_FEED = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"; 
                 const ascPOLPoolAddress = "0xeF85494A8d24ED93cC0f7a405Bb5616BFF18C235"; 
-    
-                // Initialize provider
+        
                 const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
-    
+        
                 // 🔍 Fetch POL price from Chainlink
                 const priceFeed = new ethers.Contract(
                     POL_USD_FEED,
@@ -101,29 +100,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const polPriceRaw = await priceFeed.latestAnswer();
                 const polPrice = parseFloat(ethers.utils.formatUnits(polPriceRaw, 8)); 
                 console.log("✅ POL/USD Price:", polPrice);
-    
+        
                 // 🔍 Fetch ASC price data from Uniswap V3 LP
                 const lpContract = new ethers.Contract(
                     ascPOLPoolAddress,
                     ["function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)"],
                     provider
                 );
-    
+        
                 const slot0 = await lpContract.slot0();
                 const sqrtPriceX96 = slot0[0];
                 console.log("✅ sqrtPriceX96 from LP:", sqrtPriceX96.toString());
-    
+        
                 if (sqrtPriceX96 === 0) {
                     console.error("⚠️ No trades have happened yet.");
                     return 0;
                 }
-    
+        
+                // ✅ Fix: Invert the price ratio to get ASC price correctly
                 const priceRatio = (sqrtPriceX96 / (2 ** 96)) ** 2;
-                console.log("✅ ASC/POL Price Ratio:", priceRatio);
-    
-                const ascPriceUSD = priceRatio * polPrice;
-                console.log("✅ ASC/USD Price:", ascPriceUSD);
-    
+                const ascPriceUSD = (1 / priceRatio) * polPrice;
+                console.log("✅ Fixed ASC/USD Price:", ascPriceUSD);
+        
                 // ✅ Update UI with ASC price
                 priceDisplay.innerText = `ASC Price: $${ascPriceUSD.toFixed(6)}`;
                 return ascPriceUSD;
@@ -133,6 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return 0;
             }
         }
+        
 
         async function addASCToWallet() {
             try {
