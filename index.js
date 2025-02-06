@@ -99,26 +99,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Fetch ASC Price from PolygonScan
     async function fetchASCPrice() {
         try {
-            const response = await fetch(`https://api.polygonscan.com/api?module=stats&action=tokensupply&contractaddress=0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a&apikey=YOUR_POLYGONSCAN_API_KEY`);
-            const data = await response.json();
-
-            if (data.status === "1") {
-                const totalSupply = ethers.utils.formatUnits(data.result, 18);
-
-                // Replace with an actual price source (e.g., CoinGecko, Chainlink, etc.)
-                const pricePerASC = 0.01; // Example: $0.01 per ASC (hardcoded for now)
-
-                priceDisplay.innerText = `$${pricePerASC} per ASC`;
-            } else {
-                throw new Error("Failed to fetch ASC price.");
+            const POL_USD_FEED = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"; // Chainlink MATIC/USD Price Feed
+            const ascPOLPoolAddress = "0xeF85494A8d24ED93cC0f7a405Bb5616BFF18C235"; // Verified LP Contract
+    
+            // Initialize provider
+            const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com"); 
+    
+            // Fetch POL price from Chainlink
+            const priceFeed = new ethers.Contract(
+                POL_USD_FEED,
+                ["function latestAnswer() view returns (int256)"],
+                provider
+            );
+            const polPriceRaw = await priceFeed.latestAnswer();
+            const polPrice = parseFloat(ethers.utils.formatUnits(polPriceRaw, 8)); // Chainlink uses 8 decimals
+    
+            // Fetch price data from Uniswap V3 LP
+            const lpContract = new ethers.Contract(
+                ascPOLPoolAddress,
+                ["function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)"],
+                provider
+            );
+    
+            // Get sqrtPriceX96
+            const slot0 = await lpContract.slot0();
+            const sqrtPriceX96 = slot0[0];
+    
+            // Convert sqrtPriceX96 to normal price
+            const priceRatio = (sqrtPriceX96 / (2 ** 96)) ** 2; // Convert Uniswap V3 format
+    
+            // Get ASC price in USD
+            const ascPriceUSD = priceRatio * polPrice;
+    
+            // Update UI
+            const priceDisplay = document.getElementById('ascPrice');
+            if (priceDisplay) {
+                priceDisplay.innerText = `$${ascPriceUSD.toFixed(6)} per ASC`;
             }
-
         } catch (error) {
             console.error("Error fetching ASC price:", error);
-            priceDisplay.innerText = "Price unavailable";
+            const priceDisplay = document.getElementById('ascPrice');
+            if (priceDisplay) {
+                priceDisplay.innerText = "Price unavailable";
+            }
         }
     }
-
-    // Run price fetch on page load
+    
+    // Fetch price on page load
     fetchASCPrice();
+
 });
+
+
+    
