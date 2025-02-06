@@ -99,13 +99,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Fetch ASC Price from PolygonScan
     async function fetchASCPrice() {
         try {
-            const POL_USD_FEED = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"; // Chainlink MATIC/USD Price Feed
-            const ascPOLPoolAddress = "0xeF85494A8d24ED93cC0f7a405Bb5616BFF18C235"; // Verified LP Contract
+            const POL_USD_FEED = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"; // Chainlink MATIC/USD Feed
+            const ascPOLPoolAddress = "0xeF85494A8d24ED93cC0f7a405Bb5616BFF18C235"; // ASC/POL Uniswap V3 Pool
     
             // Initialize provider
-            const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com"); 
+            const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
     
-            // Fetch POL price from Chainlink
+            // 🔍 Fetch POL price from Chainlink
             const priceFeed = new ethers.Contract(
                 POL_USD_FEED,
                 ["function latestAnswer() view returns (int256)"],
@@ -113,31 +113,42 @@ document.addEventListener('DOMContentLoaded', async () => {
             );
             const polPriceRaw = await priceFeed.latestAnswer();
             const polPrice = parseFloat(ethers.utils.formatUnits(polPriceRaw, 8)); // Chainlink uses 8 decimals
+            console.log("✅ POL/USD Price:", polPrice); // ✅ Debug log
     
-            // Fetch price data from Uniswap V3 LP
+            // 🔍 Fetch price data from Uniswap V3 LP
             const lpContract = new ethers.Contract(
                 ascPOLPoolAddress,
                 ["function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)"],
                 provider
             );
     
-            // Get sqrtPriceX96
+            // Get slot0() data
             const slot0 = await lpContract.slot0();
             const sqrtPriceX96 = slot0[0];
+            console.log("✅ sqrtPriceX96 from LP:", sqrtPriceX96.toString()); // ✅ Debug log
     
-            // Convert sqrtPriceX96 to normal price
-            const priceRatio = (sqrtPriceX96 / (2 ** 96)) ** 2; // Convert Uniswap V3 format
+            if (sqrtPriceX96 === 0) {
+                console.error("⚠️ sqrtPriceX96 is 0. This means no trades have happened yet.");
+                return;
+            }
+    
+            // Convert sqrtPriceX96 to price ratio
+            const priceRatio = (sqrtPriceX96 / (2 ** 96)) ** 2;
+            console.log("✅ ASC/POL Price Ratio:", priceRatio); // ✅ Debug log
     
             // Get ASC price in USD
             const ascPriceUSD = priceRatio * polPrice;
+            console.log("✅ ASC/USD Price:", ascPriceUSD); // ✅ Debug log
     
             // Update UI
             const priceDisplay = document.getElementById('ascPrice');
             if (priceDisplay) {
                 priceDisplay.innerText = `$${ascPriceUSD.toFixed(6)} per ASC`;
+            } else {
+                console.error("⚠️ HTML element #ascPrice not found.");
             }
         } catch (error) {
-            console.error("Error fetching ASC price:", error);
+            console.error("🚨 Error fetching ASC price:", error);
             const priceDisplay = document.getElementById('ascPrice');
             if (priceDisplay) {
                 priceDisplay.innerText = "Price unavailable";
@@ -147,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Fetch price on page load
     fetchASCPrice();
-
+    
 });
 
 
