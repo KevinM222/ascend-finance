@@ -2,8 +2,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let provider;
     const connectWalletButton = document.getElementById('connectWalletButton');
     const disconnectWalletButton = document.getElementById('disconnectWalletButton');
-    const balanceDisplay = document.getElementById('ascBalance'); 
-    const priceDisplay = document.getElementById('ascPrice');
+    const balanceDisplay = document.getElementById('tokenBalance'); 
+    const priceDisplay = document.getElementById('tokenPrice');
+    const totalValueDisplay = document.getElementById('totalValue');
 
     if (window.ethereum) {
         provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -20,13 +21,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 disconnectWalletButton.style.display = 'block';
                 disconnectWalletButton.style.backgroundColor = 'red';
 
-                // Get current network
+                // Check Network
                 const chainId = await window.ethereum.request({ method: 'eth_chainId' });
                 if (chainId !== "0x89") {
                     await switchToPolygon();
                 }
 
-                await fetchASCBalance(signer, address);
+                // Fetch ASC Balance and Price
+                await fetchASCData(signer, address);
 
             } catch (error) {
                 console.error("Error:", error);
@@ -36,7 +38,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         disconnectWalletButton.addEventListener('click', () => {
             connectWalletButton.style.display = 'block';
             disconnectWalletButton.style.display = 'none';
-            balanceDisplay.innerText = "N/A";
+            balanceDisplay.innerText = "Your ASC Balance: N/A";
+            totalValueDisplay.innerText = "Total Value: $0.00";
             console.log("Wallet disconnected");
         });
 
@@ -52,8 +55,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        async function fetchASCBalance(signer, userAddress) {
+        async function fetchASCData(signer, userAddress) {
             try {
+                // Fetch ASC Balance
                 const ascContract = new ethers.Contract(
                     '0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a',
                     ["function balanceOf(address owner) view returns (uint256)"],
@@ -62,15 +66,71 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const balance = await ascContract.balanceOf(userAddress);
                 const formattedBalance = ethers.utils.formatUnits(balance, 18);
-                balanceDisplay.innerText = `${formattedBalance} ASC`;
+                balanceDisplay.innerText = `Your ASC Balance: ${formattedBalance}`;
 
                 if (balance.gt(0)) {
                     await addASCToWallet();
                 }
 
+                // Fetch ASC Price and Update Total Value
+                const ascPrice = await fetchASCPrice();
+                const totalValue = formattedBalance * ascPrice;
+                totalValueDisplay.innerText = `Total Value: $${totalValue.toFixed(2)}`;
+
             } catch (error) {
                 console.error("Error fetching balance:", error);
-                balanceDisplay.innerText = "N/A";
+                balanceDisplay.innerText = "Your ASC Balance: Unavailable";
+                totalValueDisplay.innerText = "Total Value: $0.00";
+            }
+        }
+
+        async function fetchASCPrice() {
+            try {
+                const POL_USD_FEED = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"; 
+                const ascPOLPoolAddress = "0xeF85494A8d24ED93cC0f7a405Bb5616BFF18C235"; 
+    
+                // Initialize provider
+                const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
+    
+                // 🔍 Fetch POL price from Chainlink
+                const priceFeed = new ethers.Contract(
+                    POL_USD_FEED,
+                    ["function latestAnswer() view returns (int256)"],
+                    provider
+                );
+                const polPriceRaw = await priceFeed.latestAnswer();
+                const polPrice = parseFloat(ethers.utils.formatUnits(polPriceRaw, 8)); 
+                console.log("✅ POL/USD Price:", polPrice);
+    
+                // 🔍 Fetch ASC price data from Uniswap V3 LP
+                const lpContract = new ethers.Contract(
+                    ascPOLPoolAddress,
+                    ["function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)"],
+                    provider
+                );
+    
+                const slot0 = await lpContract.slot0();
+                const sqrtPriceX96 = slot0[0];
+                console.log("✅ sqrtPriceX96 from LP:", sqrtPriceX96.toString());
+    
+                if (sqrtPriceX96 === 0) {
+                    console.error("⚠️ No trades have happened yet.");
+                    return 0;
+                }
+    
+                const priceRatio = (sqrtPriceX96 / (2 ** 96)) ** 2;
+                console.log("✅ ASC/POL Price Ratio:", priceRatio);
+    
+                const ascPriceUSD = priceRatio * polPrice;
+                console.log("✅ ASC/USD Price:", ascPriceUSD);
+    
+                // ✅ Update UI with ASC price
+                priceDisplay.innerText = `ASC Price: $${ascPriceUSD.toFixed(6)}`;
+                return ascPriceUSD;
+            } catch (error) {
+                console.error("🚨 Error fetching ASC price:", error);
+                priceDisplay.innerText = "ASC Price: Unavailable";
+                return 0;
             }
         }
 
@@ -96,72 +156,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Non-Ethereum browser detected. Install MetaMask.");
     }
 
-    // Fetch ASC Price from PolygonScan
-    async function fetchASCPrice() {
-        try {
-            const POL_USD_FEED = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"; // Chainlink MATIC/USD Feed
-            const ascPOLPoolAddress = "0xeF85494A8d24ED93cC0f7a405Bb5616BFF18C235"; // ASC/POL Uniswap V3 Pool
-    
-            // Initialize provider
-            const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
-    
-            // 🔍 Fetch POL price from Chainlink
-            const priceFeed = new ethers.Contract(
-                POL_USD_FEED,
-                ["function latestAnswer() view returns (int256)"],
-                provider
-            );
-            const polPriceRaw = await priceFeed.latestAnswer();
-            const polPrice = parseFloat(ethers.utils.formatUnits(polPriceRaw, 8)); // Chainlink uses 8 decimals
-            console.log("✅ POL/USD Price:", polPrice); // ✅ Debug log
-    
-            // 🔍 Fetch price data from Uniswap V3 LP
-            const lpContract = new ethers.Contract(
-                ascPOLPoolAddress,
-                ["function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)"],
-                provider
-            );
-    
-            // Get slot0() data
-            const slot0 = await lpContract.slot0();
-            const sqrtPriceX96 = slot0[0];
-            console.log("✅ sqrtPriceX96 from LP:", sqrtPriceX96.toString()); // ✅ Debug log
-    
-            if (sqrtPriceX96 === 0) {
-                console.error("⚠️ sqrtPriceX96 is 0. This means no trades have happened yet.");
-                return;
-            }
-    
-            // Convert sqrtPriceX96 to price ratio
-            const priceRatio = (sqrtPriceX96 / (2 ** 96)) ** 2;
-            console.log("✅ ASC/POL Price Ratio:", priceRatio); // ✅ Debug log
-    
-            // Get ASC price in USD
-            const ascPriceUSD = priceRatio * polPrice;
-            console.log("✅ ASC/USD Price:", ascPriceUSD); // ✅ Debug log
-    
-            // Update UI
-            const priceDisplay = document.getElementById('ascPrice');
-            if (priceDisplay) {
-                priceDisplay.innerText = `$${ascPriceUSD.toFixed(6)} per ASC`;
-            } else {
-                console.error("⚠️ HTML element #ascPrice not found.");
-            }
-        } catch (error) {
-            console.error("🚨 Error fetching ASC price:", error);
-            const priceDisplay = document.getElementById('ascPrice');
-            if (priceDisplay) {
-                priceDisplay.innerText = "Price unavailable";
-            }
-        }
-    }
-    
     // Fetch price on page load
     fetchASCPrice();
-    
 });
-
-
-
-
-    
