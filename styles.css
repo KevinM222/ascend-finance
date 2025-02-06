@@ -8,7 +8,7 @@ body, html {
 /* Hero Section */
 .hero-section {
     background-color: #11b49c;
-    background-image: url('background.webp');
+    background-image: url('../images/background.webp');
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -45,6 +45,7 @@ body, html {
 nav ul {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 20px;
     list-style: none;
     padding: 10px 0;
@@ -54,20 +55,28 @@ nav ul {
     width: 100%;
     z-index: 100;
     margin: 0;
+    flex-wrap: nowrap; /* Prevents items from stacking */
 }
 
-nav ul li a {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+/* Fix for mobile screens */
+@media screen and (max-width: 600px) {
+    nav ul {
+        flex-wrap: wrap; /* Allows wrapping if needed, but not forced */
+        justify-content: space-around; /* Distributes space evenly */
+        padding: 5px 10px; /* Reduces padding to take up less space */
+    }
+
+    nav ul li {
+        flex: 1 1 auto; /* Prevents excessive stacking */
+        text-align: center;
+    }
+
+    nav ul li a {
+        font-size: 14px; /* Reduce font size slightly for better fit */
+        padding: 5px; /* Reduce padding */
+    }
 }
 
-nav ul li a:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
 
 /* Wallet Buttons */
 .wallet-container button {
@@ -228,7 +237,7 @@ nav ul li a:hover {
         max-width: 300px;
     }
 
-   /* ASC Token Info Container */
+        /* ASC Token Info Container */
 .asc-info-container {
     background-color: rgba(255, 255, 255, 0.9); /* Light background for better contrast */
     border-radius: 8px;
@@ -262,11 +271,36 @@ nav ul li a:hover {
 }
 
 /* Ensure Text Inside is Visible */
-.asc-info-container p {
-    margin: 8px 0;
-    color: #333;
-    font-size: 18px;
+.asc-info-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 350px;
+    min-height: 120px;
+    margin: 20px auto;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex; /* Ensure it's always visible */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 10;
 }
+
+
+
+/* Force visibility for larger screens */
+@media screen and (min-width: 1024px) {
+    .asc-info-container {
+        display: flex !important; /* Ensure it's visible on desktop */
+        max-width: 400px;
+    }
+}
+
 
 /* Keep ASC Price & Total Value Readable */
 #tokenPrice {
