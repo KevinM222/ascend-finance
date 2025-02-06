@@ -241,33 +241,66 @@ nav ul li a:hover {
     font-weight: bold;
 }
 
-/* ASC Token Info Text */
+/* ASC Token Info Container */
+.asc-info-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    max-width: 350px;
+    width: 100%; /* Ensures it adapts to different screen sizes */
+    margin: 20px auto;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Ensures it's positioned properly */
+    z-index: 10; /* Ensures it stays on top */
+}
+
+/* Ensure Text Inside is Visible */
 .asc-info-container p {
     margin: 8px 0;
-    color: #333; /* Dark text for readability */
+    color: #333;
     font-size: 18px;
 }
 
-/* Highlight ASC Price */
+/* Keep ASC Price & Total Value Readable */
 #tokenPrice {
     font-size: 20px;
-    color: #007bff; /* Blue text for visibility */
+    color: #007bff;
     font-weight: bold;
 }
 
-/* Highlight Total Value */
 #totalValue {
     font-size: 20px;
-    color: #28a745; /* Green for financial value */
+    color: #28a745;
     font-weight: bold;
 }
 
-/* Mobile Responsive Styling */
-@media screen and (max-width: 600px) {
+/* Ensure Hero Section Doesn't Hide It */
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+    text-align: center;
+    position: relative; /* Ensures content stacks properly */
+    z-index: 1;
+}
+
+/* Responsive Fix: Ensure It Scales Correctly */
+@media screen and (min-width: 1024px) {
     .asc-info-container {
-        width: 90%;
+        max-width: 400px; /* Keep it properly sized on large screens */
     }
 }
+
 
 
 }
