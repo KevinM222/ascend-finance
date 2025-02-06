@@ -123,7 +123,11 @@ nav ul li a:hover {
     }
 
     nav ul {
-        flex-direction: column;
-        gap: 10px;
+        flex-wrap: nowrap;
+        overflow-x: auto; /* Allows horizontal scrolling if needed */
+        justify-content: flex-start;
+        white-space: nowrap;
+        padding: 5px;
     }
+    
 }
