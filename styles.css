@@ -228,29 +228,46 @@ nav ul li a:hover {
         max-width: 300px;
     }
 
-    /* ASC Token Info Styling */
+   /* ASC Token Info Container */
 .asc-info-container {
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
-    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.9); /* Light background for better contrast */
     border-radius: 8px;
+    padding: 15px 20px;
     text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Soft shadow */
     max-width: 350px;
     margin: 20px auto;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.asc-info-container p {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
-    color: white; /* Ensuring visibility */
-    margin: 5px 0;
 }
 
-/* Responsive improvements */
+/* ASC Token Info Text */
+.asc-info-container p {
+    margin: 8px 0;
+    color: #333; /* Dark text for readability */
+    font-size: 18px;
+}
+
+/* Highlight ASC Price */
+#tokenPrice {
+    font-size: 20px;
+    color: #007bff; /* Blue text for visibility */
+    font-weight: bold;
+}
+
+/* Highlight Total Value */
+#totalValue {
+    font-size: 20px;
+    color: #28a745; /* Green for financial value */
+    font-weight: bold;
+}
+
+/* Mobile Responsive Styling */
 @media screen and (max-width: 600px) {
     .asc-info-container {
         width: 90%;
     }
 }
+
 
 }
