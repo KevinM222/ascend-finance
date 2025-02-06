@@ -1,32 +1,43 @@
-body {
+/* General Reset */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
     font-family: Arial, sans-serif;
     color: white;
     background: #000;
-    height: 100%;
+    height: 100vh;
     padding: 0;
 }
 
-/* Header with logo */
+/* Header with Logo */
 header {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    background-color: rgba(0, 0, 0, 0.8); /* Improved visibility */
     padding: 10px 20px;
-    z-index: 10;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .logo-container {
-    text-align: center;
+    display: flex;
+    align-items: center;
 }
 
 .main-logo {
-    max-width: 20px; /* Make the logo smaller */
-    height: 20px;
+    max-width: 50px;
+    height: auto;
 }
 
-/* Navigation Bar */
 nav ul {
     list-style: none;
     display: flex;
@@ -56,37 +67,50 @@ nav ul li a:hover {
 
 /* Roadmap Section */
 .roadmap {
-    position: relative;
-    height: 100vh;
-    background: url("../images/rocket.png") no-repeat center center fixed; /* Rocket as background */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: url("../images/rocket.png") no-repeat center center fixed;
     background-size: cover;
-    padding: 40px;
+    padding: 50px 20px;
 }
 
-/* Timeline and Milestones */
-.milestones {
-    position: absolute;
-    top: 50%;
-    left: 20px; /* Position the text to the left of the rocket */
-    transform: translateY(-50%);
-    max-width: 400px;
-}
-
-.milestones h1 {
-    font-size: 2rem;
-    margin-bottom: 30px;
-}
-
-.milestones ul {
-    list-style: none;
-    padding: 0;
-}
-
-.milestones li {
-    font-size: 1.2rem;
+.roadmap h2 {
+    font-size: 2.5rem;
     margin-bottom: 20px;
 }
 
-.milestones strong {
-    font-weight: bold;
+/* Timeline and Milestones */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 800px;
+    margin: auto;
+}
+
+.timeline-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .timeline-section {
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    .main-logo {
+        max-width: 40px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
