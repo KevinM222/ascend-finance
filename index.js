@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         provider = new ethers.providers.Web3Provider(window.ethereum);
 
+        // 🚨 Ensure the user is on Polygon before allowing interactions
+        await enforcePolygonNetwork();
+
         connectWalletButton.addEventListener('click', async () => {
             try {
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -21,13 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 disconnectWalletButton.style.display = 'block';
                 disconnectWalletButton.style.backgroundColor = 'red';
 
-                // Check Network
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                if (chainId !== "0x89") {
-                    await switchToPolygon();
-                }
-
-                // Fetch ASC Balance and Price
                 await fetchASCData(signer, address);
 
             } catch (error) {
@@ -43,42 +39,58 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Wallet disconnected");
         });
 
-        async function switchToPolygon() {
+        async function enforcePolygonNetwork() {
             try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x89' }], 
-                });
-                console.log("Switched to Polygon Network");
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                if (chainId !== "0x89") {
+                    console.warn("⚠️ Not on Polygon. Switching now...");
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x89' }], 
+                    });
+                    console.log("✅ Switched to Polygon Network");
+                }
             } catch (error) {
-                console.error("Failed to switch network:", error);
+                console.error("🚨 Failed to switch to Polygon:", error);
             }
         }
 
         async function fetchASCData(signer, userAddress) {
             try {
-                // Fetch ASC Balance
+                // 🚨 Ensure we're on Polygon before fetching data
+                const network = await provider.getNetwork();
+                if (network.chainId !== 137) {
+                    console.error("⚠️ Wrong network detected. Please switch to Polygon.");
+                    return;
+                }
+
                 const ascContract = new ethers.Contract(
                     '0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a',
                     ["function balanceOf(address owner) view returns (uint256)"],
                     provider
                 );
 
-                const balance = await ascContract.balanceOf(userAddress);
-                const formattedBalance = ethers.utils.formatUnits(balance, 18);
-                balanceDisplay.innerText = `Your ASC Balance: ${formattedBalance}`;
+                const balanceRaw = await ascContract.balanceOf(userAddress);
+                const balance = ethers.utils.formatUnits(balanceRaw, 18);
+                console.log("✅ User ASC Balance:", balance);
 
-                if (balance.gt(0)) {
+                // ✅ Update UI with ASC balance
+                balanceDisplay.innerText = `Your ASC Balance: ${balance}`;
+
+                if (balanceRaw.gt(0)) {
                     await addASCToWallet();
                 }
 
-                // Fetch ASC Price and Update Total Value
+                // 🔍 Fetch ASC price and update total value
                 const ascPrice = await fetchASCPrice();
-                const totalValue = formattedBalance * ascPrice;
+                const totalValue = balance * ascPrice;
+                console.log("✅ Total USD Value:", totalValue);
+
+                // ✅ Update UI with total value
                 totalValueDisplay.innerText = `Total Value: $${totalValue.toFixed(2)}`;
 
             } catch (error) {
-                console.error("Error fetching balance:", error);
+                console.error("🚨 Error fetching ASC balance:", error);
                 balanceDisplay.innerText = "Your ASC Balance: Unavailable";
                 totalValueDisplay.innerText = "Total Value: $0.00";
             }
@@ -88,9 +100,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const POL_USD_FEED = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"; 
                 const ascPOLPoolAddress = "0xeF85494A8d24ED93cC0f7a405Bb5616BFF18C235"; 
-        
+    
                 const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
-        
+    
                 // 🔍 Fetch POL price from Chainlink
                 const priceFeed = new ethers.Contract(
                     POL_USD_FEED,
@@ -100,28 +112,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const polPriceRaw = await priceFeed.latestAnswer();
                 const polPrice = parseFloat(ethers.utils.formatUnits(polPriceRaw, 8)); 
                 console.log("✅ POL/USD Price:", polPrice);
-        
+    
                 // 🔍 Fetch ASC price data from Uniswap V3 LP
                 const lpContract = new ethers.Contract(
                     ascPOLPoolAddress,
                     ["function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)"],
                     provider
                 );
-        
+    
                 const slot0 = await lpContract.slot0();
                 const sqrtPriceX96 = slot0[0];
                 console.log("✅ sqrtPriceX96 from LP:", sqrtPriceX96.toString());
-        
+    
                 if (sqrtPriceX96 === 0) {
                     console.error("⚠️ No trades have happened yet.");
                     return 0;
                 }
-        
+    
                 // ✅ Fix: Invert the price ratio to get ASC price correctly
                 const priceRatio = (sqrtPriceX96 / (2 ** 96)) ** 2;
                 const ascPriceUSD = (1 / priceRatio) * polPrice;
                 console.log("✅ Fixed ASC/USD Price:", ascPriceUSD);
-        
+    
                 // ✅ Update UI with ASC price
                 priceDisplay.innerText = `ASC Price: $${ascPriceUSD.toFixed(6)}`;
                 return ascPriceUSD;
@@ -131,7 +143,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return 0;
             }
         }
-        
 
         async function addASCToWallet() {
             try {
