@@ -20,7 +20,7 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.8); /* Improved visibility */
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 10px 20px;
     z-index: 100;
     display: flex;
@@ -28,66 +28,42 @@ header {
     justify-content: space-between;
 }
 
+/* Logo and Tagline */
 .logo-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 10px 20px; /* Adds space to prevent overlap */
+    padding: 10px 20px;
+    flex-wrap: nowrap;
 }
 
-/* Ensure tagline doesn’t push nav */
+/* Tagline Styling */
 .tagline {
     font-size: 1rem;
-    max-width: 60%;
+    max-width: 40%; /* Prevents it from taking up too much space */
     text-align: right;
     white-space: nowrap;
-    margin-left: 20px; /* Creates spacing from logo */
+    margin-left: 15px; /* Gives space from the logo */
 }
 
-/* Reduce tagline size on mobile */
-@media (max-width: 768px) {
-    .tagline {
-        font-size: 0.8rem; /* Make it smaller */
-        max-width: 50%; /* Prevent it from taking too much space */
-        text-align: right;
-        margin-left: auto; /* Auto-adjust spacing */
-    }
-
-    .logo-container {
-        flex-wrap: nowrap;
-        padding: 5px 10px; /* Slightly smaller padding */
-    }
-}
-
-
-/* Reduce tagline size on mobile */
-@media (max-width: 768px) {
-    .tagline {
-        font-size: 0.8rem; /* Make the tagline smaller */
-        max-width: 50%; /* Prevent it from taking too much space */
-        text-align: right; /* Align it better */
-    }
-
-    .logo-container {
-        flex-wrap: nowrap;
-    }
-}
-
-
+/* Logo */
 .main-logo {
     max-width: 50px;
     height: auto;
 }
 
+/* Navigation Bar */
 nav ul {
     list-style: none;
     display: flex;
     justify-content: center;
     gap: 20px;
     padding: 0;
+    flex-wrap: nowrap;
 }
 
+/* Navigation Items */
 nav ul li {
     display: inline;
 }
@@ -119,17 +95,17 @@ nav ul li a:hover {
     padding: 50px 20px;
 }
 
-/* Adjust Roadmap Title */
+/* Roadmap Title */
 .roadmap h2 {
     font-size: 2.5rem;
     margin-bottom: 20px;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.6); /* Adds a subtle readable background */
+    background-color: rgba(0, 0, 0, 0.6);
     padding: 10px;
     border-radius: 8px;
 }
 
-/* Timeline and Milestones */
+/* Timeline */
 .timeline {
     display: flex;
     flex-direction: column;
@@ -138,9 +114,9 @@ nav ul li a:hover {
     margin: auto;
 }
 
-/* Timeline Boxes - Improve Readability */
+/* Timeline Boxes */
 .timeline-section {
-    background-color: rgba(0, 0, 0, 0.5); /* Darker background for text readability */
+    background-color: rgba(0, 0, 0, 0.5);
     padding: 15px;
     border-radius: 10px;
     font-size: 1.2rem;
@@ -148,28 +124,29 @@ nav ul li a:hover {
     max-width: 600px;
     margin: 10px auto;
     color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3); /* Subtle border for better separation */
-    backdrop-filter: blur(5px); /* Adds a slight blur effect for readability */
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
 }
 
-/* Mobile Responsiveness */
+/* Mobile Adjustments */
 @media (max-width: 768px) {
-    .timeline-section {
-        font-size: 1rem;
-        padding: 10px;
-        width: 95%;
+    .tagline {
+        font-size: 0.8rem; /* Smaller tagline */
+        max-width: 40%; /* Prevent it from taking up too much space */
+        text-align: right;
+        margin-left: auto;
     }
 
-    .main-logo {
-        max-width: 40px;
+    .logo-container {
+        flex-wrap: nowrap;
+        padding: 5px 10px;
     }
 
     nav ul {
         flex-wrap: nowrap;
-        overflow-x: auto; /* Allows horizontal scrolling if needed */
+        overflow-x: auto; /* Allows scrolling if needed */
         justify-content: flex-start;
         white-space: nowrap;
         padding: 5px;
     }
-    
 }
