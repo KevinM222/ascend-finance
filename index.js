@@ -57,44 +57,48 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         async function fetchASCData(signer, userAddress) {
             try {
-                // 🚨 Ensure we're on Polygon before fetching data
                 const network = await provider.getNetwork();
                 if (network.chainId !== 137) {
                     console.error("⚠️ Wrong network detected. Please switch to Polygon.");
                     return;
                 }
-
+        
                 const ascContract = new ethers.Contract(
-                    '0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a',
+                    "0x4456b0f017f6bf9b0aa7a0ac3d3f224902a1937a",
                     ["function balanceOf(address owner) view returns (uint256)"],
                     provider
                 );
-
+        
                 const balanceRaw = await ascContract.balanceOf(userAddress);
-                const balance = ethers.utils.formatUnits(balanceRaw, 18);
-                console.log("✅ User ASC Balance:", balance);
-
-                // ✅ Update UI with ASC balance
-                balanceDisplay.innerText = `Your ASC Balance: ${balance}`;
-
+                const balance = parseFloat(ethers.utils.formatUnits(balanceRaw, 18)); // Convert BigNumber to Float
+                const formattedBalance = balance.toFixed(balance >= 1 ? 2 : 6); // 2 decimals for large values, 6 for small
+        
+                console.log(`✅ User ASC Balance: ${formattedBalance}`);
+        
+                // ✅ Update UI with cleaned balance
+                balanceDisplay.innerText = `Your ASC Balance: ${formattedBalance}`;
+        
                 if (balanceRaw.gt(0)) {
                     await addASCToWallet();
                 }
-
+        
                 // 🔍 Fetch ASC price and update total value
                 const ascPrice = await fetchASCPrice();
                 const totalValue = balance * ascPrice;
-                console.log("✅ Total USD Value:", totalValue);
-
+                const formattedTotalValue = totalValue.toFixed(2); // Always 2 decimals for USD value
+        
+                console.log(`✅ Total USD Value: ${formattedTotalValue}`);
+        
                 // ✅ Update UI with total value
-                totalValueDisplay.innerText = `Total Value: $${totalValue.toFixed(2)}`;
-
+                totalValueDisplay.innerText = `Total Value: $${formattedTotalValue}`;
+        
             } catch (error) {
                 console.error("🚨 Error fetching ASC balance:", error);
                 balanceDisplay.innerText = "Your ASC Balance: Unavailable";
                 totalValueDisplay.innerText = "Total Value: $0.00";
             }
         }
+        
 
         async function fetchASCPrice() {
             try {
