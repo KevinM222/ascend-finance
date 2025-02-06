@@ -32,20 +32,17 @@ header {
 .logo-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
-    padding: 10px 20px;
-    flex-wrap: nowrap;
+    gap: 10px; /* Adds spacing between logo and tagline */
 }
 
-/* Tagline Styling */
 .tagline {
     font-size: 1rem;
-    max-width: 40%; /* Prevents it from taking up too much space */
-    text-align: right;
+    flex-grow: 1; /* Makes it adjust dynamically */
+    text-align: center; /* Centers it so it doesn’t push buttons */
     white-space: nowrap;
-    margin-left: 15px; /* Gives space from the logo */
 }
+
 
 /* Logo */
 .main-logo {
@@ -57,11 +54,13 @@ header {
 nav ul {
     list-style: none;
     display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 0;
+    justify-content: flex-end; /* Keeps nav items aligned */
     flex-wrap: nowrap;
+    gap: 15px;
+    padding: 0;
+    overflow-x: auto; /* Ensures it doesn’t break */
 }
+
 
 /* Navigation Items */
 nav ul li {
@@ -130,23 +129,28 @@ nav ul li a:hover {
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
-    .tagline {
-        font-size: 0.8rem; /* Smaller tagline */
-        max-width: 40%; /* Prevent it from taking up too much space */
-        text-align: right;
-        margin-left: auto;
+    .logo-container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 10px;
     }
 
-    .logo-container {
-        flex-wrap: nowrap;
-        padding: 5px 10px;
+    .tagline {
+        font-size: 0.75rem; /* Make it smaller */
+        max-width: 40%; /* Prevent it from taking up too much space */
     }
 
     nav ul {
         flex-wrap: nowrap;
-        overflow-x: auto; /* Allows scrolling if needed */
+        overflow-x: auto; /* Allows horizontal scrolling */
         justify-content: flex-start;
         white-space: nowrap;
         padding: 5px;
     }
+
+    .main-logo {
+        max-width: 40px; /* Adjust logo size */
+    }
 }
+
