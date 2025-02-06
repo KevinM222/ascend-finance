@@ -31,24 +31,24 @@ header {
 /* Logo and Tagline */
 .logo-container {
     display: flex;
+    flex-direction: column; /* Stack logo and tagline */
     align-items: center;
-    width: 100%;
-    gap: 10px; /* Adds spacing between logo and tagline */
+    text-align: center;
+    margin-top: 10px; /* Add spacing below the toolbar */
+}
+
+.main-logo {
+    max-width: 60px; /* Adjust logo size */
+    height: auto;
 }
 
 .tagline {
     font-size: 1rem;
-    flex-grow: 1; /* Makes it adjust dynamically */
-    text-align: center; /* Centers it so it doesn’t push buttons */
+    margin-top: 5px;
+    color: white;
     white-space: nowrap;
 }
 
-
-/* Logo */
-.main-logo {
-    max-width: 50px;
-    height: auto;
-}
 
 /* Navigation Bar */
 nav ul {
