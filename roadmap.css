@@ -53,19 +53,28 @@ header {
 /* Navigation Bar */
 nav ul {
     display: flex;
-    justify-content: center;
-    flex-wrap: nowrap;
+    justify-content: center; /* Centers the buttons */
+    align-items: center; /* Ensures even height */
+    flex-wrap: nowrap; /* Prevents stacking */
     gap: 15px;
-    padding: 0;
-    overflow-x: auto; /* Prevents wrapping issues */
+    padding: 10px 0; /* Ensures even spacing */
+    height: 50px; /* Locks height to stop up/down toggling */
 }
 
+nav {
+    height: 50px; /* Prevents jumping */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 
 /* Navigation Items */
 nav ul li {
-    display: inline;
+    display: flex;
+    align-items: center;
 }
+
 
 nav ul li a {
     text-decoration: none;
