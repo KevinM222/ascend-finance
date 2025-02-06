@@ -52,14 +52,14 @@ header {
 
 /* Navigation Bar */
 nav ul {
-    list-style: none;
     display: flex;
-    justify-content: flex-end; /* Keeps nav items aligned */
+    justify-content: center;
     flex-wrap: nowrap;
     gap: 15px;
     padding: 0;
-    overflow-x: auto; /* Ensures it doesn’t break */
+    overflow-x: auto; /* Prevents wrapping issues */
 }
+
 
 
 /* Navigation Items */
