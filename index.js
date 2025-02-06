@@ -150,6 +150,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         async function addASCToWallet() {
             try {
+                // 🚨 Check if MetaMask supports detecting assets
+                if (!window.ethereum || !window.ethereum.request) {
+                    console.warn("⚠️ MetaMask detection not supported.");
+                    return;
+                }
+        
+                // 🚨 Check if ASC is already in the wallet
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length === 0) {
+                    console.warn("⚠️ No connected wallet found.");
+                    return;
+                }
+        
+                const balance = await window.ethereum.request({
+                    method: "eth_getBalance",
+                    params: [accounts[0], "latest"],
+                });
+        
+                if (parseInt(balance, 16) > 0) {
+                    console.log("✅ ASC is already in the wallet. No need to add again.");
+                    return; // Stop execution if ASC is already added
+                }
+        
+                // 🚀 If ASC is NOT added, ask the user to add it
                 await window.ethereum.request({
                     method: 'wallet_watchAsset',
                     params: {
@@ -162,10 +186,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                         },
                     },
                 });
+        
+                console.log("✅ ASC successfully added to wallet.");
             } catch (error) {
-                console.error('Error adding ASC to wallet:', error);
+                if (error.code === 4001) {
+                    console.warn("⚠️ User rejected adding ASC to wallet.");
+                } else {
+                    console.error("🚨 Error adding ASC to wallet:", error);
+                }
             }
         }
+        
 
         // ✅ Call fetchASCPrice() **AFTER** function is defined
         fetchASCPrice();
