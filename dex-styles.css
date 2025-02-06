@@ -143,22 +143,19 @@ nav ul li a:hover {
 
 /* Tab Content */
 .tab-content {
+    display: none; /* Hide all tabs initially */
     width: 100%;
-    background: rgba(240, 240, 240, 1); /* Light gray for better contrast */
+    background: rgba(240, 240, 240, 1);
     border-radius: 16px;
-    padding: 2rem;
+    padding: 1.5rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
-    display: none; /* Initially hidden, shown on tab click */
-    #staking-tab {
-        display: block !important; /* Force it to be visible */
-    }
-    
 }
 
 .tab-content.active {
-    display: block;
+    display: block; /* Show only the active tab */
 }
+
 
 /* Labels and Input Fields */
 label {
@@ -400,16 +397,8 @@ button.cta-button:hover {
 
 @media only screen and (max-width: 768px) {
     
-    #staking-tab, .remove-liquidity-content {
-        display: block !important;
-    }
-
-    body {
+      body {
         background: none;
-    }
-
-    nav {
-        display: none; /* Hide the toolbar */
     }
 
     .swap-container {
@@ -420,20 +409,24 @@ button.cta-button:hover {
     }
 
     .wallet-container {
-        flex-direction: column;
-        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
         justify-content: center;
+        gap: 10px;
         width: 100%;
     }
-
+    
     .wallet-container button {
-        width: 90%;
-        margin-bottom: 0.5rem;
+        flex: 1 1 45%; /* Ensures buttons stay in a row */
+        max-width: 160px;
     }
+    
 
     .tab-button {
-        font-size: 1rem;
-        padding: 0.8rem;
+        font-size: 0.9rem;
+        padding: 0.6rem;
+        flex: 1; /* Makes all buttons fit in one row */
+        min-width: 25%; /* Ensures they don’t get too small */
     }
 
     .staking-container, 
