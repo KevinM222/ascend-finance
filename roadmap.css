@@ -98,7 +98,7 @@ nav ul li a:hover {
 
 /* Timeline Boxes - Improve Readability */
 .timeline-section {
-    background-color: rgba(0, 0, 0, 0.3); /* Darker background for text readability */
+    background-color: rgba(0, 0, 0, 0.5); /* Darker background for text readability */
     padding: 15px;
     border-radius: 10px;
     font-size: 1.2rem;
