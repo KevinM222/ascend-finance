@@ -72,7 +72,7 @@ nav ul li a:hover {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: url("../images/rocket.png") no-repeat center center fixed;
+    background: url("rocket.png") no-repeat center center fixed;
     background-size: cover;
     padding: 50px 20px;
 }
