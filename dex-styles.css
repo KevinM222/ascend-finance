@@ -25,11 +25,11 @@ nav {
 
 nav ul {
     display: flex;
-    justify-content: space-around;
-    list-style-type: none;
-    margin: 0;
+    justify-content: space-evenly; /* Evenly space buttons */
+    align-items: center;
+    width: 100%;
     padding: 0;
-    width: 80%;
+    margin: 0;
 }
 
 nav ul li {
@@ -400,9 +400,22 @@ button.cta-button:hover {
       body {
         background: none;
     }
-
+    nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.9);
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100; /* Keep it above everything */
+        height: 50px; /* Fix toolbar height to prevent overlapping */
+    }
+    
+    /* Ensure there is space between toolbar and DEX box */
     .swap-container {
-        margin: 1rem auto;
+        margin-top: 70px; /* Pushes the DEX box down so it's not covered */
         padding: 1rem;
         max-width: 100%;
         box-shadow: none;
@@ -410,11 +423,12 @@ button.cta-button:hover {
 
     .wallet-container {
         display: flex;
-        flex-wrap: wrap;
         justify-content: center;
         gap: 10px;
-        width: 100%;
+        position: relative; /* Removes fixed position to avoid overlapping toolbar */
+        margin-top: 10px; /* Pushes it below toolbar */
     }
+    
     
     .wallet-container button {
         flex: 1 1 45%; /* Ensures buttons stay in a row */
