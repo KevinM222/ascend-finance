@@ -152,10 +152,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error('Error adding ASC to wallet:', error);
             }
         }
+
+        // ✅ Call fetchASCPrice() **AFTER** function is defined
+        fetchASCPrice();
     } else {
         console.error("Non-Ethereum browser detected. Install MetaMask.");
     }
-
-    // Fetch price on page load
-    fetchASCPrice();
 });
