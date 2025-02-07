@@ -7,8 +7,8 @@ body, html {
 
 /* Hero Section */
 .hero-section {
-    background: #f2f5f4 url('background.webp') center center / cover no-repeat;
-    min-height: 100vh;
+    background: #11b49c0a url('background.webp') center center / cover no-repeat;
+    height: 100vh;  /* Changed from min-height */
     width: 100%;
     position: relative;
     z-index: 1;
@@ -17,7 +17,7 @@ body, html {
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding-top: 60px;
+    /* Removed padding-top if not necessary for your layout */
 }
 
 /* Logo container and tagline */
