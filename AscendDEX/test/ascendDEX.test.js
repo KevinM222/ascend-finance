@@ -4,7 +4,8 @@ const { ethers, network } = require("hardhat");
 describe("AscendDEX & Rewards Testing", function () {
     let ModularDEX, AscRewards, dex, rewards, MockERC20, Treasury;
     let token1, token2_POL, token2_USDC, treasury, owner, addr1, addr2;
-    const provider = ethers.provider; // ✅ FIXED: Use Hardhat’s provider
+    
+    const provider = ethers.provider; // ✅ Fix: Use Hardhat's built-in provider
 
     beforeEach(async function () {
         console.log("🔄 Resetting Hardhat network...");
