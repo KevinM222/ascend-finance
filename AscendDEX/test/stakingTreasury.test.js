@@ -32,16 +32,18 @@ describe("AscStaking & Treasury Testing", function () {
 
     // ✅ Ensure contracts deploy successfully
     it("Should deploy Staking & Treasury contracts", async function () {
-        expect(staking.address).to.properAddress;
-        expect(treasury.address).to.properAddress;
+        expect(staking.address).to.be.properAddress;
+        expect(treasury.address).to.be.properAddress;
     });
 
     // ✅ Test staking functionality
     it("Should allow staking ASC tokens", async function () {
         const stakeAmount = ethers.utils.parseUnits("2000", 18);
 
-        // Approve & Stake
+        // ✅ Fix: Ensure tokens are approved before staking
         await ascToken.connect(addr1).approve(staking.address, stakeAmount);
+
+        // Stake
         await staking.connect(addr1).stake(stakeAmount, 0); // No lock period
 
         // Verify staking
@@ -76,14 +78,14 @@ describe("AscStaking & Treasury Testing", function () {
         await ascToken.connect(addr1).approve(staking.address, stakeAmount);
         await staking.connect(addr1).stake(stakeAmount, 0); // No lock
 
-        // Increase time by 1 year to accumulate rewards
-        await network.provider.send("evm_increaseTime", [365 * 24 * 60 * 60]);
-        await network.provider.send("evm_mine");
+        // ✅ Fix: Increase time to accumulate rewards before claiming
+        await network.provider.send("evm_increaseTime", [365 * 24 * 60 * 60]); // Move forward 1 year
+        await network.provider.send("evm_mine"); // Mine new block
 
         // Claim rewards
         await staking.connect(addr1).claimRewards();
 
-        // Balance should have increased due to rewards
+        // ✅ Verify balance increase due to rewards
         const balance = await ascToken.balanceOf(addr1.address);
         expect(balance).to.be.gt(ethers.utils.parseUnits("5000", 18));
     });
@@ -106,6 +108,10 @@ describe("AscStaking & Treasury Testing", function () {
         const stakeAmount = ethers.utils.parseUnits("5000", 18);
         await ascToken.connect(addr1).approve(staking.address, stakeAmount);
         await staking.connect(addr1).stake(stakeAmount, 0);
+
+        // ✅ Fix: Ensure rewards are accumulated before unstaking
+        await network.provider.send("evm_increaseTime", [365 * 24 * 60 * 60]); // Move forward 1 year
+        await network.provider.send("evm_mine");
 
         // Unstake
         await staking.connect(addr1).unstake(stakeAmount);
