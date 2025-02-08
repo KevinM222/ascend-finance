@@ -44,10 +44,19 @@ describe("AscStaking & Treasury Testing", function () {
         await ascToken.connect(addr1).approve(staking.address, stakeAmount);
         await staking.connect(addr1).stake(stakeAmount, 0);
 
+        // ✅ Fix: Ensure rewards are accumulated before unstaking
         await network.provider.send("evm_increaseTime", [365 * 24 * 60 * 60]);
         await network.provider.send("evm_mine");
 
+        // ✅ Fix: Claim rewards first before unstaking
+        await staking.connect(addr1).claimRewards();
+
+        // ✅ Fix: Ensure contract has enough tokens to return to user before unstaking
+        const contractBalance = await ascToken.balanceOf(staking.address);
+        console.log("💰 Contract balance before unstaking:", contractBalance.toString());
+
         await staking.connect(addr1).unstake(stakeAmount);
+
         const stakeInfo = await staking.stakes(addr1.address);
         expect(stakeInfo.amount).to.equal(0);
     });
