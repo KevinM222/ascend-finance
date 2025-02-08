@@ -1,18 +1,27 @@
-require("dotenv").config({ path: require("path").resolve(__dirname, ".env") });
-// Ensure this is the first line
+require("dotenv").config();
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 
-//debug statement 
+// Ensure required .env variables are set
+if (!process.env.SEPOLIA_RPC_URL) {
+  console.error("❌ ERROR: SEPOLIA_RPC_URL is not set in .env");
+  process.exit(1);
+}
+
+if (!process.env.PRIVATE_KEY) {
+  console.error("❌ ERROR: PRIVATE_KEY is not set in .env");
+  process.exit(1);
+}
+
+// Debug statement to verify env loading
 console.log("SEPOLIA_RPC_URL:", process.env.SEPOLIA_RPC_URL);
 
-const { task } = require("hardhat/config");
-
 // Custom Task: Block Number
+const { task } = require("hardhat/config");
 task("block-number", "Prints the current block number").setAction(async (taskArgs, hre) => {
-    const blockNumber = await hre.ethers.provider.getBlockNumber();
-    console.log("Current block number:", blockNumber);
+  const blockNumber = await hre.ethers.provider.getBlockNumber();
+  console.log("Current block number:", blockNumber);
 });
 
 module.exports = {
@@ -20,32 +29,27 @@ module.exports = {
     compilers: [
       {
         version: "0.8.19",
-        settings: {
-          optimizer: { enabled: true, runs: 200 }
-        }
+        settings: { optimizer: { enabled: true, runs: 200 } }
       },
       {
         version: "0.8.0",
-        settings: {
-          optimizer: { enabled: true, runs: 200 }
-        }
+        settings: { optimizer: { enabled: true, runs: 200 } }
       }
     ],
-    overrides: {
-      "contracts/Treasury.sol": { version: "0.8.0" },
-      "contracts/ModularDEX.sol": { version: "0.8.0" },
-      "contracts/MockERC20.sol": { version: "0.8.0" },
-      "contracts/MockPriceFeeds.sol": { version: "0.8.0" }
-    }
+    overrides: Object.fromEntries(
+      ["Treasury.sol", "ModularDEX.sol", "MockERC20.sol", "MockPriceFeeds.sol"].map(contract => [
+        `contracts/${contract}`, { version: "0.8.0" }
+      ])
+    ),
   },
   networks: {
     hardhat: {
-      chainId: 31337, // If using a local node
+      chainId: 31337,
     },
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL,
       chainId: 11155111,
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      accounts: [`0x${process.env.PRIVATE_KEY}`],
     },
   },
   etherscan: {

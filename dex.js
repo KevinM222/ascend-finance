@@ -87,34 +87,90 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 async function connectWallet() {
-  console.log("connectWallet() function started...");
+  console.log("🔌 Connecting wallet...");
+  
   if (window.ethereum) {
     try {
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+
+      // ✅ Ensure user is on Sepolia (0xaa36a7)
       if (chainId !== '0xaa36a7') {
-        alert("Please switch to the Sepolia test network in MetaMask.");
-        return;
+        console.warn("⚠️ Wrong network detected. Switching to Sepolia...");
+        await switchToSepolia();
+        return; // Prevent further execution until they are on Sepolia
       }
+
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
       if (accounts.length === 0) {
-        console.warn("No accounts found. Please check MetaMask.");
+        console.warn("⚠️ No accounts found. Please check MetaMask.");
         return;
       }
+
       const walletAddress = accounts[0];
       provider = new ethers.providers.Web3Provider(window.ethereum);
       signer = provider.getSigner();
+
       document.getElementById("connectWalletButton").textContent =
         `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
       document.getElementById("connectWalletButton").disabled = true;
       document.getElementById("disconnectWalletButton").style.display = "inline-block";
-      console.log("Wallet Connected Successfully.");
+
+      console.log("✅ Wallet Connected Successfully.");
+
+      // ✅ Add ASC Token to MetaMask
+      await addASCTokenToMetaMask();
+
     } catch (error) {
-      console.error("Error connecting to wallet:", error);
+      console.error("❌ Error connecting to wallet:", error);
     }
   } else {
-    alert("MetaMask is not installed. Please install it to connect your wallet.");
+    alert("⚠️ MetaMask is not installed. Please install it to connect your wallet.");
   }
 }
+
+async function switchToSepolia() {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0xaa36a7' }], // Sepolia Testnet Chain ID
+    });
+
+    console.log("✅ Successfully switched to Sepolia.");
+    window.location.reload(); // Refresh page after network switch
+
+  } catch (error) {
+    // If Sepolia is not added in MetaMask, prompt to add it
+    if (error.code === 4902) {
+      console.warn("⚠️ Sepolia network not found. Adding it now...");
+      await addSepoliaNetwork();
+    } else {
+      console.error("❌ Error switching to Sepolia:", error);
+    }
+  }
+}
+
+async function addSepoliaNetwork() {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_addEthereumChain',
+      params: [{
+        chainId: '0xaa36a7', // Sepolia Testnet
+        chainName: 'Ethereum Sepolia Testnet',
+        nativeCurrency: { name: 'SepoliaETH', symbol: 'ETH', decimals: 18 },
+        rpcUrls: ['https://sepolia.infura.io/v3/YOUR_INFURA_API_KEY'], // Replace with your Infura API Key
+        blockExplorerUrls: ['https://sepolia.etherscan.io/'],
+      }]
+    });
+
+    console.log("✅ Sepolia network added to MetaMask.");
+    window.location.reload(); // Refresh page after adding network
+
+  } catch (error) {
+    console.error("❌ Failed to add Sepolia network:", error);
+  }
+}
+
 
 function disconnectWallet() {
   document.getElementById("connectWalletButton").textContent = "Connect Wallet";
