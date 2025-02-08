@@ -4,7 +4,7 @@ const { ethers, network } = require("hardhat");
 describe("AscendDEX & Rewards Testing", function () {
     let ModularDEX, AscRewards, dex, rewards, MockERC20, Treasury;
     let token1, token2_POL, token2_USDC, treasury, owner, addr1, addr2;
-
+    
     beforeEach(async function () {
         console.log("🔄 Resetting Hardhat network...");
         await network.provider.request({ method: "hardhat_reset" });
@@ -23,27 +23,24 @@ describe("AscendDEX & Rewards Testing", function () {
 
         // Deploy Treasury Contract
         Treasury = await ethers.getContractFactory("Treasury");
-        treasury = await Treasury.deploy();
+        treasury = await Treasury.deploy(owner.address);
         await treasury.deployed();
 
-        // ✅ Fix: Ensure the correct number of constructor arguments for ModularDEX
+        // ✅ Ensure the contract is deployed with the correct owner
         ModularDEX = await ethers.getContractFactory("ModularDEX");
-        dex = await ModularDEX.deploy(owner.address, treasury.address, owner.address); // Fix
+        dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address);
         await dex.deployed();
-
-        // ✅ Fix: Register tokens before adding liquidity
-        await dex.addToken("MT1", token1.address, owner.address, 18);
-        await dex.addToken("MT2", token2_POL.address, owner.address, 18);
 
         // Deploy AscRewards
         AscRewards = await ethers.getContractFactory("AscRewards");
         rewards = await AscRewards.deploy(token1.address, ethers.utils.parseUnits("50000", 18));
         await rewards.deployed();
+
+        console.log("✅ Owner Address:", await dex.owner());
     });
 
     it("Should allow fee updates", async function () {
-        // ✅ Fix: Ensure only owner updates fee
-        await dex.connect(owner).setFee(50);
+        await dex.connect(owner).setFee(50); // 0.5%
         expect(await dex.fee()).to.equal(50);
     });
 
@@ -54,11 +51,29 @@ describe("AscendDEX & Rewards Testing", function () {
         await token1.connect(addr1).approve(dex.address, amount1);
         await token2_POL.connect(addr1).approve(dex.address, amount2);
 
-        // ✅ Fix: Ensure tokens are registered before adding liquidity
-        await dex.connect(owner).addLiquidity("MT1", "MT2", amount1, amount2);
+        await dex.connect(owner).addToken("MT1", token1.address, owner.address, 18);
+        await dex.connect(owner).addToken("MT2", token2_POL.address, owner.address, 18);
+
+        await dex.connect(addr1).addLiquidity("MT1", "MT2", amount1, amount2);
 
         const pair = await dex.pairs(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MT1MT2")));
         expect(pair.reserve1).to.equal(amount1);
         expect(pair.reserve2).to.equal(amount2);
+
+        await dex.connect(addr1).removeLiquidity("MT1", "MT2", ethers.utils.parseUnits("20", 18));
+
+        const updatedPair = await dex.pairs(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MT1MT2")));
+        expect(updatedPair.reserve1).to.be.lt(pair.reserve1);
+        expect(updatedPair.reserve2).to.be.lt(pair.reserve2);
+    });
+
+    it("Should collect fees in the treasury", async function () {
+        const depositAmount = ethers.utils.parseUnits("20", 18);
+
+        await token1.connect(owner).approve(treasury.address, depositAmount);
+        await treasury.deposit(token1.address, depositAmount);
+
+        const treasuryBalance = await token1.balanceOf(treasury.address);
+        expect(treasuryBalance).to.equal(depositAmount);
     });
 });
