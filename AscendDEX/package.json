@@ -25,6 +25,7 @@
   "dependencies": {
     "@chainlink/contracts": "^0.4.1",
     "@openzeppelin/contracts": "^4.8.0",
+    "ganache": "^7.9.2",
     "glob": "^11.0.1",
     "har-validator": "^5.1.5",
     "rimraf": "^6.0.1",
