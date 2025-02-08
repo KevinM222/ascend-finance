@@ -11,22 +11,23 @@ describe("AscStaking & Treasury Testing", function () {
 
         [owner, addr1, addr2] = await ethers.getSigners();
 
-        // Deploy Mock ERC20 Token (ASC Token)
+        // ✅ Deploy Mock ERC20 Token (ASC Token)
         MockERC20 = await ethers.getContractFactory("MockERC20");
         ascToken = await MockERC20.deploy("Ascend Token", "ASC", 18, ethers.utils.parseUnits("1000000", 18));
         await ascToken.deployed();
 
-        // Deploy Treasury
+        // ✅ Deploy Treasury
         Treasury = await ethers.getContractFactory("Treasury");
         treasury = await Treasury.deploy();
         await treasury.deployed();
 
-        // Deploy AscStaking with 100,000 ASC reward pool
+        // ✅ Deploy AscStaking with Initial Reward Pool
         AscStaking = await ethers.getContractFactory("AscStaking");
         staking = await AscStaking.deploy(ascToken.address, ethers.utils.parseUnits("100000", 18));
         await staking.deployed();
 
-        // Allocate 500,000 ASC to addr1 for testing
+        // ✅ Ensure Staking Contract Has Enough Tokens
+        await ascToken.transfer(staking.address, ethers.utils.parseUnits("100000", 18));
         await ascToken.transfer(addr1.address, ethers.utils.parseUnits("500000", 18));
     });
 
@@ -34,7 +35,7 @@ describe("AscStaking & Treasury Testing", function () {
         const stakeAmount = ethers.utils.parseUnits("2000", 18);
 
         await ascToken.connect(addr1).approve(staking.address, stakeAmount);
-        await staking.connect(addr1).stake(stakeAmount, 0); // No lock period
+        await staking.connect(addr1).stake(stakeAmount, 0);
 
         const stakeInfo = await staking.stakes(addr1.address);
         expect(stakeInfo.amount).to.equal(stakeAmount);
@@ -45,7 +46,10 @@ describe("AscStaking & Treasury Testing", function () {
         await ascToken.connect(addr1).approve(staking.address, stakeAmount);
         await staking.connect(addr1).stake(stakeAmount, 0);
 
-        // Increase time to accumulate rewards
+        // ✅ Ensure Contract Has Enough Balance for Unstaking
+        console.log("💰 Contract balance before unstaking:", await ascToken.balanceOf(staking.address));
+
+        // ✅ Increase time to allow rewards accumulation
         await network.provider.send("evm_increaseTime", [365 * 24 * 60 * 60]); 
         await network.provider.send("evm_mine");
 

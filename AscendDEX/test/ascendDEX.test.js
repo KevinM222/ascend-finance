@@ -4,14 +4,14 @@ const { ethers, network } = require("hardhat");
 describe("AscendDEX & Rewards Testing", function () {
     let ModularDEX, AscRewards, dex, rewards, MockERC20, Treasury;
     let token1, token2_POL, token2_USDC, treasury, owner, addr1, addr2;
-    
+
     beforeEach(async function () {
         console.log("🔄 Resetting Hardhat network...");
         await network.provider.request({ method: "hardhat_reset" });
 
         [owner, addr1, addr2] = await ethers.getSigners();
 
-        // Deploy Mock ERC20 Tokens
+        // ✅ Deploy Mock ERC20 Tokens
         MockERC20 = await ethers.getContractFactory("MockERC20");
         token1 = await MockERC20.deploy("Mock Token 1", "MT1", 18, ethers.utils.parseUnits("100000", 18));
         token2_POL = await MockERC20.deploy("Mock Token 2", "MT2", 18, ethers.utils.parseUnits("100000", 18));
@@ -21,26 +21,29 @@ describe("AscendDEX & Rewards Testing", function () {
         await token2_POL.deployed();
         await token2_USDC.deployed();
 
-        // Deploy Treasury Contract
+        // ✅ Deploy Treasury Contract
         Treasury = await ethers.getContractFactory("Treasury");
         treasury = await Treasury.deploy(owner.address);
         await treasury.deployed();
 
-        // ✅ Ensure the contract is deployed with the correct owner
+        // ✅ Fix Constructor Arguments for ModularDEX
         ModularDEX = await ethers.getContractFactory("ModularDEX");
-        dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address);
+        dex = await ModularDEX.deploy(owner.address, treasury.address); // Pass correct arguments
         await dex.deployed();
 
-        // Deploy AscRewards
+        // ✅ Deploy AscRewards with Proper Arguments
         AscRewards = await ethers.getContractFactory("AscRewards");
         rewards = await AscRewards.deploy(token1.address, ethers.utils.parseUnits("50000", 18));
         await rewards.deployed();
+    });
 
-        console.log("✅ Owner Address:", await dex.owner());
+    it("Should deploy contracts successfully", async function () {
+        expect(dex.address).to.be.properAddress;
+        expect(rewards.address).to.be.properAddress;
     });
 
     it("Should allow fee updates", async function () {
-        await dex.connect(owner).setFee(50); // 0.5%
+        await dex.connect(owner).setFee(50);
         expect(await dex.fee()).to.equal(50);
     });
 
