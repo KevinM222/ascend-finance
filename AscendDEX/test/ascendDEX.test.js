@@ -5,11 +5,9 @@ describe("AscendDEX & Rewards Testing", function () {
     let ModularDEX, AscRewards, dex, rewards, MockERC20, Treasury;
     let token1, token2_POL, token2_USDC, treasury, owner, addr1, addr2;
     
-    const provider = ethers.provider; // ✅ Fix: Use Hardhat's built-in provider
-
     beforeEach(async function () {
         console.log("🔄 Resetting Hardhat network...");
-        await network.provider.request({ method: "hardhat_reset" }); // ✅ Ensures fresh state
+        await network.provider.request({ method: "hardhat_reset" });
 
         [owner, addr1, addr2] = await ethers.getSigners();
 
@@ -25,23 +23,23 @@ describe("AscendDEX & Rewards Testing", function () {
 
         // Deploy Treasury Contract
         Treasury = await ethers.getContractFactory("Treasury");
-        treasury = await Treasury.deploy(owner.address);
+        treasury = await Treasury.deploy();
         await treasury.deployed();
 
-        // ✅ FIXED: Correct ModularDEX Constructor Arguments
+        // ✅ Fix: Ensure the correct number of constructor arguments for ModularDEX
         ModularDEX = await ethers.getContractFactory("ModularDEX");
-        dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address);
+        dex = await ModularDEX.deploy(owner.address, treasury.address);
         await dex.deployed();
 
         // Deploy AscRewards
         AscRewards = await ethers.getContractFactory("AscRewards");
-        rewards = await AscRewards.deploy(token1.address, ethers.utils.parseUnits("50000", 18)); // Reward pool 50,000 ASC
+        rewards = await AscRewards.deploy(token1.address, ethers.utils.parseUnits("50000", 18)); // 50,000 ASC Rewards
         await rewards.deployed();
     });
 
     it("Should deploy contracts successfully", async function () {
-        expect(dex.address).to.properAddress;
-        expect(rewards.address).to.properAddress;
+        expect(dex.address).to.be.properAddress;
+        expect(rewards.address).to.be.properAddress;
     });
 
     it("Should allow fee updates", async function () {
@@ -55,7 +53,6 @@ describe("AscendDEX & Rewards Testing", function () {
 
         await token1.connect(addr1).approve(dex.address, amount1);
         await token2_POL.connect(addr1).approve(dex.address, amount2);
-
         await dex.connect(addr1).addLiquidity("MT1", "MT2", amount1, amount2);
 
         const pair = await dex.pairs(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MT1MT2")));
