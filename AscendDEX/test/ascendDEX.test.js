@@ -27,6 +27,8 @@ describe("AscendDEX & Rewards Testing", function () {
         await treasury.deployed();
 
         // ✅ FIXED: Ensure Correct Constructor Parameters
+        console.log("🚀 Deploying ModularDEX with:", owner.address, owner.address, treasury.address);
+
         ModularDEX = await ethers.getContractFactory("ModularDEX");
         dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address);
         await dex.deployed();
