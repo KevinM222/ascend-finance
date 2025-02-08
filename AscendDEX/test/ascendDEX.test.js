@@ -7,10 +7,11 @@ describe("AscendDEX & Rewards Testing", function () {
 
     beforeEach(async function () {
         console.log("🔄 Resetting Hardhat network...");
+        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545"); // ✅ Added Fix
+    
         await network.provider.request({ method: "hardhat_reset" }); // Ensures fresh state
-
         [owner, addr1, addr2] = await ethers.getSigners();
-
+    
         // Deploy Mock ERC20 Tokens
         MockERC20 = await ethers.getContractFactory("MockERC20");
         token1 = await MockERC20.deploy("Mock Token 1", "MT1", 18, ethers.utils.parseUnits("100000", 18));
@@ -20,22 +21,23 @@ describe("AscendDEX & Rewards Testing", function () {
         await token1.deployed();
         await token2_POL.deployed();
         await token2_USDC.deployed();
-
+    
         // Deploy Treasury Contract
         Treasury = await ethers.getContractFactory("Treasury");
         treasury = await Treasury.deploy(owner.address);
         await treasury.deployed();
-
-        // Deploy ModularDEX
+    
+        // Deploy ModularDEX ✅ FIXED Constructor Arguments
         ModularDEX = await ethers.getContractFactory("ModularDEX");
-        dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address);
+        dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address, owner.address); // ✅ FIXED
         await dex.deployed();
-
+    
         // Deploy AscRewards
         AscRewards = await ethers.getContractFactory("AscRewards");
         rewards = await AscRewards.deploy(token1.address, ethers.utils.parseUnits("50000", 18)); // Reward pool 50,000 ASC
         await rewards.deployed();
     });
+    
 
     // ✅ Ensure contracts deploy successfully
     it("Should deploy contracts successfully", async function () {
