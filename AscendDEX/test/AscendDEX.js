@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const { ethers, network } = require("hardhat"); // ✅ Added `network`
 
 describe("AscendDEX Contract", function () {
     let AscendDEX, ascendDEX, MockERC20, MockPriceFeed;
@@ -7,6 +7,9 @@ describe("AscendDEX Contract", function () {
     let owner, addr1, addr2;
 
     beforeEach(async function () {
+        console.log("🔄 Resetting Hardhat network...");
+        await network.provider.request({ method: "hardhat_reset" }); // ✅ Ensures a fresh test blockchain state
+
         [owner, addr1, addr2] = await ethers.getSigners();
 
         // Deploy Mock Tokens
@@ -44,8 +47,10 @@ describe("AscendDEX Contract", function () {
     });
 
     it("Should deploy the contract successfully", async function () {
-        expect(ascendDEX.address).to.properAddress;
+        expect(ascendDEX.address).to.be.properAddress;
     });
+
+
 
     it("Should add liquidity and handle swaps correctly", async function () {
         const amount1 = ethers.utils.parseUnits("100", 18); // ASC liquidity
