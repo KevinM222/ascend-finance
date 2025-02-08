@@ -199,29 +199,50 @@ async function loadTokenData() {
 
 async function getTokenBalance(token) {
   try {
-    if (!provider) {
-      console.warn(`Skipping balance fetch for ${token}: No wallet connected.`);
+    if (!window.ethereum) {
+      console.warn(`❌ No Ethereum provider found. Install MetaMask.`);
       return "0";
     }
-    const tokens = await loadTokenData();
-    const tokenData = tokens[token];
-    if (!tokenData) {
-      throw new Error(`Token address for ${token} not found`);
+
+    if (!provider) {
+      console.warn(`⏳ Waiting for provider...`);
+      return "0";
     }
-    const erc20ABI = await loadABI('./frontend/MockERC20ABI.json');
-    const tokenContract = new ethers.Contract(tokenData.address, erc20ABI, provider);
+
+    // Ensure wallet is connected before proceeding
     const accounts = await provider.listAccounts();
     if (accounts.length === 0) {
-      console.warn(`Skipping balance fetch for ${token}: No wallet connected.`);
+      console.warn(`⚠️ No wallet connected. Cannot fetch balance for ${token}.`);
       return "0";
     }
+
+    const tokens = await loadTokenData();
+    const tokenData = tokens[token];
+
+    if (!tokenData) {
+      console.error(`❌ Token address for ${token} not found.`);
+      return "0";
+    }
+
+    const erc20ABI = await loadMockERC20ABI();
+    if (!erc20ABI) {
+      console.error(`❌ ERC20 ABI missing, cannot fetch balance.`);
+      return "0";
+    }
+
+    // Create contract instance with the signer
+    const tokenContract = new ethers.Contract(tokenData.address, erc20ABI, signer);
+
+    console.log(`🔍 Fetching balance for ${token} at ${tokenData.address}`);
+
     const balance = await tokenContract.balanceOf(accounts[0]);
     return ethers.utils.formatUnits(balance, tokenData.decimals);
   } catch (error) {
-    console.error(`Error fetching balance for ${token}:`, error);
+    console.error(`❌ Error fetching balance for ${token}:`, error);
     return "0";
   }
 }
+
 
 async function updateBalance(tabPrefix) {
   try {
