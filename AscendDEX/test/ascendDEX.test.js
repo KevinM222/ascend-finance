@@ -29,16 +29,18 @@ describe("AscendDEX & Rewards Testing", function () {
         // ✅ FIXED: Ensure Correct Constructor Parameters
         ModularDEX = await ethers.getContractFactory("ModularDEX");
 
-        // 🔍 Debugging: Show expected constructor inputs
-        console.log("🔍 ABI Inputs:", ModularDEX.interface.deploy.inputs);
-        
-        // 🚀 Deploying ModularDEX
+        // 🔍 Print the expected constructor inputs
+        console.log("🔍 Expected Constructor Inputs:", ModularDEX.interface.deploy.inputs);
+
+        // 🚀 Debugging: Show deployment arguments
         console.log("🚀 Deploying ModularDEX with:", owner.address, owner.address, treasury.address);
+
+        // 🚀 Deploying
         dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address);
         await dex.deployed();
-        
+
         console.log("✅ Deployment successful:", dex.address);
-        
+
 
         // ✅ Deploy AscRewards
         AscRewards = await ethers.getContractFactory("AscRewards");
