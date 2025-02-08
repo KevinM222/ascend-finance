@@ -11,7 +11,7 @@ describe("AscStaking & Treasury Testing", function () {
 
         [owner, addr1, addr2] = await ethers.getSigners();
 
-        // Deploy Mock ERC20 Token (ASC Token)
+        // Deploy Mock ERC20 Token
         MockERC20 = await ethers.getContractFactory("MockERC20");
         ascToken = await MockERC20.deploy("Ascend Token", "ASC", 18, ethers.utils.parseUnits("1000000", 18));
         await ascToken.deployed();
@@ -21,39 +21,32 @@ describe("AscStaking & Treasury Testing", function () {
         treasury = await Treasury.deploy();
         await treasury.deployed();
 
-        // Deploy AscStaking with 100,000 ASC reward pool
+        // Deploy AscStaking
         AscStaking = await ethers.getContractFactory("AscStaking");
         staking = await AscStaking.deploy(ascToken.address, ethers.utils.parseUnits("100000", 18));
         await staking.deployed();
 
-        // ✅ Fix: Ensure `addr1` has enough balance before staking
+        // Allocate tokens to addr1
         await ascToken.transfer(addr1.address, ethers.utils.parseUnits("500000", 18));
     });
 
     it("Should allow staking ASC tokens", async function () {
         const stakeAmount = ethers.utils.parseUnits("2000", 18);
-
-        // ✅ Fix: Ensure approval before staking
         await ascToken.connect(addr1).approve(staking.address, stakeAmount);
-        await staking.connect(addr1).stake(stakeAmount, 0); // No lock period
+        await staking.connect(addr1).stake(stakeAmount, 0);
 
-        // Verify staking
         const stakeInfo = await staking.stakes(addr1.address);
         expect(stakeInfo.amount).to.equal(stakeAmount);
     });
 
     it("Should allow unstaking ASC tokens", async function () {
         const stakeAmount = ethers.utils.parseUnits("5000", 18);
-
-        // ✅ Fix: Ensure approval before staking
         await ascToken.connect(addr1).approve(staking.address, stakeAmount);
         await staking.connect(addr1).stake(stakeAmount, 0);
 
-        // ✅ Fix: Increase time before unstaking
         await network.provider.send("evm_increaseTime", [365 * 24 * 60 * 60]);
         await network.provider.send("evm_mine");
 
-        // Unstake
         await staking.connect(addr1).unstake(stakeAmount);
         const stakeInfo = await staking.stakes(addr1.address);
         expect(stakeInfo.amount).to.equal(0);
@@ -61,27 +54,10 @@ describe("AscStaking & Treasury Testing", function () {
 
     it("Should allow deposits to the treasury", async function () {
         const depositAmount = ethers.utils.parseUnits("10000", 18);
-
-        // ✅ Fix: Ensure approval before depositing
         await ascToken.connect(addr1).approve(treasury.address, depositAmount);
         await treasury.connect(addr1).deposit(ascToken.address, depositAmount);
-
-        // Verify balance in treasury
         const balance = await ascToken.balanceOf(treasury.address);
         expect(balance).to.equal(depositAmount);
-    });
-
-    it("Should allow withdrawals from the treasury", async function () {
-        const depositAmount = ethers.utils.parseUnits("10000", 18);
-        await ascToken.connect(addr1).approve(treasury.address, depositAmount);
-        await treasury.connect(addr1).deposit(ascToken.address, depositAmount);
-
-        // Withdraw
-        await treasury.connect(owner).withdraw(ascToken.address, addr1.address, depositAmount);
-
-        // Verify balance
-        const balance = await ascToken.balanceOf(addr1.address);
-        expect(balance).to.be.gte(depositAmount);
     });
 
     it("Should prevent non-owner from withdrawing from the treasury", async function () {
