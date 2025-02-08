@@ -26,14 +26,15 @@ describe("AscendDEX & Rewards Testing", function () {
         treasury = await Treasury.deploy(owner.address);
         await treasury.deployed();
 
-        // ✅ Fix Constructor Arguments for ModularDEX
+        // ✅ Fix: Deploy ModularDEX with 3 Correct Constructor Arguments
         ModularDEX = await ethers.getContractFactory("ModularDEX");
-        dex = await ModularDEX.deploy(owner.address, treasury.address); // Pass correct arguments
+        dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address); // ✅ FIXED
+
         await dex.deployed();
 
-        // ✅ Deploy AscRewards with Proper Arguments
+        // ✅ Deploy AscRewards
         AscRewards = await ethers.getContractFactory("AscRewards");
-        rewards = await AscRewards.deploy(token1.address, ethers.utils.parseUnits("50000", 18));
+        rewards = await AscRewards.deploy(token1.address, ethers.utils.parseUnits("50000", 18)); // Reward pool: 50,000 ASC
         await rewards.deployed();
     });
 
