@@ -25,6 +25,7 @@ task("block-number", "Prints the current block number").setAction(async (taskArg
 });
 
 module.exports = {
+  defaultNetwork: "hardhat",  // ✅ Ensures Hardhat is always used for tests
   solidity: {
     compilers: [
       {
