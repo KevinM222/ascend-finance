@@ -65,6 +65,19 @@ async function loadAscTokenABI() {
   }
 }
 
+async function loadMockERC20ABI() {
+  try {
+    const response = await fetch('/frontend/MockERC20ABI.json'); // ✅ Corrected path
+    const { abi: abiData } = await response.json();
+    console.log("✅ ERC20 ABI loaded:", abiData);
+    return abiData;
+  } catch (error) {
+    console.error("❌ Failed to load MockERC20 ABI:", error);
+    return null;
+  }
+}
+
+
 // =========================
 // Wallet Connection Functions
 // =========================
