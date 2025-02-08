@@ -24,7 +24,7 @@ async function loadDexContract() {
   if (dexContract) return dexContract;
   try {
     console.log("Loading DEX ABI...");
-    const response = await fetch('/dexABI.json');
+    const response = await fetch('/frontend/dexABI.json');
     const { abi: dexABI } = await response.json();
     dexContract = new ethers.Contract(dexAddress, dexABI, signer);
     console.log("DEX contract initialized:", dexContract);
@@ -54,7 +54,7 @@ let ascTokenABI = null;
 
 async function loadAscTokenABI() {
   try {
-    const response = await fetch('TestASCabi.json');
+    const response = await fetch('/frontend/TestASCabi.json');
     const { abi: abiData } = await response.json();
     ascTokenABI = abiData;
     console.log("ASC Token ABI loaded:", ascTokenABI);
@@ -358,7 +358,7 @@ let stakingABI = null;
 
 async function loadStakingABI() {
   try {
-    const response = await fetch('/AscStakingABI.json');
+    const response = await fetch('/frontend/AscStakingABI.json');
     const { abi: abiData } = await response.json();
     stakingABI = abiData;
     console.log("Staking ABI loaded:", stakingABI);
@@ -396,7 +396,7 @@ let rewardsABI = null;
 
 async function loadRewardsABI() {
   try {
-    const response = await fetch('/AscRewardsABI.json');
+    const response = await fetch('/frontend/AscRewardsABI.json');
     const { abi: abiData } = await response.json();
     rewardsABI = abiData;
     console.log("Rewards ABI loaded:", rewardsABI);
