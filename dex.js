@@ -9,7 +9,6 @@ provider = new ethers.providers.Web3Provider(window.ethereum);
 signer = provider.getSigner();
 
 const dexAddress = "0xFe47e61f416ff96eCb783b471c7395aBefabb702"; // DEX Contract
-const stakingAddress = "0xA7548a806e7006151dB26C8596f891013d414bB7"; // Staking Contract
 const rewardsAddress = "0xa2D979bF900C1Ccf153A2Ba6BB249B9e85a95690"; // Rewards Contract
 const ascTokenAddress = "0xf6c59C630b1bC07594D695c12b3E5f5F632E23dA"; // Test ASC Token
 
@@ -87,90 +86,34 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 async function connectWallet() {
-  console.log("🔌 Connecting wallet...");
-  
+  console.log("connectWallet() function started...");
   if (window.ethereum) {
     try {
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-
-      // ✅ Ensure user is on Sepolia (0xaa36a7)
       if (chainId !== '0xaa36a7') {
-        console.warn("⚠️ Wrong network detected. Switching to Sepolia...");
-        await switchToSepolia();
-        return; // Prevent further execution until they are on Sepolia
-      }
-
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-      if (accounts.length === 0) {
-        console.warn("⚠️ No accounts found. Please check MetaMask.");
+        alert("Please switch to the Sepolia test network in MetaMask.");
         return;
       }
-
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      if (accounts.length === 0) {
+        console.warn("No accounts found. Please check MetaMask.");
+        return;
+      }
       const walletAddress = accounts[0];
       provider = new ethers.providers.Web3Provider(window.ethereum);
       signer = provider.getSigner();
-
       document.getElementById("connectWalletButton").textContent =
         `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
       document.getElementById("connectWalletButton").disabled = true;
       document.getElementById("disconnectWalletButton").style.display = "inline-block";
-
-      console.log("✅ Wallet Connected Successfully.");
-
-      // ✅ Add ASC Token to MetaMask
-      await addASCTokenToMetaMask();
-
+      console.log("Wallet Connected Successfully.");
     } catch (error) {
-      console.error("❌ Error connecting to wallet:", error);
+      console.error("Error connecting to wallet:", error);
     }
   } else {
-    alert("⚠️ MetaMask is not installed. Please install it to connect your wallet.");
+    alert("MetaMask is not installed. Please install it to connect your wallet.");
   }
 }
-
-async function switchToSepolia() {
-  try {
-    await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0xaa36a7' }], // Sepolia Testnet Chain ID
-    });
-
-    console.log("✅ Successfully switched to Sepolia.");
-    window.location.reload(); // Refresh page after network switch
-
-  } catch (error) {
-    // If Sepolia is not added in MetaMask, prompt to add it
-    if (error.code === 4902) {
-      console.warn("⚠️ Sepolia network not found. Adding it now...");
-      await addSepoliaNetwork();
-    } else {
-      console.error("❌ Error switching to Sepolia:", error);
-    }
-  }
-}
-
-async function addSepoliaNetwork() {
-  try {
-    await window.ethereum.request({
-      method: 'wallet_addEthereumChain',
-      params: [{
-        chainId: '0xaa36a7', // Sepolia Testnet
-        chainName: 'Ethereum Sepolia Testnet',
-        nativeCurrency: { name: 'SepoliaETH', symbol: 'ETH', decimals: 18 },
-        rpcUrls: ['https://sepolia.infura.io/v3/YOUR_INFURA_API_KEY'], // Replace with your Infura API Key
-        blockExplorerUrls: ['https://sepolia.etherscan.io/'],
-      }]
-    });
-
-    console.log("✅ Sepolia network added to MetaMask.");
-    window.location.reload(); // Refresh page after adding network
-
-  } catch (error) {
-    console.error("❌ Failed to add Sepolia network:", error);
-  }
-}
-
 
 function disconnectWallet() {
   document.getElementById("connectWalletButton").textContent = "Connect Wallet";
@@ -181,41 +124,7 @@ function disconnectWallet() {
 
 
 
-// =========================
-// Staking & Rewards Functions
-// =========================
-async function stakeASC(amount, lockDuration) {
-  try {
-    if (!stakingABI) await loadStakingABI();
-    if (!ascTokenABI) await loadAscTokenABI();
-    const ascStaking = new ethers.Contract(stakingAddress, stakingABI, signer);
-    const ascToken = new ethers.Contract(ascTokenAddress, ascTokenABI, signer);
-    // ... rest of the function
-  } catch (error) {
-    console.error("Error staking ASC:", error);
-  }
-}
 
-async function claimRewards() {
-  try {
-    const ascStaking = new ethers.Contract(stakingAddress, stakingABI, signer);
-    await ascStaking.claimRewards().then(tx => tx.wait());
-    alert("✅ Rewards claimed successfully!");
-  } catch (error) {
-    console.error("Error claiming rewards:", error);
-  }
-}
-
-async function unstakeASC(amount) {
-  try {
-    const ascStaking = new ethers.Contract(stakingAddress, stakingABI, signer);
-    const parsedAmount = ethers.utils.parseUnits(amount, 18);
-    await ascStaking.unstake(parsedAmount).then(tx => tx.wait());
-    alert(`✅ Successfully unstaked ${amount} ASC!`);
-  } catch (error) {
-    console.error("Error unstaking ASC:", error);
-  }
-}
 
 // =========================
 // Remove Liquidity
@@ -444,20 +353,6 @@ function reverseTokens(tabPrefix) {
   estimateOutput(tabPrefix);
 }
 
-let stakingABI = null;
-
-async function loadStakingABI() {
-  try {
-    const response = await fetch('/frontend/AscStakingABI.json');
-    const { abi: abiData } = await response.json();
-    stakingABI = abiData;
-    console.log("Staking ABI loaded:", stakingABI);
-    return stakingABI;
-  } catch (error) {
-    console.error("Failed to load Staking ABI:", error);
-    return null;
-  }
-}
 
 
 function updateSwapDetails() {
@@ -535,10 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("addLiquidityButton").addEventListener("click", handleAddLiquidity);
 });
 
-document.getElementById("stakingTabLink").addEventListener("click", function (event) {
-  event.preventDefault(); // Prevents the page from jumping to the top
-  document.querySelector("[data-target='staking-tab']").click(); // Simulates clicking the Staking tab button
-});
+
 
 document.querySelector("[data-target='pools-tab']").addEventListener("click", async () => {
   console.log("Pools tab clicked. Loading liquidity pairs...");
@@ -672,7 +564,6 @@ async function loadLiquidityPairs() {
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     await Promise.all([
-      loadStakingABI(),
       loadRewardsABI(),
       loadAscTokenABI()
     ]);
