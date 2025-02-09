@@ -38,8 +38,8 @@ describe("AscendDEX & Rewards Testing", function () {
         // 🚀 Deploying
         console.log("Deploying with:", owner.address, owner.address, treasury.address);
         ModularDEX = await ethers.getContractFactory("ModularDEX");
-        dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address);
-
+        dex = await ModularDEX.deploy(treasury.address, owner.address, treasury.address);
+        await dex.deployed();   
 
         // ✅ Deploy AscRewards
         AscRewards = await ethers.getContractFactory("AscRewards");
