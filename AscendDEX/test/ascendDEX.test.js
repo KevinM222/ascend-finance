@@ -36,11 +36,9 @@ describe("AscendDEX & Rewards Testing", function () {
         console.log("🚀 Deploying ModularDEX with:", owner.address, owner.address, treasury.address);
 
         // 🚀 Deploying
+        console.log("Deploying with:", owner.address, owner.address, treasury.address);
         ModularDEX = await ethers.getContractFactory("ModularDEX");
         dex = await ModularDEX.deploy(owner.address, owner.address, treasury.address);
-        await dex.deployed();
-
-        console.log("Deployed ModularDEX at:", dex.address);
 
 
         // ✅ Deploy AscRewards
