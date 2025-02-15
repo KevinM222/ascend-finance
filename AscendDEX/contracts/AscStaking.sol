@@ -80,30 +80,40 @@ function unstake(uint256 amount) external {
     while (i < userStakes[msg.sender].length && remainingToUnstake > 0) {
         Stake storage stake = userStakes[msg.sender][i];
 
-        if (stake.amount > 0 && block.timestamp >= stake.lockUntil) {  // ✅ Skip locked stakes
-            uint256 toWithdraw = stake.amount > remainingToUnstake ? remainingToUnstake : stake.amount;
-            stake.amount -= toWithdraw;
-            remainingToUnstake -= toWithdraw;
-
-            uint256 fee = toWithdraw / 100;  // 1% fee
-            uint256 withdrawable = toWithdraw - fee;
-
-            ascToken.transfer(msg.sender, withdrawable);
-            ascToken.transfer(owner(), fee);
-
-            if (stake.amount == 0) {
-                userStakes[msg.sender][i] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
-                userStakes[msg.sender].pop();
-            }
+        if (stake.amount == 0) {
+            i++; // Skip empty stakes
+            continue;
         }
 
-        i++;  // Move to the next stake
+        if (block.timestamp < stake.lockUntil) {
+            i++; // Skip locked stakes
+            continue;
+        }
+
+        uint256 toWithdraw = stake.amount > remainingToUnstake ? remainingToUnstake : stake.amount;
+        stake.amount -= toWithdraw;
+        remainingToUnstake -= toWithdraw;
+
+        uint256 fee = toWithdraw / 100; // 1% fee
+        uint256 withdrawable = toWithdraw - fee;
+
+        ascToken.transfer(msg.sender, withdrawable);
+        ascToken.transfer(owner(), fee);
+
+        if (stake.amount == 0) {
+            // Remove stake by swapping with the last one to avoid gaps
+            userStakes[msg.sender][i] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
+            userStakes[msg.sender].pop();
+        } else {
+            i++; // Move to the next stake if it's not empty
+        }
     }
 
-    require(remainingToUnstake == 0, "Requested amount is still locked");  // ✅ Only fail if no unstake was possible
+    require(remainingToUnstake == 0, "Requested amount is still locked");
 
     emit AscUnstaked(msg.sender, amount);
 }
+
 
 
 function unstakeSpecificStake(uint256 stakeIndex) external {
