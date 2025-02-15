@@ -1,32 +1,20 @@
-require("dotenv").config();
 const hre = require("hardhat");
 
 async function main() {
-    const { PRIVATE_KEY, SEPOLIA_RPC_URL, ASC_TOKEN_ADDRESS } = process.env;
+  const [deployer] = await hre.ethers.getSigners();
+  console.log(`Deploying AscStaking with the account: ${deployer.address}`);
 
-    if (!PRIVATE_KEY || !SEPOLIA_RPC_URL || !ASC_TOKEN_ADDRESS) {
-        throw new Error("Please set PRIVATE_KEY, SEPOLIA_RPC_URL, and ASC_TOKEN_ADDRESS in your .env file.");
-    }
+  const ASC_TOKEN_ADDRESS = "0xE6D3d358CB0A63C6B0851a2b4107Ed20387bB923"; // Your ASC token address on Sepolia
+  const INITIAL_REWARD_POOL = hre.ethers.utils.parseEther("1000000"); // 1M tokens
 
-    console.log("Deploying AscStaking contract...");
+  const AscStaking = await hre.ethers.getContractFactory("AscStaking");
+  const staking = await AscStaking.deploy(ASC_TOKEN_ADDRESS, INITIAL_REWARD_POOL);
 
-    // Get the contract factory
-    const AscStaking = await hre.ethers.getContractFactory("AscStaking");
-
-    // Define the reward pool (modify as needed)
-    const rewardPool = hre.ethers.utils.parseEther("1000000"); // Example: 1M ASC as rewards
-
-    // Deploy the contract
-    const ascStaking = await AscStaking.deploy(ASC_TOKEN_ADDRESS, rewardPool);
-
-    await ascStaking.deployed();
-
-    console.log(`✅ AscStaking deployed at: ${ascStaking.address}`);
+  await staking.deployed();
+  console.log(`✅ AscStaking deployed at: ${staking.address}`);
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error("❌ Deployment failed:", error.message);
-        process.exit(1);
-    });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
