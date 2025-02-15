@@ -126,11 +126,12 @@ function unstakeSpecificStake(uint256 stakeIndex) external {
 }
 
     function getAPY(uint256 duration) public pure returns (uint16) {
-        if (duration >= 730 days) return 2000;
-        if (duration >= 365 days) return 1600;
-        if (duration >= 180 days) return 1200;
-        if (duration >= 90 days) return 800;
-        if (duration >= 30 days) return 500;
-        return 200;
-    }
+    if (duration >= 730 days) return 200;  // ✅ 20% stored as 200
+    if (duration >= 365 days) return 160;  // ✅ 16% stored as 160
+    if (duration >= 180 days) return 120;  // ✅ 12% stored as 120
+    if (duration >= 90 days) return 80;    // ✅ 8% stored as 80
+    if (duration >= 30 days) return 50;    // ✅ 5% stored as 50
+    return 20;  // ✅ Default 2% stored as 20
+}
+
 }
