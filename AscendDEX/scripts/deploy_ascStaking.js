@@ -2,18 +2,17 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying AscStaking with the account:", deployer.address);
 
-  const testASCAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"; // ✅ Replace with the deployed TestASC address
+  const ascTokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";  // Correct token
+  const rewardPool = ethers.utils.parseEther("1000");
 
   const AscStaking = await ethers.getContractFactory("AscStaking");
-  const ascStaking = await AscStaking.deploy(testASCAddress, ethers.utils.parseEther("100000")); // Reward pool
-  await ascStaking.deployed();
+  const staking = await AscStaking.deploy(ascTokenAddress, rewardPool);
+  await staking.deployed();
 
-  console.log("✅ AscStaking deployed at:", ascStaking.address);
+  console.log("✅ AscStaking deployed at:", staking.address);
 }
 
-main()
-.then(() => process.exit(0))
-.catch((error) => {
-    console.error("Deployment error for AscStaking:", error);
-    process.exit(1);
+main().catch((error) => {
+  console.error("Deployment error for AscStaking:", error);
+  process.exitCode = 1;
 });
