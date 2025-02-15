@@ -1,20 +1,19 @@
-const hre = require("hardhat");
-
 async function main() {
-  const [deployer] = await hre.ethers.getSigners();
-  console.log(`Deploying AscStaking with the account: ${deployer.address}`);
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying AscStaking with the account:", deployer.address);
 
-  const ASC_TOKEN_ADDRESS = "0xE6D3d358CB0A63C6B0851a2b4107Ed20387bB923"; // Your ASC token address on Sepolia
-  const INITIAL_REWARD_POOL = hre.ethers.utils.parseEther("1000000"); // 1M tokens
+  const testASCAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"; // ✅ Replace with the deployed TestASC address
 
-  const AscStaking = await hre.ethers.getContractFactory("AscStaking");
-  const staking = await AscStaking.deploy(ASC_TOKEN_ADDRESS, INITIAL_REWARD_POOL);
+  const AscStaking = await ethers.getContractFactory("AscStaking");
+  const ascStaking = await AscStaking.deploy(testASCAddress, ethers.utils.parseEther("100000")); // Reward pool
+  await ascStaking.deployed();
 
-  await staking.deployed();
-  console.log(`✅ AscStaking deployed at: ${staking.address}`);
+  console.log("✅ AscStaking deployed at:", ascStaking.address);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+main()
+.then(() => process.exit(0))
+.catch((error) => {
+    console.error("Deployment error for AscStaking:", error);
+    process.exit(1);
 });
