@@ -1,31 +1,32 @@
-// scripts/deploy_ascStaking.js
+require("dotenv").config();
+const hre = require("hardhat");
 
 async function main() {
-    // Get the deployer account from Hardhat
-    const [deployer] = await ethers.getSigners();
-    console.log("Deploying AscStaking with account:", deployer.address);
-    console.log("Account balance:", (await deployer.getBalance()).toString());
-  
-    // ASC token contract address (replace with your deployed token address)
-    const ascTokenAddress = "0xf6c59C630b1bC07594D695c12b3E5f5F632E23dA";
-  
-    // Define the pre-allocated reward pool for staking rewards: 300,000,000 ASC (18 decimals)
-    const stakingRewardPool = ethers.utils.parseUnits("300000000", 18);
-  
-    // Get the contract factory for AscStaking
-    const AscStaking = await ethers.getContractFactory("AscStaking");
-  
-    // Deploy the contract with constructor parameters: ascTokenAddress and stakingRewardPool
-    const ascStaking = await AscStaking.deploy(ascTokenAddress, stakingRewardPool);
+    const { PRIVATE_KEY, INFURA_API_KEY, ASC_TOKEN_ADDRESS } = process.env;
+
+    if (!PRIVATE_KEY || !INFURA_API_KEY || !ASC_TOKEN_ADDRESS) {
+        throw new Error("Please set PRIVATE_KEY, INFURA_API_KEY, and ASC_TOKEN_ADDRESS in your .env file.");
+    }
+
+    console.log("Deploying AscStaking contract...");
+
+    // Get the contract factory
+    const AscStaking = await hre.ethers.getContractFactory("AscStaking");
+
+    // Define the reward pool (modify as needed)
+    const rewardPool = hre.ethers.utils.parseEther("1000000"); // Example: 1M ASC as rewards
+
+    // Deploy the contract
+    const ascStaking = await AscStaking.deploy(ASC_TOKEN_ADDRESS, rewardPool);
+
     await ascStaking.deployed();
-  
-    console.log("AscStaking deployed to:", ascStaking.address);
-  }
-  
-  main()
+
+    console.log(`AscStaking deployed at: ${ascStaking.address}`);
+}
+
+main()
     .then(() => process.exit(0))
     .catch((error) => {
-      console.error("Deployment error for AscStaking:", error);
-      process.exit(1);
+        console.error(error);
+        process.exit(1);
     });
-  
