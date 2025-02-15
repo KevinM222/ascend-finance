@@ -70,53 +70,44 @@ contract AscStaking is Ownable {
     }
 }  // Make sure this closing bracket is present
 
+function unstake(uint256 amount) external {
+    uint256 totalUnlocked = 0;
 
-    function unstakeSpecificStake(uint256 stakeIndex) external {
-        require(stakeIndex < userStakes[msg.sender].length, "Invalid stake index");
-
-        Stake storage stakeToUnstake = userStakes[msg.sender][stakeIndex];
-        require(block.timestamp >= stakeToUnstake.lockUntil, "Stake is still locked");
-
-        uint256 fee = stakeToUnstake.amount / 100;
-        uint256 withdrawable = stakeToUnstake.amount - fee;
-
-        ascToken.transfer(msg.sender, withdrawable);
-        ascToken.transfer(owner(), fee);
-
-        userStakes[msg.sender][stakeIndex] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
-        userStakes[msg.sender].pop();
-
-        emit AscUnstaked(msg.sender, stakeToUnstake.amount);
+    // 1️⃣ First, check if the requested amount is fully unlocked
+    for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+        if (block.timestamp >= userStakes[msg.sender][i].lockUntil) {
+            totalUnlocked += userStakes[msg.sender][i].amount;
+        }
     }
+    require(totalUnlocked >= amount, "Requested amount is still locked");
 
-    function unstake(uint256 amount) external {
-        uint256 totalStakedUser = getTotalStaked(msg.sender);
-        require(totalStakedUser >= amount, "Insufficient staked amount");
+    uint256 remainingToUnstake = amount;
 
-        for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-            if (amount == 0) break;
-            Stake storage stake = userStakes[msg.sender][i];
+    // 2️⃣ Now, process the unstaking of unlocked stakes
+    for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+        if (remainingToUnstake == 0) break;
+        Stake storage stake = userStakes[msg.sender][i];
 
-            if (stake.amount > 0 && block.timestamp >= stake.lockUntil) {
-                uint256 toWithdraw = stake.amount > amount ? amount : stake.amount;
-                stake.amount -= toWithdraw;
-                amount -= toWithdraw;
+        if (stake.amount > 0 && block.timestamp >= stake.lockUntil) {
+            uint256 toWithdraw = stake.amount > remainingToUnstake ? remainingToUnstake : stake.amount;
+            stake.amount -= toWithdraw;
+            remainingToUnstake -= toWithdraw;
 
-                uint256 fee = toWithdraw / 100;
-                uint256 withdrawable = toWithdraw - fee;
+            uint256 fee = toWithdraw / 100;
+            uint256 withdrawable = toWithdraw - fee;
 
-                ascToken.transfer(msg.sender, withdrawable);
-                ascToken.transfer(owner(), fee);
+            ascToken.transfer(msg.sender, withdrawable);
+            ascToken.transfer(owner(), fee);
 
-                if (stake.amount == 0) {
-                    userStakes[msg.sender][i] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
-                    userStakes[msg.sender].pop();
-                }
+            if (stake.amount == 0) {
+                userStakes[msg.sender][i] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
+                userStakes[msg.sender].pop();
             }
         }
-
-        emit AscUnstaked(msg.sender, amount);
     }
+
+    emit AscUnstaked(msg.sender, amount);
+}
 
     function getAPY(uint256 duration) public pure returns (uint16) {
         if (duration >= 730 days) return 2000;
