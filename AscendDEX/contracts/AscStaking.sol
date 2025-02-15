@@ -71,29 +71,21 @@ contract AscStaking is Ownable {
 }  // Make sure this closing bracket is present
 
 function unstake(uint256 amount) external {
-    uint256 totalUnlocked = 0;
-
-    // 1️⃣ First, check if the requested amount is fully unlocked
-    for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-        if (block.timestamp >= userStakes[msg.sender][i].lockUntil) {
-            totalUnlocked += userStakes[msg.sender][i].amount;
-        }
-    }
-    require(totalUnlocked >= amount, "Requested amount is still locked");
+    uint256 totalStakedUser = getTotalStaked(msg.sender);
+    require(totalStakedUser >= amount, "Insufficient staked amount");
 
     uint256 remainingToUnstake = amount;
+    uint256 i = 0;
 
-    // 2️⃣ Now, process the unstaking of unlocked stakes
-    for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-        if (remainingToUnstake == 0) break;
+    while (i < userStakes[msg.sender].length && remainingToUnstake > 0) {
         Stake storage stake = userStakes[msg.sender][i];
 
-        if (stake.amount > 0 && block.timestamp >= stake.lockUntil) {
+        if (stake.amount > 0 && block.timestamp >= stake.lockUntil) {  // ✅ Skip locked stakes
             uint256 toWithdraw = stake.amount > remainingToUnstake ? remainingToUnstake : stake.amount;
             stake.amount -= toWithdraw;
             remainingToUnstake -= toWithdraw;
 
-            uint256 fee = toWithdraw / 100;
+            uint256 fee = toWithdraw / 100;  // 1% fee
             uint256 withdrawable = toWithdraw - fee;
 
             ascToken.transfer(msg.sender, withdrawable);
@@ -104,10 +96,15 @@ function unstake(uint256 amount) external {
                 userStakes[msg.sender].pop();
             }
         }
+
+        i++;  // Move to the next stake
     }
+
+    require(remainingToUnstake == 0, "Requested amount is still locked");  // ✅ Only fail if no unstake was possible
 
     emit AscUnstaked(msg.sender, amount);
 }
+
 
 function unstakeSpecificStake(uint256 stakeIndex) external {
     require(stakeIndex < userStakes[msg.sender].length, "Invalid stake index");
