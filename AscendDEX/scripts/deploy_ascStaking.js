@@ -2,10 +2,10 @@ require("dotenv").config();
 const hre = require("hardhat");
 
 async function main() {
-    const { PRIVATE_KEY, INFURA_API_KEY, ASC_TOKEN_ADDRESS } = process.env;
+    const { PRIVATE_KEY, SEPOLIA_RPC_URL, ASC_TOKEN_ADDRESS } = process.env;
 
-    if (!PRIVATE_KEY || !INFURA_API_KEY || !ASC_TOKEN_ADDRESS) {
-        throw new Error("Please set PRIVATE_KEY, INFURA_API_KEY, and ASC_TOKEN_ADDRESS in your .env file.");
+    if (!PRIVATE_KEY || !SEPOLIA_RPC_URL || !ASC_TOKEN_ADDRESS) {
+        throw new Error("Please set PRIVATE_KEY, SEPOLIA_RPC_URL, and ASC_TOKEN_ADDRESS in your .env file.");
     }
 
     console.log("Deploying AscStaking contract...");
@@ -21,12 +21,12 @@ async function main() {
 
     await ascStaking.deployed();
 
-    console.log(`AscStaking deployed at: ${ascStaking.address}`);
+    console.log(`✅ AscStaking deployed at: ${ascStaking.address}`);
 }
 
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(error);
+        console.error("❌ Deployment failed:", error.message);
         process.exit(1);
     });
