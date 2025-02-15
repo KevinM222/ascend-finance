@@ -65,6 +65,10 @@ contract AscStaking is Ownable {
     }
 
     function getTotalStaked(address user) public view returns (uint256 total) {
+    for (uint256 i = 0; i < userStakes[user].length; i++) {
+        total += userStakes[user][i].amount;
+    }
+}  // Make sure this closing bracket is present
 
 
     function unstakeSpecificStake(uint256 stakeIndex) external {
