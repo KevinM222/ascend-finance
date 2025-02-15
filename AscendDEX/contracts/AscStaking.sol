@@ -109,6 +109,25 @@ function unstake(uint256 amount) external {
     emit AscUnstaked(msg.sender, amount);
 }
 
+function unstakeSpecificStake(uint256 stakeIndex) external {
+    require(stakeIndex < userStakes[msg.sender].length, "Invalid stake index");
+
+    Stake storage stakeToUnstake = userStakes[msg.sender][stakeIndex];
+    require(stakeToUnstake.amount > 0, "Stake is empty");
+    require(block.timestamp >= stakeToUnstake.lockUntil, "Stake is still locked");
+
+    uint256 fee = stakeToUnstake.amount / 100;
+    uint256 withdrawable = stakeToUnstake.amount - fee;
+
+    ascToken.transfer(msg.sender, withdrawable);
+    ascToken.transfer(owner(), fee);
+
+    userStakes[msg.sender][stakeIndex] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
+    userStakes[msg.sender].pop();
+
+    emit AscUnstaked(msg.sender, stakeToUnstake.amount);
+}
+
     function getAPY(uint256 duration) public pure returns (uint16) {
         if (duration >= 730 days) return 2000;
         if (duration >= 365 days) return 1600;
