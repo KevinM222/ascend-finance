@@ -77,6 +77,35 @@ contract AscStaking is Ownable {
         emit RewardsClaimed(msg.sender, totalRewards);
     }
 
+    /// ✅ **Auto Reinvest Rewards**
+    function reinvestRewards() external {
+        uint256 totalRewards = calculateRewards(msg.sender);
+        require(totalRewards > 0, "No rewards available");
+
+        uint256 latestLockPeriod = 0;
+
+        for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+            userStakes[msg.sender][i].rewardsClaimed += 
+                (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * 
+                (block.timestamp - userStakes[msg.sender][i].startTime)) / 
+                (365 days * 100);
+
+            if (userStakes[msg.sender][i].lockUntil > latestLockPeriod) {
+                latestLockPeriod = userStakes[msg.sender][i].lockUntil;
+            }
+        }
+
+        userStakes[msg.sender].push(Stake({
+            amount: totalRewards,
+            startTime: block.timestamp,
+            lockUntil: latestLockPeriod,
+            apy: getAPY(latestLockPeriod - block.timestamp),
+            rewardsClaimed: 0
+        }));
+
+        emit RewardsReinvested(msg.sender, totalRewards);
+    }
+
     function getTotalStaked(address user) public view returns (uint256 total) {
         for (uint256 i = 0; i < userStakes[user].length; i++) {
             total += userStakes[user][i].amount;
