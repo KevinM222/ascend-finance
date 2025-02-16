@@ -140,13 +140,13 @@ contract AscStaking is Ownable {
 
     if (autoReinvestEnabled[msg.sender]) {
         reinvestRewards();  
-    } else {
-        idleRewards[msg.sender] += totalRewards;
-        require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
-        ascToken.transfer(msg.sender, totalRewards);
-        emit RewardsClaimed(msg.sender, totalRewards);
-    }
-} // ✅ Fixed incorrect brackets
+        } else {
+            idleRewards[msg.sender] += totalRewards;
+            require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
+            ascToken.transfer(msg.sender, totalRewards);
+            emit RewardsClaimed(msg.sender, totalRewards);
+        }
+    } // ✅ Fixed incorrect brackets
 
 
    function getTotalStaked(address user) public view returns (uint256 total) {
