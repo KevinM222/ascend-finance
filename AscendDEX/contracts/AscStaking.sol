@@ -216,7 +216,7 @@ function unstake(uint256 index) external {
     require(ascToken.balanceOf(address(this)) >= totalWithdraw, "Insufficient pool balance");
     ascToken.transfer(msg.sender, totalWithdraw);
 
-    emit Unstaked(msg.sender, stakedAmount, rewardAmount);
+    emit AscUnstaked(msg.sender, stakedAmount, rewardAmount);
 }
 
 
