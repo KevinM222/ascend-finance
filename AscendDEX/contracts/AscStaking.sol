@@ -84,8 +84,19 @@ function reinvestRewards() external {
             highestYieldIndex = i;
         }
     }
+   function withdrawIdleRewards() external {
+    uint256 rewardAmount = idleRewards[msg.sender];
+    require(rewardAmount > 0, "No idle rewards");
 
+    idleRewards[msg.sender] = 0;
+    ascToken.transfer(msg.sender, rewardAmount);
+
+    emit RewardsClaimed(msg.sender, rewardAmount);
 }
+
+
+    uint256 public reinvestThreshold = 10 ether; // ✅ Only reinvest when rewards reach 10 tokens
+
 
     function claimRewards() external {
         uint256 totalRewards = calculateRewards(msg.sender);
@@ -106,19 +117,7 @@ function reinvestRewards() external {
         }
     }
 
-    function withdrawIdleRewards() external {
-    uint256 rewardAmount = idleRewards[msg.sender];
-    require(rewardAmount > 0, "No idle rewards");
-
-    idleRewards[msg.sender] = 0;
-    ascToken.transfer(msg.sender, rewardAmount);
-
-    emit RewardsClaimed(msg.sender, rewardAmount);
-}
-
-
-    uint256 public reinvestThreshold = 10 ether; // ✅ Only reinvest when rewards reach 10 tokens
-
+ 
   
 
     // ✅ Ensure at least one valid stake exists before reinvesting
