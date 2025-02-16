@@ -112,6 +112,14 @@ contract AscStaking is Ownable {
         }
     }
 
+function getAllUserStakes(address user) external view returns (
+    uint256[] memory amounts,
+    uint256[] memory startTimes,
+    uint256[] memory lockPeriods,
+    uint256[] memory apys
+);
+
+
     /// ✅ **Unstake Without Affecting Rewards**
     function unstake(uint256 amount) external {
         uint256 totalStakedUser = getTotalStaked(msg.sender);
