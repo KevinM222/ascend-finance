@@ -82,7 +82,7 @@ contract AscStaking is Ownable {
     }
 
 
-    function reinvestRewards() external {
+    function reinvestRewards() public {  // ✅ Change from `external` to `public`
         uint256 totalRewards = calculateRewards(msg.sender);
         require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
 
@@ -114,19 +114,7 @@ contract AscStaking is Ownable {
         emit RewardsReinvested(msg.sender, totalRewards);
     }
 
-
-   function withdrawIdleRewards() external {
-        uint256 rewardAmount = idleRewards[msg.sender];
-        require(rewardAmount > 0, "No idle rewards");
-
-        idleRewards[msg.sender] = 0;
-        ascToken.transfer(msg.sender, rewardAmount);
-
-        emit RewardsClaimed(msg.sender, rewardAmount);
-    }
-
-
-   
+ 
     function claimRewards() external {
     uint256 totalRewards = calculateRewards(msg.sender);
     require(totalRewards > 0, "No rewards available");
@@ -147,6 +135,16 @@ contract AscStaking is Ownable {
             emit RewardsClaimed(msg.sender, totalRewards);
         }
     } // ✅ Fixed incorrect brackets
+
+    function withdrawIdleRewards() external {
+        uint256 rewardAmount = idleRewards[msg.sender];
+        require(rewardAmount > 0, "No idle rewards");
+
+        idleRewards[msg.sender] = 0;
+        ascToken.transfer(msg.sender, rewardAmount);
+
+        emit RewardsClaimed(msg.sender, rewardAmount);
+    }
 
 
    function getTotalStaked(address user) public view returns (uint256 total) {
