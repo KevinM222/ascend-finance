@@ -3,7 +3,7 @@ async function main() {
   console.log("Deploying AscStaking with the account:", deployer.address);
 
   // ✅ Use the latest deployed TestASC contract
-  const ascTokenAddress = "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1"; 
+  const ascTokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
 
   // ✅ Define a starting reward pool (adjust as needed)
   const rewardPool = ethers.utils.parseEther("1000000"); // Example: 1 million ASC for rewards
