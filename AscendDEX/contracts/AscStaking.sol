@@ -18,16 +18,24 @@ contract AscStaking is Ownable {
     }
 
     mapping(address => Stake[]) public userStakes;
+    mapping(address => bool) public autoReinvestEnabled;  // ✅ Auto reinvest toggle
+    mapping(address => uint256) public idleRewards;  // ✅ Store unclaimed rewards
 
     event AscStaked(address indexed user, uint256 amount, uint256 lockUntil, uint16 apy);
     event AscUnstaked(address indexed user, uint256 amount);
     event RewardsClaimed(address indexed user, uint256 reward);
     event RewardsReinvested(address indexed user, uint256 reinvestedReward);
+    event AutoReinvestToggled(address indexed user, bool enabled);
 
     constructor(IERC20 _ascToken, uint256 _rewardPool) {
         require(address(_ascToken) != address(0), "Invalid token address");
         ascToken = _ascToken;
         rewardPool = _rewardPool;
+    }
+
+    function setAutoReinvest(bool _enabled) external {
+        autoReinvestEnabled[msg.sender] = _enabled;
+        emit AutoReinvestToggled(msg.sender, _enabled);
     }
 
     function stakeWithAutoApproval(uint256 amount, uint256 duration) external {
@@ -45,7 +53,6 @@ contract AscStaking is Ownable {
         emit AscStaked(msg.sender, amount, block.timestamp + duration, getAPY(duration));
     }
 
-    /// ✅ **Calculate Rewards Without Claiming**
     function calculateRewards(address user) public view returns (uint256 totalRewards) {
         for (uint256 i = 0; i < userStakes[user].length; i++) {
             Stake storage stake = userStakes[user][i];
@@ -59,7 +66,6 @@ contract AscStaking is Ownable {
         }
     }
 
-    /// ✅ **Claim Rewards Without Unstaking**
     function claimRewards() external {
         uint256 totalRewards = calculateRewards(msg.sender);
         require(totalRewards > 0, "No rewards available");
@@ -71,18 +77,30 @@ contract AscStaking is Ownable {
                 (365 days * 100);
         }
 
-        require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
-        ascToken.transfer(msg.sender, totalRewards);
-
-        emit RewardsClaimed(msg.sender, totalRewards);
+        if (autoReinvestEnabled[msg.sender]) {
+            reinvestRewards();
+        } else {
+            idleRewards[msg.sender] += totalRewards;
+            emit RewardsClaimed(msg.sender, totalRewards);
+        }
     }
 
-    /// ✅ **Auto Reinvest Rewards**
-    function reinvestRewards() external {
-        uint256 totalRewards = calculateRewards(msg.sender);
-        require(totalRewards > 0, "No rewards available");
+    function withdrawIdleRewards() external {
+        uint256 rewardAmount = idleRewards[msg.sender];
+        require(rewardAmount > 0, "No idle rewards");
 
-        uint256 latestLockPeriod = 0;
+        idleRewards[msg.sender] = 0;
+        ascToken.transfer(msg.sender, rewardAmount);
+    }
+
+    uint256 public reinvestThreshold = 10 ether; // ✅ Only reinvest when rewards reach 10 tokens
+
+    function reinvestRewards() public {
+        uint256 totalRewards = calculateRewards(msg.sender);
+        require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
+
+        uint256 highestYieldIndex = 0;
+        uint16 highestAPY = 0;
 
         for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
             userStakes[msg.sender][i].rewardsClaimed += 
@@ -90,19 +108,13 @@ contract AscStaking is Ownable {
                 (block.timestamp - userStakes[msg.sender][i].startTime)) / 
                 (365 days * 100);
 
-            if (userStakes[msg.sender][i].lockUntil > latestLockPeriod) {
-                latestLockPeriod = userStakes[msg.sender][i].lockUntil;
+            if (userStakes[msg.sender][i].apy > highestAPY) {
+                highestAPY = userStakes[msg.sender][i].apy;
+                highestYieldIndex = i;
             }
         }
 
-        userStakes[msg.sender].push(Stake({
-            amount: totalRewards,
-            startTime: block.timestamp,
-            lockUntil: latestLockPeriod,
-            apy: getAPY(latestLockPeriod - block.timestamp),
-            rewardsClaimed: 0
-        }));
-
+        userStakes[msg.sender][highestYieldIndex].amount += totalRewards;
         emit RewardsReinvested(msg.sender, totalRewards);
     }
 
@@ -112,15 +124,30 @@ contract AscStaking is Ownable {
         }
     }
 
-function getAllUserStakes(address user) external view returns (
-    uint256[] memory amounts,
-    uint256[] memory startTimes,
-    uint256[] memory lockPeriods,
-    uint256[] memory apys
-);
+    function getAllUserStakes(address user) external view returns (
+        uint256[] memory amounts,
+        uint256[] memory startTimes,
+        uint256[] memory lockPeriods,
+        uint256[] memory apys,
+        uint256[] memory rewardsClaimed
+    ) {
+        uint256 stakeCount = userStakes[user].length;
+        amounts = new uint256[](stakeCount);
+        startTimes = new uint256[](stakeCount);
+        lockPeriods = new uint256[](stakeCount);
+        apys = new uint256[](stakeCount);
+        rewardsClaimed = new uint256[](stakeCount);
 
+        for (uint256 i = 0; i < stakeCount; i++) {
+            Stake storage stake = userStakes[user][i];
+            amounts[i] = stake.amount;
+            startTimes[i] = stake.startTime;
+            lockPeriods[i] = stake.lockUntil;
+            apys[i] = stake.apy;
+            rewardsClaimed[i] = stake.rewardsClaimed;
+        }
+    }
 
-    /// ✅ **Unstake Without Affecting Rewards**
     function unstake(uint256 amount) external {
         uint256 totalStakedUser = getTotalStaked(msg.sender);
         require(totalStakedUser >= amount, "Insufficient staked amount");
@@ -131,13 +158,8 @@ function getAllUserStakes(address user) external view returns (
         while (i < userStakes[msg.sender].length && remainingToUnstake > 0) {
             Stake storage stake = userStakes[msg.sender][i];
 
-            if (stake.amount == 0) {
-                i++; // Skip empty stakes
-                continue;
-            }
-
             if (block.timestamp < stake.lockUntil) {
-                i++; // Skip locked stakes
+                i++;
                 continue;
             }
 
@@ -155,7 +177,7 @@ function getAllUserStakes(address user) external view returns (
                 userStakes[msg.sender][i] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
                 userStakes[msg.sender].pop();
             } else {
-                i++; // Move to next stake
+                i++;
             }
         }
 
@@ -164,11 +186,11 @@ function getAllUserStakes(address user) external view returns (
     }
 
     function getAPY(uint256 duration) public pure returns (uint16) {
-        if (duration >= 730 days) return 200;  // 20%
-        if (duration >= 365 days) return 160;  // 16%
-        if (duration >= 180 days) return 120;  // 12%
-        if (duration >= 90 days) return 80;    // 8%
-        if (duration >= 30 days) return 50;    // 5%
-        return 20;  // Default 2%
+        if (duration >= 730 days) return 200;
+        if (duration >= 365 days) return 160;
+        if (duration >= 180 days) return 120;
+        if (duration >= 90 days) return 80;
+        if (duration >= 30 days) return 50;
+        return 20;
     }
 }
