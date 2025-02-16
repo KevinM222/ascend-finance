@@ -125,39 +125,29 @@ contract AscStaking is Ownable {
     require(totalRewards > 0, "No rewards available");
 
     for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-        uint256 stakeDuration = block.timestamp > userStakes[msg.sender][i].lockUntil
-            ? (userStakes[msg.sender][i].lockUntil - userStakes[msg.sender][i].startTime)
-            : (block.timestamp - userStakes[msg.sender][i].startTime);
-
-        uint256 rewards = (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * stakeDuration) / (365 days * 100);
-
-        // ✅ Ensure only new rewards are counted
-        uint256 claimable = rewards > userStakes[msg.sender][i].rewardsClaimed 
-            ? rewards - userStakes[msg.sender][i].rewardsClaimed 
-            : 0;
-
-        userStakes[msg.sender][i].rewardsClaimed += claimable;
-        totalRewards += claimable;
+        userStakes[msg.sender][i].rewardsClaimed += 
+            (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * 
+            (block.timestamp - userStakes[msg.sender][i].startTime)) / 
+            (365 days * 100);
     }
 
-    require(totalRewards > 0, "No new rewards available");
-
     if (autoReinvestEnabled[msg.sender]) {
-        reinvestRewards();
+        reinvestRewards();  // ✅ Make sure this function is properly defined earlier
     } else {
         idleRewards[msg.sender] += totalRewards;
         require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
         ascToken.transfer(msg.sender, totalRewards);
         emit RewardsClaimed(msg.sender, totalRewards);
     }
-    
+}  // ✅ Ensure this function is properly closed
 
-    function getTotalStaked(address user) public view returns (uint256 total) {
-        for (uint256 i = 0; i < userStakes[user].length; i++) {
+function getTotalStaked(address user) public view returns (uint256 total) {
+    for (uint256 i = 0; i < userStakes[user].length; i++) {
         total += userStakes[user][i].amount;
-        }
-         return total; // ✅ Fix: Ensure function returns total staked amount
     }
+    return total; // ✅ Fix: Ensure function returns total staked amount
+}
+
 
     function getAllUserStakes(address user) external view returns (
         uint256[] memory amounts,
