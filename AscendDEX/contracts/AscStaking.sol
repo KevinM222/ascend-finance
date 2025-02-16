@@ -193,5 +193,30 @@ contract AscStaking is Ownable {
     return (amounts, startTimes, lockPeriods, apys, rewardsClaimed);  // ✅ Fixed return statement
 }
 
+function unstake(uint256 index) external {
+    require(userStakes[msg.sender].length > index, "Invalid stake index");
+    Stake storage stakeData = userStakes[msg.sender][index];
+    require(block.timestamp >= stakeData.lockUntil, "Stake is still locked");
+
+    uint256 stakedAmount = stakeData.amount;
+    uint256 rewardAmount = calculateRewards(msg.sender);
+
+    // Remove stake from list
+    userStakes[msg.sender][index] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
+    userStakes[msg.sender].pop();
+
+    // Reset rewards for user
+    rewardsClaimed[msg.sender] += rewardAmount;
+    idleRewards[msg.sender] = 0;
+
+    // Transfer both stake & rewards
+    uint256 totalWithdraw = stakedAmount + rewardAmount;
+    require(ascToken.balanceOf(address(this)) >= totalWithdraw, "Insufficient pool balance");
+    ascToken.transfer(msg.sender, totalWithdraw);
+
+    emit Unstaked(msg.sender, stakedAmount, rewardAmount);
+}
+
+
 } // ✅ Closing bracket for the contract
 
