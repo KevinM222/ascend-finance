@@ -145,9 +145,11 @@ contract AscStaking is Ownable {
         for (uint256 i = 0; i < userStakes[user].length; i++) {
             total += userStakes[user][i].amount;
             }
-            return total; // ✅ Fix: Ensure function returns total staked amount
+                return total; // ✅ Fix: Ensure function returns total staked amount
+            }
         }
     }
+    
     function getAllUserStakes(address user) external view returns (
         uint256[] memory amounts,
         uint256[] memory startTimes,
