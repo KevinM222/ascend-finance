@@ -148,29 +148,32 @@ contract AscStaking is Ownable {
         return total;  // ✅ Correct placement
     }  // ✅ Properly closed
 
-    function getAllUserStakes(address user) external view returns (
-        uint256[] memory amounts,
-        uint256[] memory startTimes,
-        uint256[] memory lockPeriods,
-        uint256[] memory apys,
-        uint256[] memory rewardsClaimed
-        ) {
-        uint256 stakeCount = userStakes[user].length;
-        amounts = new uint256[](stakeCount);
-        startTimes = new uint256[](stakeCount);
-        lockPeriods = new uint256[](stakeCount);
-        apys = new uint256[](stakeCount);
-        rewardsClaimed = new uint256[](stakeCount);
+  function getAllUserStakes(address user) external view returns (
+    uint256[] memory amounts,
+    uint256[] memory startTimes,
+    uint256[] memory lockPeriods,
+    uint256[] memory apys,
+    uint256[] memory rewardsClaimed
+    ) {
+    uint256 stakeCount = userStakes[user].length;
+    amounts = new uint256[](stakeCount);
+    startTimes = new uint256[](stakeCount);
+    lockPeriods = new uint256[](stakeCount);
+    apys = new uint256[](stakeCount);
+    rewardsClaimed = new uint256[](stakeCount);
 
-        for (uint256 i = 0; i < stakeCount; i++) {
-            Stake storage stake = userStakes[user][i];
-            amounts[i] = stake.amount;
-            startTimes[i] = stake.startTime;
-            lockPeriods[i] = stake.lockUntil;
-            apys[i] = stake.apy;
-            rewardsClaimed[i] = stake.rewardsClaimed;
-        }
+    for (uint256 i = 0; i < stakeCount; i++) {
+        Stake storage stake = userStakes[user][i];
+        amounts[i] = stake.amount;
+        startTimes[i] = stake.startTime;
+        lockPeriods[i] = stake.lockUntil;
+        apys[i] = stake.apy;
+        rewardsClaimed[i] = stake.rewardsClaimed;
     }
+
+    return (amounts, startTimes, lockPeriods, apys, rewardsClaimed);  // ✅ Fixed return statement
+    }
+
 
     function unstake(uint256 amount) external {
         uint256 totalStakedUser = getTotalStaked(msg.sender);
@@ -217,5 +220,5 @@ contract AscStaking is Ownable {
         if (duration >= 30 days) return 50;
         return 20;
     }
-}  // ✅ Ensure this function is properly closed
+
 
