@@ -67,6 +67,23 @@ contract AscStaking is Ownable {
     }
 }
 
+function reinvestRewards() external {
+    uint256 totalRewards = calculateRewards(msg.sender);
+    require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
+
+    uint256 highestYieldIndex = 0;
+    uint16 highestAPY = 0;
+
+    for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+        userStakes[msg.sender][i].rewardsClaimed += 
+            (userStakes[msg.sender][i].amount / 100) * userStakes[msg.sender][i].apy *
+            (block.timestamp - userStakes[msg.sender][i].startTime) / (365 days);
+
+        if (userStakes[msg.sender][i].apy > highestAPY) {
+            highestAPY = userStakes[msg.sender][i].apy;
+            highestYieldIndex = i;
+        }
+    }
 
     function claimRewards() external {
         uint256 totalRewards = calculateRewards(msg.sender);
@@ -100,23 +117,7 @@ contract AscStaking is Ownable {
 
     uint256 public reinvestThreshold = 10 ether; // ✅ Only reinvest when rewards reach 10 tokens
 
-  function reinvestRewards() external {
-    uint256 totalRewards = calculateRewards(msg.sender);
-    require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
-
-    uint256 highestYieldIndex = 0;
-    uint16 highestAPY = 0;
-
-    for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-        userStakes[msg.sender][i].rewardsClaimed += 
-            (userStakes[msg.sender][i].amount / 100) * userStakes[msg.sender][i].apy *
-            (block.timestamp - userStakes[msg.sender][i].startTime) / (365 days);
-
-        if (userStakes[msg.sender][i].apy > highestAPY) {
-            highestAPY = userStakes[msg.sender][i].apy;
-            highestYieldIndex = i;
-        }
-    }
+  
 
     // ✅ Ensure at least one valid stake exists before reinvesting
     if (userStakes[msg.sender].length == 0) {
