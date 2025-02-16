@@ -139,14 +139,13 @@ contract AscStaking is Ownable {
         ascToken.transfer(msg.sender, totalRewards);
         emit RewardsClaimed(msg.sender, totalRewards);
     }
-}  // ✅ Ensure this function is properly closed
 
-function getTotalStaked(address user) public view returns (uint256 total) {
-    for (uint256 i = 0; i < userStakes[user].length; i++) {
-        total += userStakes[user][i].amount;
+    function getTotalStaked(address user) public view returns (uint256 total) {
+        for (uint256 i = 0; i < userStakes[user].length; i++) {
+            total += userStakes[user][i].amount;
     }
-    return total; // ✅ Fix: Ensure function returns total staked amount
-}
+        return total; // ✅ Fix: Ensure function returns total staked amount
+    }
 
 
     function getAllUserStakes(address user) external view returns (
@@ -218,4 +217,5 @@ function getTotalStaked(address user) public view returns (uint256 total) {
         if (duration >= 30 days) return 50;
         return 20;
     }
-}
+}  // ✅ Ensure this function is properly closed
+
