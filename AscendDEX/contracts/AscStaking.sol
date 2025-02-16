@@ -87,64 +87,72 @@ contract AscStaking is Ownable {
     return totalRewards;
 }
 
-    function reinvestRewards() public {  // ✅ Change from `external` to `public`
-        uint256 totalRewards = calculateRewards(msg.sender);
-        require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
+    function reinvestRewards() public {  
+    uint256 totalRewards = calculateRewards(msg.sender);
+    require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
 
-        if (userStakes[msg.sender].length == 0) { 
-            userStakes[msg.sender].push(Stake({
-                amount: totalRewards,
-                startTime: block.timestamp,
-                lockUntil: block.timestamp + 30 days, 
-                apy: getAPY(30 days),
-                rewardsClaimed: 0
-            }));
-        } else {
-            uint256 highestYieldIndex = 0;
-            uint16 highestAPY = 0;
+    if (userStakes[msg.sender].length == 0) { 
+        userStakes[msg.sender].push(Stake({
+            amount: totalRewards,
+            startTime: block.timestamp,
+            lockUntil: block.timestamp + 30 days, 
+            apy: getAPY(30 days),
+            rewardsClaimed: 0
+        }));
+    } else {
+        uint256 highestYieldIndex = 0;
+        uint16 highestAPY = 0;
 
-            for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-                userStakes[msg.sender][i].rewardsClaimed += 
-                    (userStakes[msg.sender][i].amount / 100) * userStakes[msg.sender][i].apy *
-                    (block.timestamp - userStakes[msg.sender][i].startTime) / (365 days);
+        for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+            userStakes[msg.sender][i].rewardsClaimed += 
+                (userStakes[msg.sender][i].amount / 100) * userStakes[msg.sender][i].apy *
+                (block.timestamp - userStakes[msg.sender][i].startTime) / (365 days);
 
-                if (userStakes[msg.sender][i].apy > highestAPY) {
-                    highestAPY = userStakes[msg.sender][i].apy;
-                    highestYieldIndex = i;
-                }
+            if (userStakes[msg.sender][i].apy > highestAPY) {
+                highestAPY = userStakes[msg.sender][i].apy;
+                highestYieldIndex = i;
             }
-            userStakes[msg.sender][highestYieldIndex].amount += totalRewards;
         }
-
-        emit RewardsReinvested(msg.sender, totalRewards);
+        userStakes[msg.sender][highestYieldIndex].amount += totalRewards;
     }
+
+    // 🔹 Ensure tokens are moved correctly
+    require(ascToken.balanceOf(address(this)) >= totalRewards, "Not enough tokens in contract");
+    ascToken.transfer(address(this), totalRewards); // ✅ Actually transfers tokens!
+
+    emit RewardsReinvested(msg.sender, totalRewards);
+}
+
 
  
     function claimRewards() external {
-    uint256 totalRewards = calculateRewards(msg.sender);
-    require(totalRewards > 0, "No rewards available");
+        uint256 totalRewards = calculateRewards(msg.sender);
+        require(totalRewards > 0, "No rewards available");
 
-    for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-        userStakes[msg.sender][i].rewardsClaimed += 
-            (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * 
-            (block.timestamp - userStakes[msg.sender][i].startTime)) / 
-            (365 days * 100);
-    }
+        for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+            userStakes[msg.sender][i].rewardsClaimed += 
+                (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * 
+                (block.timestamp - userStakes[msg.sender][i].startTime)) / 
+                (365 days * 100);
+        }
 
-    if (autoReinvestEnabled[msg.sender]) {
-        reinvestRewards();  
+        if (autoReinvestEnabled[msg.sender]) {
+            this.reinvestRewards();  // ✅ Call it as external to avoid Solidity internal function issue
         } else {
             idleRewards[msg.sender] += totalRewards;
             require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
             ascToken.transfer(msg.sender, totalRewards);
             emit RewardsClaimed(msg.sender, totalRewards);
         }
-    } // ✅ Fixed incorrect brackets
+    }
+
 
     function withdrawIdleRewards() external {
         uint256 rewardAmount = idleRewards[msg.sender];
         require(rewardAmount > 0, "No idle rewards");
 
+        require(ascToken.balanceOf(address(this)) >= rewardAmount, "Contract does not have enough tokens.");
+    
         idleRewards[msg.sender] = 0;
         ascToken.transfer(msg.sender, rewardAmount);
 
