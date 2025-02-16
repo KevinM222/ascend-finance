@@ -169,7 +169,7 @@ contract AscStaking is Ownable {
         return total;  // ✅ Correct placement
     }  // ✅ Properly closed
 
- function getAllUserStakes(address user) external view returns (
+function getAllUserStakes(address user) external view returns (
     uint256[] memory amounts,
     uint256[] memory startTimes,
     uint256[] memory lockPeriods,
@@ -181,7 +181,7 @@ contract AscStaking is Ownable {
     startTimes = new uint256[](stakeCount);
     lockPeriods = new uint256[](stakeCount);
     apys = new uint256[](stakeCount);
-    rewardsClaimed = new uint256[](stakeCount);
+    claimedRewards = new uint256[](stakeCount);  // ✅ FIXED: Use a new variable
 
     for (uint256 i = 0; i < stakeCount; i++) {
         Stake storage stake = userStakes[user][i];
@@ -189,10 +189,10 @@ contract AscStaking is Ownable {
         startTimes[i] = stake.startTime;
         lockPeriods[i] = stake.lockUntil;
         apys[i] = stake.apy;
-        claimedRewards[i] = stake.rewardsClaimed;
+        claimedRewards[i] = stake.rewardsClaimed;  // ✅ FIXED: Using correct variable
     }
 
-    return (amounts, startTimes, lockPeriods, apys, rewardsClaimed);  // ✅ Fixed return statement
+    return (amounts, startTimes, lockPeriods, apys, claimedRewards);  // ✅ FIXED: Return correct variable
 }
 
 function unstake(uint256 index) external {
