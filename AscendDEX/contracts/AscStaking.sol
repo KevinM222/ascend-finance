@@ -121,23 +121,24 @@ contract AscStaking is Ownable {
 
    
     function claimRewards() external {
-    uint256 totalRewards = calculateRewards(msg.sender);
-    require(totalRewards > 0, "No rewards available");
+        uint256 totalRewards = calculateRewards(msg.sender);
+        require(totalRewards > 0, "No rewards available");
 
-    for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-        userStakes[msg.sender][i].rewardsClaimed += 
-            (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * 
-            (block.timestamp - userStakes[msg.sender][i].startTime)) / 
-            (365 days * 100);
-    }
+        for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+            userStakes[msg.sender][i].rewardsClaimed += 
+                (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * 
+                (block.timestamp - userStakes[msg.sender][i].startTime)) / 
+                (365 days * 100);
+            }
 
-    if (autoReinvestEnabled[msg.sender]) {
-        reinvestRewards();  // ✅ Make sure this function is properly defined earlier
-    } else {
-        idleRewards[msg.sender] += totalRewards;
-        require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
-        ascToken.transfer(msg.sender, totalRewards);
-        emit RewardsClaimed(msg.sender, totalRewards);
+            if (autoReinvestEnabled[msg.sender]) {
+                reinvestRewards();  // ✅ Make sure this function is properly defined earlier
+            } else {
+            idleRewards[msg.sender] += totalRewards;
+            require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
+            ascToken.transfer(msg.sender, totalRewards);
+            emit RewardsClaimed(msg.sender, totalRewards);
+        }
     }
 
     function getTotalStaked(address user) public view returns (uint256 total) {
