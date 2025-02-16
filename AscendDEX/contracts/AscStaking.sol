@@ -174,7 +174,7 @@ contract AscStaking is Ownable {
     uint256[] memory startTimes,
     uint256[] memory lockPeriods,
     uint256[] memory apys,
-    uint256[] memory rewardsClaimed
+    uint256[] memory claimedRewards
 ) {
     uint256 stakeCount = userStakes[user].length;
     amounts = new uint256[](stakeCount);
@@ -189,7 +189,7 @@ contract AscStaking is Ownable {
         startTimes[i] = stake.startTime;
         lockPeriods[i] = stake.lockUntil;
         apys[i] = stake.apy;
-        rewardsClaimed[i] = stake.rewardsClaimed;
+        claimedRewards[i] = stake.rewardsClaimed;
     }
 
     return (amounts, startTimes, lockPeriods, apys, rewardsClaimed);  // ✅ Fixed return statement
