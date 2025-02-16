@@ -4,6 +4,11 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+uint256 public reinvestThreshold = 10 ether;
+uint256 public rewardPool;
+uint256 public totalStaked;
+
+
 contract AscStaking is Ownable {
     IERC20 public ascToken;
     uint256 public rewardPool;
@@ -61,86 +66,97 @@ contract AscStaking is Ownable {
             (stake.lockUntil - stake.startTime) : 
             (block.timestamp - stake.startTime);
 
-        // ✅ Prevent multiplication overflow by reordering
-        uint256 rewards = (stake.amount / 100) * stake.apy * stakingTime / (365 days);
-        totalRewards += rewards - stake.rewardsClaimed;
+            uint256 rewards = (stake.amount / 100) * stake.apy * stakingTime / (365 days);
+            totalRewards += rewards - stake.rewardsClaimed;
+        }
+            return totalRewards;
     }
-}
 
-function reinvestRewards() external {
+
+    function reinvestRewards() external {
+        uint256 totalRewards = calculateRewards(msg.sender);
+        require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
+
+        if (userStakes[msg.sender].length == 0) { 
+            userStakes[msg.sender].push(Stake({
+                amount: totalRewards,
+                startTime: block.timestamp,
+                lockUntil: block.timestamp + 30 days, // Default 30 days
+                apy: getAPY(30 days),
+                rewardsClaimed: 0
+            }));
+        } else {
+            uint256 highestYieldIndex = 0;
+            uint16 highestAPY = 0;
+
+            for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+                userStakes[msg.sender][i].rewardsClaimed += 
+                    (userStakes[msg.sender][i].amount / 100) * userStakes[msg.sender][i].apy *
+                    (block.timestamp - userStakes[msg.sender][i].startTime) / (365 days);
+
+                if (userStakes[msg.sender][i].apy > highestAPY) {
+                    highestAPY = userStakes[msg.sender][i].apy;
+                    highestYieldIndex = i;
+                }
+            }
+
+            userStakes[msg.sender][highestYieldIndex].amount += totalRewards;
+            }
+
+            emit RewardsReinvested(msg.sender, totalRewards);
+        }
+    }    
+
+
+   function withdrawIdleRewards() external {
+        uint256 rewardAmount = idleRewards[msg.sender];
+        require(rewardAmount > 0, "No idle rewards");
+
+        idleRewards[msg.sender] = 0;
+        ascToken.transfer(msg.sender, rewardAmount);
+
+        emit RewardsClaimed(msg.sender, rewardAmount);
+    }
+
+
+   
+    function claimRewards() external {
     uint256 totalRewards = calculateRewards(msg.sender);
-    require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
-
-    uint256 highestYieldIndex = 0;
-    uint16 highestAPY = 0;
+    require(totalRewards > 0, "No rewards available");
 
     for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-        userStakes[msg.sender][i].rewardsClaimed += 
-            (userStakes[msg.sender][i].amount / 100) * userStakes[msg.sender][i].apy *
-            (block.timestamp - userStakes[msg.sender][i].startTime) / (365 days);
+        uint256 stakeDuration = block.timestamp > userStakes[msg.sender][i].lockUntil
+            ? (userStakes[msg.sender][i].lockUntil - userStakes[msg.sender][i].startTime)
+            : (block.timestamp - userStakes[msg.sender][i].startTime);
 
-        if (userStakes[msg.sender][i].apy > highestAPY) {
-            highestAPY = userStakes[msg.sender][i].apy;
-            highestYieldIndex = i;
-        }
-    }
-   function withdrawIdleRewards() external {
-    uint256 rewardAmount = idleRewards[msg.sender];
-    require(rewardAmount > 0, "No idle rewards");
+        uint256 rewards = (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * stakeDuration) / (365 days * 100);
 
-    idleRewards[msg.sender] = 0;
-    ascToken.transfer(msg.sender, rewardAmount);
+        // ✅ Ensure only new rewards are counted
+        uint256 claimable = rewards > userStakes[msg.sender][i].rewardsClaimed 
+            ? rewards - userStakes[msg.sender][i].rewardsClaimed 
+            : 0;
 
-    emit RewardsClaimed(msg.sender, rewardAmount);
-}
-
-
-    uint256 public reinvestThreshold = 10 ether; // ✅ Only reinvest when rewards reach 10 tokens
-
-
-    function claimRewards() external {
-        uint256 totalRewards = calculateRewards(msg.sender);
-        require(totalRewards > 0, "No rewards available");
-
-        for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-            userStakes[msg.sender][i].rewardsClaimed += 
-                (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * 
-                (block.timestamp - userStakes[msg.sender][i].startTime)) / 
-                (365 days * 100);
-        }
-
-        if (autoReinvestEnabled[msg.sender]) {
-            reinvestRewards();
-        } else {
-            idleRewards[msg.sender] += totalRewards;
-            emit RewardsClaimed(msg.sender, totalRewards);
-        }
+        userStakes[msg.sender][i].rewardsClaimed += claimable;
+        totalRewards += claimable;
     }
 
- 
-  
+    require(totalRewards > 0, "No new rewards available");
 
-    // ✅ Ensure at least one valid stake exists before reinvesting
-    if (userStakes[msg.sender].length == 0) {
-        userStakes[msg.sender].push(Stake({
-            amount: totalRewards,
-            startTime: block.timestamp,
-            lockUntil: block.timestamp + 30 days, // Default 30 days
-            apy: getAPY(30 days),
-            rewardsClaimed: 0
-        }));
+    if (autoReinvestEnabled[msg.sender]) {
+        reinvestRewards();
     } else {
-        userStakes[msg.sender][highestYieldIndex].amount += totalRewards;
+        idleRewards[msg.sender] += totalRewards;
+        require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
+        ascToken.transfer(msg.sender, totalRewards);
+        emit RewardsClaimed(msg.sender, totalRewards);
     }
-
-    emit RewardsReinvested(msg.sender, totalRewards);
-}
-
+    
 
     function getTotalStaked(address user) public view returns (uint256 total) {
         for (uint256 i = 0; i < userStakes[user].length; i++) {
-            total += userStakes[user][i].amount;
+        total += userStakes[user][i].amount;
         }
+         return total; // ✅ Fix: Ensure function returns total staked amount
     }
 
     function getAllUserStakes(address user) external view returns (
