@@ -85,6 +85,8 @@ function reinvestRewards() external {
         }
     }
 
+}
+
     function claimRewards() external {
         uint256 totalRewards = calculateRewards(msg.sender);
         require(totalRewards > 0, "No rewards available");
