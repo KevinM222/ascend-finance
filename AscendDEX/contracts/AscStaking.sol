@@ -44,13 +44,14 @@ contract AscStaking is Ownable {
     }
 
     function getAPY(uint256 duration) public pure returns (uint16) {
-        if (duration >= 730 days) return 200;
-        if (duration >= 365 days) return 160;
-        if (duration >= 180 days) return 120;
-        if (duration >= 90 days) return 80;
-        if (duration >= 30 days) return 50;
-        return 20;
-    }
+    if (duration >= 730 days) return 20;  // ✅ Should be 20, NOT 200
+    if (duration >= 365 days) return 16;  // ✅ Should be 16, NOT 160
+    if (duration >= 180 days) return 12;  // ✅ Should be 12, NOT 120
+    if (duration >= 90 days) return 8;    // ✅ Should be 8, NOT 80
+    if (duration >= 30 days) return 5;    // ✅ Should be 5, NOT 50
+    return 2;  // ✅ Lowest APY, should be 2
+}
+
 
     function stakeWithAutoApproval(uint256 amount, uint256 duration) external {
         require(amount > 0, "Cannot stake zero amount");
@@ -67,7 +68,7 @@ contract AscStaking is Ownable {
         emit AscStaked(msg.sender, amount, block.timestamp + duration, getAPY(duration));
     }
 
-    function calculateRewards(address user) public view returns (uint256 totalRewards) {
+  function calculateRewards(address user) public view returns (uint256 totalRewards) { 
     for (uint256 i = 0; i < userStakes[user].length; i++) {
         Stake storage stake = userStakes[user][i];
 
@@ -75,12 +76,16 @@ contract AscStaking is Ownable {
             (stake.lockUntil - stake.startTime) : 
             (block.timestamp - stake.startTime);
 
-            uint256 rewards = (stake.amount / 100) * stake.apy * stakingTime / (365 days);
+        // ✅ Fixed Multiplication Order
+        uint256 rewards = (stake.amount * stake.apy * stakingTime) / (100 * 365 days);
+
+        // ✅ Prevent Underflow
+        if (rewards > stake.rewardsClaimed) {
             totalRewards += rewards - stake.rewardsClaimed;
         }
-            return totalRewards;
     }
-
+    return totalRewards;
+}
 
     function reinvestRewards() public {  // ✅ Change from `external` to `public`
         uint256 totalRewards = calculateRewards(msg.sender);
