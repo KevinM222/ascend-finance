@@ -4,13 +4,12 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-uint256 public reinvestThreshold = 10 ether;
-uint256 public rewardPool;
-uint256 public totalStaked;
-
 
 contract AscStaking is Ownable {
     IERC20 public ascToken;
+    
+    // ✅ State Variables (Must be inside the contract)
+    uint256 public reinvestThreshold = 10 ether;  // ✅ Correct placement
     uint256 public rewardPool;
     uint256 public totalStaked;
 
@@ -21,6 +20,7 @@ contract AscStaking is Ownable {
         uint16 apy;
         uint256 rewardsClaimed;  // ✅ Track claimed rewards
     }
+
 
     mapping(address => Stake[]) public userStakes;
     mapping(address => bool) public autoReinvestEnabled;  // ✅ Auto reinvest toggle
