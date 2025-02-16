@@ -43,6 +43,15 @@ contract AscStaking is Ownable {
         emit AutoReinvestToggled(msg.sender, _enabled);
     }
 
+    function getAPY(uint256 duration) public pure returns (uint16) {
+        if (duration >= 730 days) return 200;
+        if (duration >= 365 days) return 160;
+        if (duration >= 180 days) return 120;
+        if (duration >= 90 days) return 80;
+        if (duration >= 30 days) return 50;
+        return 20;
+    }
+
     function stakeWithAutoApproval(uint256 amount, uint256 duration) external {
         require(amount > 0, "Cannot stake zero amount");
 
@@ -73,39 +82,37 @@ contract AscStaking is Ownable {
     }
 
 
-   function reinvestRewards() external {
-    uint256 totalRewards = calculateRewards(msg.sender);
-    require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
+    function reinvestRewards() external {
+        uint256 totalRewards = calculateRewards(msg.sender);
+        require(totalRewards >= reinvestThreshold, "Not enough rewards to reinvest yet");
 
-    if (userStakes[msg.sender].length == 0) { 
-        userStakes[msg.sender].push(Stake({
-            amount: totalRewards,
-            startTime: block.timestamp,
-            lockUntil: block.timestamp + 30 days, // Default 30 days
-            apy: getAPY(30 days),
-            rewardsClaimed: 0
-        }));
-    } else {
-        uint256 highestYieldIndex = 0;
-        uint16 highestAPY = 0;
+        if (userStakes[msg.sender].length == 0) { 
+            userStakes[msg.sender].push(Stake({
+                amount: totalRewards,
+                startTime: block.timestamp,
+                lockUntil: block.timestamp + 30 days, 
+                apy: getAPY(30 days),
+                rewardsClaimed: 0
+            }));
+        } else {
+            uint256 highestYieldIndex = 0;
+            uint16 highestAPY = 0;
 
-        for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
-            userStakes[msg.sender][i].rewardsClaimed += 
-                (userStakes[msg.sender][i].amount / 100) * userStakes[msg.sender][i].apy *
-                (block.timestamp - userStakes[msg.sender][i].startTime) / (365 days);
+            for (uint256 i = 0; i < userStakes[msg.sender].length; i++) {
+                userStakes[msg.sender][i].rewardsClaimed += 
+                    (userStakes[msg.sender][i].amount / 100) * userStakes[msg.sender][i].apy *
+                    (block.timestamp - userStakes[msg.sender][i].startTime) / (365 days);
 
-            if (userStakes[msg.sender][i].apy > highestAPY) {
-                highestAPY = userStakes[msg.sender][i].apy;
-                highestYieldIndex = i;
+                if (userStakes[msg.sender][i].apy > highestAPY) {
+                    highestAPY = userStakes[msg.sender][i].apy;
+                    highestYieldIndex = i;
+                }
             }
+            userStakes[msg.sender][highestYieldIndex].amount += totalRewards;
         }
 
-        userStakes[msg.sender][highestYieldIndex].amount += totalRewards;
+        emit RewardsReinvested(msg.sender, totalRewards);
     }
-
-    emit RewardsReinvested(msg.sender, totalRewards); // ✅ Fixed placement
-} // ✅ Removed extra closing bracket
-  
 
 
    function withdrawIdleRewards() external {
