@@ -199,7 +199,7 @@ function unstake(uint256 index) external {
     require(block.timestamp >= stakeData.lockUntil, "Stake is still locked");
 
     uint256 stakedAmount = stakeData.amount;
-    uint256 rewardAmount = calculateRewards(msg.sender);
+    uint256 rewardAmount = (stakeData.amount * stakeData.apy * (block.timestamp - stakeData.startTime)) / (365 days * 100);
 
     // Remove stake from list
     userStakes[msg.sender][index] = userStakes[msg.sender][userStakes[msg.sender].length - 1];
