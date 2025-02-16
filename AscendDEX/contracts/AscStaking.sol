@@ -22,21 +22,17 @@ contract AscStaking is Ownable {
     }
 
 
-    mapping(address => Stake[]) public userStakes;
+       mapping(address => Stake[]) public userStakes;
     mapping(address => bool) public autoReinvestEnabled;  // ✅ Auto reinvest toggle
     mapping(address => uint256) public idleRewards;  // ✅ Store unclaimed rewards
+    mapping(address => uint256) public rewardsClaimed; // ✅ Track claimed rewards
 
+    // ✅ Define all events consistently
     event AscStaked(address indexed user, uint256 amount, uint256 lockUntil, uint16 apy);
-    event AscUnstaked(address indexed user, uint256 amount);
+    event AscUnstaked(address indexed user, uint256 amount, uint256 rewards); // 🔹 Match unstake function
     event RewardsClaimed(address indexed user, uint256 reward);
     event RewardsReinvested(address indexed user, uint256 reinvestedReward);
     event AutoReinvestToggled(address indexed user, bool enabled);
-
-    // Store unclaimed rewards
-    mapping(address => uint256) public idleRewards;
-
-    // ✅ Add this mapping to track claimed rewards
-    mapping(address => uint256) public rewardsClaimed;
 
     constructor(IERC20 _ascToken, uint256 _rewardPool) {
         require(address(_ascToken) != address(0), "Invalid token address");
