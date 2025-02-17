@@ -23,7 +23,7 @@ contract AscStaking is Ownable {
 
 
        mapping(address => Stake[]) public userStakes;
-    mapping(address => bool) public autoReinvestEnabled;  // ✅ Auto reinvest toggle
+    mapping(address => mapping(uint256 => bool)) public autoReinvestStatus;  // ✅ Auto reinvest toggle per stake
     mapping(address => uint256) public idleRewards;  // ✅ Store unclaimed rewards
     mapping(address => uint256) public rewardsClaimed; // ✅ Track claimed rewards
 
@@ -40,8 +40,14 @@ contract AscStaking is Ownable {
         rewardPool = _rewardPool;
     }
 
-    function setAutoReinvest(bool _enabled) external {
-        autoReinvestEnabled[msg.sender] = _enabled;
+    /**
+ * 🔹 Set Auto-Reinvest for a Specific Stake
+ */
+    function setAutoReinvest(uint256 _index, bool _enabled) external {
+        require(_index < userStakes[msg.sender].length, "Invalid stake index");
+    
+        autoReinvestStatus[msg.sender][_index] = _enabled;
+    
         emit AutoReinvestToggled(msg.sender, _enabled);
     }
 
