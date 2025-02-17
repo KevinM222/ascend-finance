@@ -44,13 +44,17 @@ contract AscStaking is Ownable {
  * 🔹 Set Auto-Reinvest for a Specific Stake
  */
     function setAutoReinvest(uint256 _index, bool _enabled) external {
-        require(_index < userStakes[msg.sender].length, "Invalid stake index");
+    require(_index < userStakes[msg.sender].length, "Invalid stake index");
 
-        // ✅ Explicitly declare in storage
-        autoReinvestStatus[msg.sender][_index] = _enabled;  
+    // ✅ Explicitly declare storage mapping before accessing
+    mapping(uint256 => bool) storage userReinvestMapping = autoReinvestStatus[msg.sender];
 
-        emit AutoReinvestToggled(msg.sender, _enabled);
-    }
+    // ✅ Now we can access it without errors
+    userReinvestMapping[_index] = _enabled;
+
+    emit AutoReinvestToggled(msg.sender, _enabled);
+}
+
 
 
     function getAPY(uint256 duration) public pure returns (uint16) {
