@@ -45,11 +45,13 @@ contract AscStaking is Ownable {
  */
     function setAutoReinvest(uint256 _index, bool _enabled) external {
         require(_index < userStakes[msg.sender].length, "Invalid stake index");
-    
-        autoReinvestStatus[msg.sender][_index] = _enabled;
-    
+
+        // ✅ Explicitly declare in storage
+        autoReinvestStatus[msg.sender][_index] = _enabled;  
+
         emit AutoReinvestToggled(msg.sender, _enabled);
     }
+
 
     function getAPY(uint256 duration) public pure returns (uint16) {
     if (duration >= 730 days) return 20;  // ✅ Should be 20, NOT 200
