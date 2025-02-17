@@ -144,7 +144,7 @@ contract AscStaking is Ownable {
                 (365 days * 100);
         }
 
-        if (autoReinvestStatus[msg.sender][i]) { 
+        if (autoReinvestStatus[msg.sender][_index]) { 
 
             this.reinvestRewards();  // ✅ Call it as external to avoid Solidity internal function issue
         } else {
