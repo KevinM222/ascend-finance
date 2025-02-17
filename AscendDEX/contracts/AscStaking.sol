@@ -44,16 +44,16 @@ contract AscStaking is Ownable {
  * 🔹 Set Auto-Reinvest for a Specific Stake
  */
     function setAutoReinvest(uint256 _index, bool _enabled) external {
-    require(_index < userStakes[msg.sender].length, "Invalid stake index");
+        require(_index < userStakes[msg.sender].length, "Invalid stake index");
 
-    // ✅ Explicitly declare storage mapping before accessing
-    mapping(uint256 => bool) storage userReinvestMapping = autoReinvestStatus[msg.sender];
+        // ❌ Remove this line (you cannot declare a mapping inside a function)
+        // mapping(uint256 => bool) storage userReinvestMapping = autoReinvestStatus[msg.sender];
 
-    // ✅ Now we can access it without errors
-    userReinvestMapping[_index] = _enabled;
+        // ✅ Instead, just update the mapping directly
+        autoReinvestStatus[msg.sender][_index] = _enabled;
 
-    emit AutoReinvestToggled(msg.sender, _enabled);
-}
+        emit AutoReinvestToggled(msg.sender, _enabled);
+    }
 
 
 
@@ -64,7 +64,7 @@ contract AscStaking is Ownable {
     if (duration >= 90 days) return 8;    // ✅ Should be 8, NOT 80
     if (duration >= 30 days) return 5;    // ✅ Should be 5, NOT 50
     return 2;  // ✅ Lowest APY, should be 2
-}
+    }
 
 
     function stakeWithAutoApproval(uint256 amount, uint256 duration) external {
@@ -139,7 +139,7 @@ contract AscStaking is Ownable {
 
 
  
-    function claimRewards() external {
+   function claimRewards() external {
         uint256 totalRewards = calculateRewards(msg.sender);
         require(totalRewards > 0, "No rewards available");
 
@@ -148,18 +148,20 @@ contract AscStaking is Ownable {
                 (userStakes[msg.sender][i].amount * userStakes[msg.sender][i].apy * 
                 (block.timestamp - userStakes[msg.sender][i].startTime)) / 
                 (365 days * 100);
+
+            // ✅ Fixed: Check reinvest status **per stake**
+            if (autoReinvestStatus[msg.sender][i]) {  
+                this.reinvestRewards();  // ✅ Call it as external to avoid Solidity internal function issue
+            } else {
+                idleRewards[msg.sender] += totalRewards;
+            }
         }
 
-        if (autoReinvestStatus[msg.sender][_index]) { 
-
-            this.reinvestRewards();  // ✅ Call it as external to avoid Solidity internal function issue
-        } else {
-            idleRewards[msg.sender] += totalRewards;
-            require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
-            ascToken.transfer(msg.sender, totalRewards);
-            emit RewardsClaimed(msg.sender, totalRewards);
-        }
+        require(ascToken.balanceOf(address(this)) >= totalRewards, "Insufficient reward pool");
+        ascToken.transfer(msg.sender, totalRewards);
+        emit RewardsClaimed(msg.sender, totalRewards);
     }
+
 
 
     function withdrawIdleRewards() external {
