@@ -16,7 +16,7 @@ contract AscStaking is Ownable {
         uint256 lockUntil;
         uint16 apy;
         uint256 rewardsClaimed;
-        uint256 pendingReinvestRewards; // New: Queued for auto-reinvest
+        uint256 pendingReinvestRewards;
     }
 
     mapping(address => Stake[]) public userStakes;
@@ -42,13 +42,13 @@ contract AscStaking is Ownable {
     }
 
     function getAPY(uint256 duration) public pure returns (uint16) {
-        if (duration == 0) return 2; // No lock
+        if (duration == 0) return 2;
         if (duration >= 730 days) return 20;
         if (duration >= 365 days) return 16;
         if (duration >= 180 days) return 12;
         if (duration >= 90 days) return 8;
         if (duration >= 30 days) return 5;
-        return 2; // Default for < 30 days
+        return 2;
     }
 
     function stakeWithAutoApproval(uint256 amount, uint256 duration) external {
@@ -101,12 +101,11 @@ contract AscStaking is Ownable {
             }
         }
         require(totalRewards > 0, "No rewards to process");
-        // Rewards stay in contract until user decides (handled in JS)
     }
 
     function reinvestRewards(uint256 index) external {
         require(index < userStakes[msg.sender].length, "Invalid stake index");
-        Stake storage stake = userStakes[msg.sender][i];
+        Stake storage stake = userStakes[msg.sender][index]; // Fixed: Use 'index' instead of 'i'
         uint256 pending = stake.pendingReinvestRewards;
         require(pending > 0, "No rewards to reinvest");
         stake.amount += pending;
