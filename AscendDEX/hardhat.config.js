@@ -7,17 +7,11 @@ require("@nomiclabs/hardhat-etherscan");
 console.log("Using network:", process.env.HARDHAT_NETWORK || "hardhat");
 
 // Ensure required .env variables are set
-if (!process.env.SEPOLIA_RPC_URL) {
-  console.error("❌ ERROR: SEPOLIA_RPC_URL is not set in .env");
-  process.exit(1);
-}
-
 if (!process.env.PRIVATE_KEY) {
   console.error("❌ ERROR: PRIVATE_KEY is not set in .env");
   process.exit(1);
 }
 
-// Custom Task: Block Number
 const { task } = require("hardhat/config");
 task("block-number", "Prints the current block number").setAction(async (taskArgs, hre) => {
   const blockNumber = await hre.ethers.provider.getBlockNumber();
@@ -25,7 +19,7 @@ task("block-number", "Prints the current block number").setAction(async (taskArg
 });
 
 module.exports = {
-  defaultNetwork: "hardhat", // ✅ Ensures Hardhat is always used for tests
+  defaultNetwork: "hardhat",
   solidity: {
     compilers: [
       {
@@ -46,10 +40,10 @@ module.exports = {
   networks: {
     hardhat: {
       chainId: 31337,
-      allowUnlimitedContractSize: true,  // ✅ Prevents contract size issues
+      allowUnlimitedContractSize: true,
     },
     localhost: {
-      url: "http://127.0.0.1:8545", // ✅ Ensures connection to local Hardhat node
+      url: "http://127.0.0.1:8545",
       chainId: 31337,
     },
     sepolia: {
@@ -57,8 +51,26 @@ module.exports = {
       chainId: 11155111,
       accounts: [`0x${process.env.PRIVATE_KEY}`],
     },
+    polygon: {
+      url: "https://rpc-mainnet.maticvigil.com", // Polygon mainnet RPC
+      chainId: 137,
+      accounts: [`0x${process.env.PRIVATE_KEY}`],
+    },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      polygon: process.env.POLYGONSCAN_API_KEY, // For Polygon mainnet verification
+      sepolia: process.env.ETHERSCAN_API_KEY,   // Keep for Sepolia
+    },
+    customChains: [
+      {
+        network: "polygon",
+        chainId: 137,
+        urls: {
+          apiURL: "https://api.polygonscan.com/api",
+          browserURL: "https://polygonscan.com",
+        },
+      },
+    ],
   },
 };
