@@ -1,71 +1,41 @@
-// scripts/fund_ascStaking.js
+const { ethers } = require("hardhat");
 
 async function main() {
-    const [deployer] = await ethers.getSigners();
-    console.log("Funding AscStaking using account:", deployer.address);
-  
-    // ASC token contract address (TestASC token deployed on Sepolia)
-    const ascTokenAddress = "0x4456B0F017F6bF9b0aa7a0ac3d3F224902a1937A";
-    
-    // Full ABI for the ASC token (as obtained from Polyscan)
-    const ascTokenAbi = [
-      {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_account","type":"address"}],"name":"BlockedAccount","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint8","name":"version","type":"uint8"}],"name":"Initialized","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"account","type":"address"}],"name":"Paused","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_account","type":"address"}],"name":"UnblockedAccount","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"account","type":"address"}],"name":"Unpaused","type":"event"},
-      {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"blockAccount","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burnFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_symbol","type":"string"},{"internalType":"uint8","name":"_decimals","type":"uint8"},{"internalType":"uint256","name":"_initialSupply","type":"uint256"},{"internalType":"uint256","name":"_maxSupply","type":"uint256"}],"name":"initialize","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"isAccountBlocked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"maxSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_account","type":"address"}],"name":"unblockAccount","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"}
-    ];
-    
-    // Attach to the ASC token contract using the full ABI
-    const ascToken = new ethers.Contract(ascTokenAddress, ascTokenAbi, deployer);
-  
-    // Replace with your actual deployed AscStaking contract address:
-    const ascStakingAddress = "0xA7548a806e7006151dB26C8596f891013d414bB7";
-  
-    // Define the amount to mint: 300,000,000 ASC (with 18 decimals)
-    const amountToMint = ethers.utils.parseUnits("300000000", 18);
-  
-    console.log(`Minting ${ethers.utils.formatUnits(amountToMint, 18)} ASC to AscStaking contract at ${ascStakingAddress}...`);
-  
-    // Call the mint function on your ASC token contract to mint tokens directly to the staking contract
-    const tx = await ascToken.mint(ascStakingAddress, amountToMint);
-    await tx.wait();
-    console.log(`Successfully minted ${ethers.utils.formatUnits(amountToMint, 18)} ASC to AscStaking contract.`);
+  const [deployer] = await ethers.getSigners();
+  console.log("Funding AscStaking using account:", deployer.address);
+
+  const ascTokenAddress = "0x4456B0F017F6bF9b0aa7a0ac3d3F224902a1937A";
+  const ascTokenAbi = [
+    "function mint(address to, uint256 amount) public",
+    "function balanceOf(address account) public view returns (uint256)",
+    "function owner() public view returns (address)"
+  ];
+  const ascToken = new ethers.Contract(ascTokenAddress, ascTokenAbi, deployer);
+
+  // Verify deployer is the owner
+  const owner = await ascToken.owner();
+  if (owner.toLowerCase() !== deployer.address.toLowerCase()) {
+    throw new Error("Deployer is not the owner of the ASC token contract");
   }
-  
-  main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error("Funding error:", error);
-      process.exit(1);
-    });
-  
+
+  const ascStakingAddress = "INSERT_YOUR_ASCSTAKING_ADDRESS_HERE"; // Replace with your latest deployed AscStaking address
+  const amountToMint = ethers.utils.parseUnits("300000000", 18);
+
+  console.log(`Minting ${ethers.utils.formatUnits(amountToMint, 18)} ASC to AscStaking contract at ${ascStakingAddress}...`);
+
+  const balanceBefore = await ascToken.balanceOf(ascStakingAddress);
+  console.log(`Staking contract balance before: ${ethers.utils.formatUnits(balanceBefore, 18)} ASC`);
+
+  const tx = await ascToken.mint(ascStakingAddress, amountToMint);
+  await tx.wait();
+
+  const balanceAfter = await ascToken.balanceOf(ascStakingAddress);
+  console.log(`Successfully minted ${ethers.utils.formatUnits(amountToMint, 18)} ASC. New balance: ${ethers.utils.formatUnits(balanceAfter, 18)} ASC`);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error("Funding error:", error);
+    process.exit(1);
+  });

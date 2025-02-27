@@ -12,6 +12,9 @@ if (!process.env.PRIVATE_KEY) {
   process.exit(1);
 }
 
+// Only check POLYGON_RPC_URL if deploying to Polygon, but keep it optional with a default
+const POLYGON_RPC_URL = process.env.POLYGON_RPC_URL || "https://rpc-mainnet.maticvigil.com";
+
 const { task } = require("hardhat/config");
 task("block-number", "Prints the current block number").setAction(async (taskArgs, hre) => {
   const blockNumber = await hre.ethers.provider.getBlockNumber();
@@ -47,20 +50,20 @@ module.exports = {
       chainId: 31337,
     },
     sepolia: {
-      url: process.env.SEPOLIA_RPC_URL,
+      url: process.env.SEPOLIA_RPC_URL || "https://rpc.sepolia.org", // Fallback URL
       chainId: 11155111,
-      accounts: [`0x${process.env.PRIVATE_KEY}`],
+      accounts: process.env.PRIVATE_KEY ? [`0x${process.env.PRIVATE_KEY}`] : [],
     },
     polygon: {
-      url: "https://rpc-mainnet.maticvigil.com", // Polygon mainnet RPC
+      url: POLYGON_RPC_URL, // Use default or env variable
       chainId: 137,
-      accounts: [`0x${process.env.PRIVATE_KEY}`],
+      accounts: process.env.PRIVATE_KEY ? [`0x${process.env.PRIVATE_KEY}`] : [],
     },
   },
   etherscan: {
     apiKey: {
-      polygon: process.env.POLYGONSCAN_API_KEY, // For Polygon mainnet verification
-      sepolia: process.env.ETHERSCAN_API_KEY,   // Keep for Sepolia
+      polygon: process.env.POLYGONSCAN_API_KEY,
+      sepolia: process.env.ETHERSCAN_API_KEY,
     },
     customChains: [
       {
