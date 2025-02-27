@@ -18,7 +18,7 @@ async function main() {
     throw new Error("Deployer is not the owner of the ASC token contract");
   }
 
-  const ascStakingAddress = "INSERT_YOUR_ASCSTAKING_ADDRESS_HERE"; // Replace with your latest deployed AscStaking address
+  const ascStakingAddress = "0x6a663C5e104AAB49b5E09A0d2De94B4b340a4Aef"; // Replace with your latest deployed AscStaking address
   const amountToMint = ethers.utils.parseUnits("300000000", 18);
 
   console.log(`Minting ${ethers.utils.formatUnits(amountToMint, 18)} ASC to AscStaking contract at ${ascStakingAddress}...`);
