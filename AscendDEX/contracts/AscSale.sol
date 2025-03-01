@@ -7,15 +7,18 @@ contract AscSale {
     IERC20 public ascToken;
     IERC20 public usdc;
     address public treasury;
-    address public devWallet; // Changed from hardcoded
+    address public devWallet;
     uint256 public ascPerPol = 50;
     uint256 public ascPerUsdc = 50;
+    
+    // Add this event declaration
+    event AscPurchased(address indexed buyer, uint256 ascAmount, uint256 paidAmount, string currency);
     
     constructor(address _ascToken, address _usdc, address _treasury, address _devWallet) {
         ascToken = IERC20(_ascToken);
         usdc = IERC20(_usdc);
         treasury = _treasury;
-        devWallet = _devWallet; // Set here
+        devWallet = _devWallet;
     }
     
     function buyWithPol() external payable {
