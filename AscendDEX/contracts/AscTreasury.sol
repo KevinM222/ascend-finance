@@ -25,8 +25,8 @@ contract AscTreasury {
         if (balance >= STAKE_AMOUNT + GAS_RESERVE) {
             uint256 stakeable = (balance - GAS_RESERVE) / STAKE_AMOUNT * STAKE_AMOUNT;
             stakedAmount += stakeable;
-            // Simulate staking by sending to a burn address
-            (bool sent, ) = address(0xdead00000000000000000000000000000000dead).call{value: stakeable}("");
+            // Use checksummed burn address
+            (bool sent, ) = address(0xdeAD00000000000000000000000000000000dEAd).call{value: stakeable}("");
             require(sent, "Stake transfer failed");
         }
     }
