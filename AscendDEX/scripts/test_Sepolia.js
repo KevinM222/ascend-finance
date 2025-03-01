@@ -7,7 +7,7 @@ async function main() {
     // Contract addresses (Sepolia)
     const ascTokenAddress = "0xE6D3d358CB0A63C6B0851a2b4107Ed20387bB923";
     const usdcAddress = "0x176f5a08c4c4cfC364C35a309c093a8979344600";
-    const wpolAddress = "0x05db234b00e782A8689E185A8A79E488CA070cC8"; // POL mock as WPOL
+    const wpolAddress = "0x05db234b00e782A8689E185A8A79E488CA070cC8";
     const saleAddress = "0x7C7beb9F164BFd6a61a2e1e044B759777Dc699Ce";
     const treasuryAddress = "0x1C99ff4b13E16a47072EEfDc8848AE6c3AAD7052";
 
@@ -27,7 +27,10 @@ async function main() {
     // Test 2: Buy with USDC (buyWithUsdc)
     console.log("\nTest 2: Buying 500 ASC with 10 USDC...");
     const usdcAmount = hre.ethers.utils.parseUnits("10", 6);
-    await usdc.approve(saleAddress, usdcAmount);
+    console.log("Approving USDC...");
+    const approveTx = await usdc.approve(saleAddress, usdcAmount);
+    await approveTx.wait(); // Wait for approval to confirm
+    console.log("USDC approved");
     await sale.buyWithUsdc(usdcAmount);
     console.log("Bought 500 ASC with 10 USDC");
 
