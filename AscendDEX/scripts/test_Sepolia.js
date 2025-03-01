@@ -3,6 +3,7 @@ const hre = require("hardhat");
 async function main() {
     const [deployer] = await hre.ethers.getSigners();
     console.log("Testing with account:", deployer.address);
+    console.log("Initial ETH balance:", hre.ethers.utils.formatEther(await deployer.getBalance()));
 
     const ascTokenAddress = "0xE6D3d358CB0A63C6B0851a2b4107Ed20387bB923";
     const usdcAddress = "0x176f5a08c4c4cfC364C35a309c093a8979344600";
@@ -34,38 +35,43 @@ async function main() {
 
     // Test 3: Set new price
     console.log("\nTest 3: Setting new price to 100 ASC/ETH, 100 ASC/USDC...");
-    console.log("Before: ", (await sale.ascPerPol()).toString(), "ASC/ETH,", (await sale.ascPerUsdc()).toString(), "ASC/USDC");
+    const initialEthPrice = await sale.ascPerPol();
+    const initialUsdcPrice = await sale.ascPerUsdc();
+    console.log("Before:", initialEthPrice.toString(), "ASC/ETH,", initialUsdcPrice.toString(), "ASC/USDC");
     const priceTx = await sale.setPrice(100, 100);
     await priceTx.wait();
-    console.log("New price set:", (await sale.ascPerPol()).toString(), "ASC/ETH,", (await sale.ascPerUsdc()).toString(), "ASC/USDC");
+    console.log("After:", (await sale.ascPerPol()).toString(), "ASC/ETH,", (await sale.ascPerUsdc()).toString(), "ASC/USDC");
 
     // Test 4: Auto-stake ETH in treasury
-    console.log("\nTest 4: Sending 2.2 ETH to treasury and staking...");
-    await deployer.sendTransaction({ to: treasuryAddress, value: hre.ethers.utils.parseEther("2.2") });
+    console.log("\nTest 4: Sending 0.5 ETH to treasury and staking...");
+    await deployer.sendTransaction({ to: treasuryAddress, value: hre.ethers.utils.parseEther("0.5") });
     await treasury.autoStake();
     console.log("Treasury balance:", hre.ethers.utils.formatEther(await hre.ethers.provider.getBalance(treasuryAddress)));
     console.log("Staked amount:", hre.ethers.utils.formatEther(await treasury.stakedAmount()));
 
     // Test 5: Wrap ETH to WPOL
-    console.log("\nTest 5: Wrapping 0.05 ETH to WPOL...");
-    await treasury.wrapPol(hre.ethers.utils.parseEther("0.05"));
+    console.log("\nTest 5: Wrapping 0.01 ETH to WPOL...");
+    await treasury.wrapPol(hre.ethers.utils.parseEther("0.01"));
     console.log("WPOL balance in treasury:", hre.ethers.utils.formatEther(await wpol.balanceOf(treasuryAddress)));
 
-    // Remaining tests unchanged...
+    // Test 6: Withdraw USDC from sale
     console.log("\nTest 6: Withdrawing 5 USDC from sale...");
     await sale.withdrawUsdc(hre.ethers.utils.parseUnits("5", 6));
     console.log("USDC balance in wallet:", hre.ethers.utils.formatUnits(await usdc.balanceOf(deployer.address), 6));
 
+    // Test 7: Withdraw ETH from sale
     console.log("\nTest 7: Withdrawing 0.05 ETH from sale...");
     await sale.withdrawPol();
     console.log("ETH balance in wallet:", hre.ethers.utils.formatEther(await deployer.getBalance()));
 
+    // Test 8: Withdraw ASC from sale
     console.log("\nTest 8: Withdrawing 1000 ASC from sale...");
     await sale.withdrawAsc(hre.ethers.utils.parseUnits("1000", 18));
     console.log("ASC balance in wallet:", hre.ethers.utils.formatUnits(await ascToken.balanceOf(deployer.address), 18));
 
-    console.log("\nTest 9: Withdrawing 0.02 WPOL from treasury...");
-    await treasury.withdrawWpol(hre.ethers.utils.parseEther("0.02"));
+    // Test 9: Withdraw WPOL from treasury
+    console.log("\nTest 9: Withdrawing 0.01 WPOL from treasury...");
+    await treasury.withdrawWpol(hre.ethers.utils.parseEther("0.01"));
     console.log("WPOL balance in wallet:", hre.ethers.utils.formatEther(await wpol.balanceOf(deployer.address)));
 }
 
