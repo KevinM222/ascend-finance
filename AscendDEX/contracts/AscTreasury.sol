@@ -3,12 +3,24 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+// Custom interface for WPOL (includes deposit function)
+interface IWPOL is IERC20 {
+    function deposit() external payable;
+    // Optional: add withdraw if you want to unwrap WPOL to POL later
+    // function withdraw(uint256 amount) external;
+}
+
 contract AscTreasury {
     address public owner = 0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1;
-    IERC20 public usdc;     // 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359
-    IERC20 public wpol;     // WPOL: 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270
+    IERC20 public usdc;     // USDC: 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359
+    IWPOL public wpol;      // WPOL: 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270
     uint256 public constant STAKE_AMOUNT = 100 ether; // 100 POL
     uint256 public constant GAS_RESERVE = 2 ether;    // 2 POL
+    
+    constructor(address _usdc, address _wpol) {
+        usdc = IERC20(_usdc);
+        wpol = IWPOL(_wpol);
+    }
     
     // Stake POL when balance hits 102 POL
     function autoStake() external {
