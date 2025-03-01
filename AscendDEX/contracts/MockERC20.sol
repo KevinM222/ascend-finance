@@ -20,8 +20,11 @@ contract MockERC20 is ERC20 {
         return _decimals;
     }
 
-    // Mint function to allow additional token minting
     function mint(address to, uint256 amount) public {
         _mint(to, amount);
+    }
+
+    function deposit() external payable {
+        _mint(msg.sender, msg.value); // Wraps POL (ETH locally) to WPOL
     }
 }

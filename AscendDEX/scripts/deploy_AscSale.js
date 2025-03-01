@@ -1,4 +1,4 @@
-// scripts/deploy_AscSale.js
+// C:\Users\User\Desktop\Ascend\AscendDEX\scripts\deploy_AscSale.js
 const hre = require("hardhat");
 
 async function main() {
@@ -7,21 +7,22 @@ async function main() {
     console.log("Account balance:", hre.ethers.utils.formatEther(await deployer.getBalance()));
 
     // Deploy TestASC
-    const initialSupply = hre.ethers.utils.parseUnits("1000000000", 18); // 1B ASC
+    const initialSupplyASC = hre.ethers.utils.parseUnits("1000000000", 18); // 1B ASC
     const TestASC = await hre.ethers.getContractFactory("TestASC");
-    const testASC = await TestASC.deploy(initialSupply);
+    const testASC = await TestASC.deploy(initialSupplyASC);
     await testASC.deployed();
     console.log("TestASC deployed to:", testASC.address);
 
-    // Deploy MockUSDC
-    const MockUSDC = await hre.ethers.getContractFactory("MockUSDC");
-    const mockUsdc = await MockUSDC.deploy();
+    // Deploy MockERC20 as USDC
+    const initialSupplyUSDC = hre.ethers.utils.parseUnits("1000000", 6); // 1M USDC
+    const MockERC20 = await hre.ethers.getContractFactory("MockERC20");
+    const mockUsdc = await MockERC20.deploy("USD Coin", "USDC", 6, initialSupplyUSDC);
     await mockUsdc.deployed();
     console.log("MockUSDC deployed to:", mockUsdc.address);
 
-    // Deploy MockWPOL
-    const MockWPOL = await hre.ethers.getContractFactory("MockWPOL");
-    const mockWpol = await MockWPOL.deploy();
+    // Deploy MockERC20 as WPOL
+    const initialSupplyWPOL = hre.ethers.utils.parseUnits("1000000", 18); // 1M WPOL
+    const mockWpol = await MockERC20.deploy("Wrapped POL", "WPOL", 18, initialSupplyWPOL);
     await mockWpol.deployed();
     console.log("MockWPOL deployed to:", mockWpol.address);
 
@@ -43,7 +44,7 @@ async function main() {
     await sale.depositAsc(ascAmount);
     console.log("Funded AscSale with 150M ASC");
 
-    // Test buying with POL
+    // Test buying with POL (ETH locally)
     const polAmount = hre.ethers.utils.parseUnits("10", 18); // 10 POL
     await sale.buyWithPol({ value: polAmount });
     console.log("Bought 500 ASC with 10 POL (8 POL to treasury, 2 POL to dev)");
@@ -57,7 +58,7 @@ async function main() {
     // Send more POL to treasury to trigger staking
     await deployer.sendTransaction({
         to: treasury.address,
-        value: hre.ethers.utils.parseUnits("102", 18) // 102 POL to hit threshold
+        value: hre.ethers.utils.parseUnits("102", 18) // 102 POL
     });
     await treasury.autoStake();
     console.log("Treasury POL balance after staking:", hre.ethers.utils.formatEther(await hre.ethers.provider.getBalance(treasury.address)));
