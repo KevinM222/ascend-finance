@@ -4,19 +4,18 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract AscSale {
-    IERC20 public ascToken; // ASC token address
-    IERC20 public usdc;     // USDC: 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359
+    IERC20 public ascToken;
+    IERC20 public usdc;
     address public treasury;
-    address public devWallet = 0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1;
-    uint256 public ascPerPol = 50;  // 1 POL = 50 ASC
-    uint256 public ascPerUsdc = 50; // 1 USDC = 50 ASC
+    address public devWallet; // Changed from hardcoded
+    uint256 public ascPerPol = 50;
+    uint256 public ascPerUsdc = 50;
     
-    event AscPurchased(address buyer, uint256 ascAmount, uint256 paidAmount, string currency);
-    
-    constructor(address _ascToken, address _usdc, address _treasury) {
+    constructor(address _ascToken, address _usdc, address _treasury, address _devWallet) {
         ascToken = IERC20(_ascToken);
         usdc = IERC20(_usdc);
         treasury = _treasury;
+        devWallet = _devWallet; // Set here
     }
     
     function buyWithPol() external payable {
