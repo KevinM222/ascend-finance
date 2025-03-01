@@ -12,8 +12,8 @@ if (!process.env.PRIVATE_KEY) {
   process.exit(1);
 }
 
-// Only check POLYGON_RPC_URL if provided, otherwise use default
-const POLYGON_RPC_URL = process.env.POLYGON_RPC_URL || "https://polygon-rpc.com"; // Updated RPC
+const POLYGON_RPC_URL = process.env.POLYGON_RPC_URL || "https://polygon-rpc.com";
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "https://rpc2.sepolia.org"; // Updated fallback
 
 const { task } = require("hardhat/config");
 task("block-number", "Prints the current block number").setAction(async (taskArgs, hre) => {
@@ -50,14 +50,14 @@ module.exports = {
       chainId: 31337,
     },
     sepolia: {
-      url: process.env.SEPOLIA_RPC_URL || "https://rpc.sepolia.org",
+      url: SEPOLIA_RPC_URL,
       chainId: 11155111,
       accounts: process.env.PRIVATE_KEY ? [`0x${process.env.PRIVATE_KEY}`] : [],
     },
     polygon: {
-      url: POLYGON_RPC_URL, // Updated to a working RPC
+      url: POLYGON_RPC_URL,
       chainId: 137,
-      accounts: process.env.ORIGINAL_PRIVATE_KEY ? [`0x${process.env.ORIGINAL_PRIVATE_KEY}`] : [],
+      accounts: process.env.PRIVATE_KEY ? [`0x${process.env.PRIVATE_KEY}`] : [], // Unified key
     },
   },
   etherscan: {
