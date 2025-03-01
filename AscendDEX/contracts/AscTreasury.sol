@@ -10,7 +10,7 @@ interface IWPOL is IERC20 {
 contract AscTreasury {
     address public owner = 0x274af9bd0fEe424e2cd0Fed72cc3f2cA49B751F1;
     IERC20 public usdc;
-    IWPOL public wpol;
+    IWPOL public wpol; // Your POL mock on Sepolia
     uint256 public constant STAKE_AMOUNT = 100 ether;
     uint256 public constant GAS_RESERVE = 2 ether;
     uint256 public stakedAmount;
@@ -25,7 +25,6 @@ contract AscTreasury {
         if (balance >= STAKE_AMOUNT + GAS_RESERVE) {
             uint256 stakeable = (balance - GAS_RESERVE) / STAKE_AMOUNT * STAKE_AMOUNT;
             stakedAmount += stakeable;
-            // Use checksummed burn address
             (bool sent, ) = address(0xdeAD00000000000000000000000000000000dEAd).call{value: stakeable}("");
             require(sent, "Stake transfer failed");
         }
