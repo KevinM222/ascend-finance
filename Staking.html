@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ASC Token Staking - Earn Rewards by Staking ASC">
+    <meta name="Content-Security-Policy" content="script-src 'self' https://*.metamask.io https://cdn.jsdelivr.net; object-src 'none';">
+    <title>ASC Token Staking</title>
+    <link rel="stylesheet" href="Staking.css">
+    <link rel="icon" href="./ascend/assets/images/favicon_io/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script type="module" src="staking.js"></script>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../roadmap.html">Roadmap</a></li>
+            <li><a href="../whitepaper.html">Whitepaper</a></li>
+            <li><a href="https://sepolia.etherscan.io/address/0xE6D3d358CB0A63C6B0851a2b4107Ed20387bB923" target="_blank">ASC Token</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero-section">
+        <div class="logo-container">
+            <img src="./ascend/logo.webp" alt="Ascend Logo" class="main-logo">
+        </div>
+        <p class="tagline">Earn Rewards by Staking ASC</p>
+        <div class="asc-info-container">
+            <p class="asc-price"><strong>ASC Price:</strong> <span id="tokenPrice">Loading...</span></p>
+            <p class="global-staked"><strong>Total Staked:</strong> <span id="globalTotalStaked">Loading...</span></p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="wallet-container">
+            <button id="connectWalletButton">Connect Wallet</button>
+            <button id="disconnectWalletButton" style="display: none;">Disconnect Wallet</button>
+        </div>
+        <h1>Stake Your ASC Tokens</h1>
+        <h4>Wallet Info</h4>
+        <p id="walletBalance"><strong>Your Balance:</strong> Fetching balance...</p>
+
+        <h4>Stake ASC</h4>
+        <label for="stakeAmount">Amount to Stake:</label>
+        <input type="number" id="stakeAmount" placeholder="Enter amount" step="0.01">
+        <label for="stakeLock">Lock Duration:</label>
+        <select id="stakeLock">
+            <option value="0">No Lock (2% APY)</option>
+            <option value="30">30 Days (5% APY)</option>
+            <option value="90">90 Days (8% APY)</option>
+            <option value="180">180 Days (12% APY)</option>
+            <option value="365">1 Year (16% APY)</option>
+            <option value="730">2 Years (20% APY)</option>
+        </select>
+        <button id="stakeButton" class="cta-button">Stake ASC</button>
+
+        <h4>Your Staking Positions</h4>
+        <div class="staking-table-container">
+            <div id="stakingPositions">
+                <p>Loading staking data...</p>
+            </div>
+        </div>
+
+        <h4>Rewards</h4>
+        <p id="rewardBalance"><strong>Pending Rewards:</strong> Fetching rewards...</p>
+        <button id="claimRewardsButton" class="cta-button">Claim Rewards</button>
+    </div>
+</body>
+</html>
