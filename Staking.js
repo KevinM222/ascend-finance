@@ -7,7 +7,7 @@ let provider, signer, stakingContract, ascContract, userAddress, updateInterval;
 async function updateGlobalStats() {
   const polygonProvider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
   try {
-    const stakingResponse = await fetch("./AscStakingABI.json");
+    const stakingResponse = await fetch("AscStakingABI.json");
     if (!stakingResponse.ok) throw new Error(`Failed to fetch AscStakingABI.json: ${stakingResponse.statusText}`);
     const stakingData = await stakingResponse.json();
     const stakingAbi = stakingData.abi || stakingData;
@@ -99,13 +99,13 @@ async function init() {
 
 async function initializeContracts() {
   try {
-    const stakingResponse = await fetch("./AscStakingABI.json");
+    const stakingResponse = await fetch("AscStakingABI.json");
     if (!stakingResponse.ok) throw new Error(`Failed to fetch AscStakingABI.json: ${stakingResponse.statusText}`);
     const stakingData = await stakingResponse.json(); // Read once
     let stakingAbi = stakingData.abi || stakingData; // Use .abi if present, otherwise assume the whole object is the ABI
     if (!Array.isArray(stakingAbi)) throw new Error("Staking ABI is not an array");
 
-    const ascResponse = await fetch("./AscTokenABI.json");
+    const ascResponse = await fetch("AscTokenABI.json");
     if (!ascResponse.ok) throw new Error(`Failed to fetch AscTokenABI.json: ${ascResponse.statusText}`);
     const ascData = await ascResponse.json(); // Read once
     let ascAbi = ascData.abi || ascData; // Use .abi if present, otherwise assume the whole object is the ABI
