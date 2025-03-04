@@ -1,3 +1,4 @@
+const { fetchASCPrice } = require('./utils.js'); // Adjust path
 const STAKING_CONTRACT = "0x6a663C5e104AAB49b5E09A0d2De94B4b340a4Aef";
 const ASC_TOKEN = "0x4456B0F017F6bF9b0aa7a0ac3d3F224902a1937A";
 const POLYGON_RPC = "https://polygon-rpc.com";
@@ -5,30 +6,25 @@ const POLYGON_RPC = "https://polygon-rpc.com";
 let provider, signer, stakingContract, ascContract, userAddress, updateInterval;
 
 async function updateGlobalStats() {
-  const polygonProvider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
-  try {
-    const stakingResponse = await fetch("AscStakingABI.json");
-    if (!stakingResponse.ok) throw new Error(`Failed to fetch AscStakingABI.json: ${stakingResponse.statusText}`);
-    const stakingData = await stakingResponse.json();
-    const stakingAbi = stakingData.abi || stakingData;
-    if (!Array.isArray(stakingAbi)) throw new Error("Staking ABI is not an array");
+    const polygonProvider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
+    try {
+        const stakingResponse = await fetch("AscStakingABI.json");
+        const stakingData = await stakingResponse.json();
+        const stakingAbi = stakingData.abi || stakingData;
+        if (!Array.isArray(stakingAbi)) throw new Error("Staking ABI is not an array");
 
-    const contract = new ethers.Contract(STAKING_CONTRACT, stakingAbi, polygonProvider);
-    const globalTotalStaked = await contract.totalStaked();
-    console.log("Global total staked:", ethers.utils.formatEther(globalTotalStaked));
+        const contract = new ethers.Contract(STAKING_CONTRACT, stakingAbi, polygonProvider);
+        const globalTotalStaked = await contract.totalStaked();
+        console.log("Global total staked:", ethers.utils.formatEther(globalTotalStaked));
 
-    document.getElementById("globalTotalStaked").innerText = `${parseFloat(ethers.utils.formatEther(globalTotalStaked)).toFixed(4)} ASC`;
-    document.getElementById("tokenPrice").innerText = "0.0008 POL"; // Hardcoded for now
-  } catch (error) {
-    console.error("Failed to fetch global stats:", {
-      message: error.message,
-      stack: error.stack,
-      rpc: "https://polygon-rpc.com",
-      contractAddress: STAKING_CONTRACT
-    });
-    document.getElementById("globalTotalStaked").innerText = "Loading...";
-    document.getElementById("tokenPrice").innerText = "0.0008 POL";
-  }
+        const ascPriceInPol = await fetchASCPrice();
+        document.getElementById("globalTotalStaked").innerText = `${parseFloat(ethers.utils.formatEther(globalTotalStaked)).toFixed(4)} ASC`;
+        document.getElementById("tokenPrice").innerText = `${ascPriceInPol.toFixed(4)} POL`; // Live price
+    } catch (error) {
+        console.error("Failed to fetch global stats:", error);
+        document.getElementById("globalTotalStaked").innerText = "Loading...";
+        document.getElementById("tokenPrice").innerText = "Loading...";
+    }
 }
 
 // Run on page load, independent of wallet
