@@ -56,5 +56,4 @@ async function fetchASCPrice() {
     }
 }
 
-// Expose fetchASCPrice globally
-window.fetchASCPrice = fetchASCPrice;
+export { fetchASCPrice }; // Export as ES Module
