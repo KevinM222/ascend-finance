@@ -11,8 +11,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <script type="module" src="Staking.js"></script>
-    
 </head>
 <body>
     <nav>
@@ -69,5 +67,8 @@
         <p id="rewardBalance"><strong>Pending Rewards:</strong> Fetching rewards...</p>
         <button id="claimRewardsButton" class="cta-button">Claim Rewards</button>
     </div>
+
+    <!-- Load Staking.js as a module at the end -->
+    <script type="module" src="Staking.js"></script>
 </body>
 </html>
