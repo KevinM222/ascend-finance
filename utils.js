@@ -41,23 +41,23 @@ async function fetchASCPrice() {
         console.log("✅ Token1:", token1);
         console.log("✅ Is ASC Token0?", isAscToken0);
 
-        // Correct Uniswap V3 price calculation
+        // Uniswap V3 price: sqrtPriceX96 = sqrt(token1/token0) * 2^96
         const Q96 = ethers.BigNumber.from(2).pow(96);
-        const price = sqrtPriceX96.mul(sqrtPriceX96).mul(ethers.BigNumber.from(10).pow(18)).div(Q96).div(Q96);
-        let ascPriceInPol;
+        const sqrtPrice = sqrtPriceX96.div(Q96);
+        const price = sqrtPrice.mul(sqrtPrice);
+        const priceAdjusted = parseFloat(ethers.utils.formatUnits(price, 18)); // token1/token0
 
+        let ascPriceInPol;
         if (isAscToken0) {
-            // ASC is token0, POL is token1: price is POL per ASC
-            ascPriceInPol = parseFloat(ethers.utils.formatUnits(price, 18));
+            // ASC (token0), POL (token1): price is POL per ASC
+            ascPriceInPol = priceAdjusted;
         } else {
-            // ASC is token1, POL is token0: price is ASC per POL, invert
-            ascPriceInPol = 1 / parseFloat(ethers.utils.formatUnits(price, 18));
+            // ASC (token1), POL (token0): price is ASC per POL, invert
+            ascPriceInPol = 1 / priceAdjusted;
         }
 
+        console.log("✅ Raw Price (token1/token0):", priceAdjusted);
         console.log("✅ ASC Price in POL:", ascPriceInPol);
-        // Optional: Return ASC/USD to match index.js if desired
-        // const ascPriceInUsd = ascPriceInPol * polPrice;
-        // console.log("✅ ASC/USD Price:", ascPriceInUsd);
         return ascPriceInPol;
     } catch (error) {
         console.error("❌ Failed to fetch ASC price:", error.message);
