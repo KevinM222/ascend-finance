@@ -52,13 +52,13 @@ async function fetchASCPrice() {
             // ASC (token0), POL (token1): price is POL per ASC
             ascPriceInPol = priceAdjusted;
         } else {
-            // ASC (token1), POL (token0): price is ASC per POL, invert to POL per ASC
-            ascPriceInPol = 1 / priceAdjusted;
+            // ASC (token1), POL (token0): price is ASC per POL, invert correctly
+            ascPriceInPol = 1 / priceAdjusted; // POL per ASC
         }
 
         console.log("✅ Raw Price (token1/token0):", priceAdjusted);
         console.log("✅ ASC Price in POL:", ascPriceInPol);
-        return ascPriceInPol;
+        return ascPriceInPol; // Returns POL per ASC
     } catch (error) {
         console.error("❌ Failed to fetch ASC price:", error.message);
         return 0;
