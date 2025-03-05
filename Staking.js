@@ -1,3 +1,6 @@
+// C:\Users\User\Desktop\Ascend\frontend\Staking.js
+import { fetchASCPrice } from './utils.js'; // Use ES Module import
+
 const STAKING_CONTRACT = "0x6a663C5e104AAB49b5E09A0d2De94B4b340a4Aef";
 const ASC_TOKEN = "0x4456B0F017F6bF9b0aa7a0ac3d3F224902a1937A";
 const POLYGON_RPC = "https://polygon-rpc.com";
@@ -16,7 +19,7 @@ async function updateGlobalStats() {
         const globalTotalStaked = await contract.totalStaked();
         console.log("Global total staked:", ethers.utils.formatEther(globalTotalStaked));
 
-        const ascPriceInPol = await fetchASCPrice(); // Now uses the global function
+        const ascPriceInPol = await fetchASCPrice();
         document.getElementById("globalTotalStaked").innerText = `${parseFloat(ethers.utils.formatEther(globalTotalStaked)).toFixed(4)} ASC`;
         document.getElementById("tokenPrice").innerText = `${ascPriceInPol.toFixed(4)} POL`;
     } catch (error) {
@@ -27,7 +30,14 @@ async function updateGlobalStats() {
 }
 
 // Run on page load, independent of wallet
-updateGlobalStats();
+try {
+    updateGlobalStats();
+} catch (error) {
+    console.error("Initial updateGlobalStats failed:", error);
+}
+
+// ... rest of your Staking.js code unchanged
+
 
 async function init() {
   if (!window.ethereum) {
