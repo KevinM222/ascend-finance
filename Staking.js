@@ -1,5 +1,5 @@
 // C:\Users\User\Desktop\Ascend\frontend\Staking.js
-import { fetchASCPrice } from './utils.js'; // Use ES Module import
+import { fetchASCPrice } from './utils.js'; // Ensure this is at the top
 
 const STAKING_CONTRACT = "0x6a663C5e104AAB49b5E09A0d2De94B4b340a4Aef";
 const ASC_TOKEN = "0x4456B0F017F6bF9b0aa7a0ac3d3F224902a1937A";
@@ -19,7 +19,7 @@ async function updateGlobalStats() {
         const globalTotalStaked = await contract.totalStaked();
         console.log("Global total staked:", ethers.utils.formatEther(globalTotalStaked));
 
-        const ascPriceInPol = await fetchASCPrice();
+        const ascPriceInPol = await fetchASCPrice(); // Line 19 - this should now work
         document.getElementById("globalTotalStaked").innerText = `${parseFloat(ethers.utils.formatEther(globalTotalStaked)).toFixed(4)} ASC`;
         document.getElementById("tokenPrice").innerText = `${ascPriceInPol.toFixed(4)} POL`;
     } catch (error) {
