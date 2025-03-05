@@ -45,15 +45,15 @@ async function fetchASCPrice() {
         const Q96 = ethers.BigNumber.from(2).pow(96);
         const sqrtPrice = sqrtPriceX96.div(Q96);
         const price = sqrtPrice.mul(sqrtPrice);
-        const priceAdjusted = parseFloat(ethers.utils.formatUnits(price, 18)); // token1/token0
+        const priceAdjusted = parseFloat(ethers.utils.formatUnits(price, 18)); // token1/token0 = ASC/POL
 
         let ascPriceInPol;
         if (isAscToken0) {
             // ASC (token0), POL (token1): price is POL per ASC
             ascPriceInPol = priceAdjusted;
         } else {
-            // ASC (token1), POL (token0): price is ASC per POL, we want POL per ASC
-            ascPriceInPol = priceAdjusted; // No invert - index.js implies POL per ASC directly
+            // ASC (token1), POL (token0): price is ASC per POL, invert to POL per ASC
+            ascPriceInPol = 1 / priceAdjusted;
         }
 
         console.log("✅ Raw Price (token1/token0):", priceAdjusted);
