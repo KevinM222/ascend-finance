@@ -41,13 +41,13 @@ async function fetchASCPrice() {
         console.log("✅ Token1:", token1);
         console.log("✅ Is ASC Token0?", isAscToken0);
 
-        // Match index.js logic
+        // Match index.js logic, but return POL/ASC
         const priceRatio = Math.pow(sqrtPriceX96.toString() / Math.pow(2, 96), 2); // ASC/POL ≈ 0.000826
-        const ascPriceInPol = priceRatio; // ASC/POL, not inverted
+        const ascPriceInPol = 1 / priceRatio; // POL/ASC ≈ 1208
 
         console.log("✅ Raw Price (token1/token0):", priceRatio);
         console.log("✅ ASC Price in POL:", ascPriceInPol);
-        return ascPriceInPol; // Returns ASC/POL to match index.js scale
+        return priceRatio; // Return ASC/POL to match index.js scale, adjusted below
     } catch (error) {
         console.error("❌ Failed to fetch ASC price:", error.message);
         return 0;
