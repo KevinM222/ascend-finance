@@ -17,25 +17,28 @@
     "dotenv": "^16.4.7",
     "ethereum-waffle": "^4.0.10",
     "ethers": "^5.7.2",
-    "hardhat": "^2.22.0",
+    "hardhat": "^2.22.10",
     "hardhat-console": "^1.0.0",
     "hardhat-gas-reporter": "^1.0.10",
     "mocha": "^10.2.0",
     "prettier": "^2.8.8"
   },
   "dependencies": {
-    "@chainlink/contracts": "^0.4.1",
+    "@chainlink/contracts": "^0.6.1",
     "@openzeppelin/contracts": "^5.0.1",
     "ganache": "^7.9.2",
     "glob": "^11.0.1",
     "har-validator": "^5.1.5",
     "rimraf": "^6.0.1",
+    "tough-cookie": "^4.1.4",
     "uuid": "^11.0.5"
-  }
-
-  {
-    "optionalDependencies": {
-      "fsevents": "^2.3.2"
-    }
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.3.2"
+  },
+  "resolutions": {
+    "cookie": "^0.7.0",
+    "elliptic": "^6.5.7",
+    "secp256k1": "^5.0.0"
   }
 }
