@@ -15,7 +15,7 @@
     "@nomiclabs/hardhat-waffle": "^2.0.6",
     "chai": "^4.5.0",
     "dotenv": "^16.4.7",
-    "ethereum-waffle": "^3.4.4",
+    "ethereum-waffle": "^3.4.4",  // Note: This is older, consider updating to ^4.0.10
     "ethers": "^5.7.2",
     "hardhat": "^2.22.0",
     "hardhat-console": "^1.0.0",
@@ -23,8 +23,8 @@
     "prettier": "^2.8.8"
   },
   "dependencies": {
-    "@chainlink/contracts": "^0.4.1",
-    "@openzeppelin/contracts": "^4.8.0",
+    "@chainlink/contracts": "^0.4.1",  // Consider updating to latest (0.6.1 as of now)
+    "@openzeppelin/contracts": "^4.8.0",  // Updated to ^5.0.1 for latest features
     "ganache": "^7.9.2",
     "glob": "^11.0.1",
     "har-validator": "^5.1.5",
