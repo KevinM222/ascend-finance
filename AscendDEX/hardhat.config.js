@@ -1,12 +1,11 @@
 require("dotenv").config();
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ethers");
-require("@nomiclabs/hardhat-etherscan");
+require("@nomicfoundation/hardhat-verify"); // Replace @nomiclabs/hardhat-etherscan
+require("hardhat-gas-reporter"); // Added from previous steps
 
-// Debug: Show the selected network
 console.log("Using network:", process.env.HARDHAT_NETWORK || "hardhat");
 
-// Ensure required .env variables are set for non-hardhat networks
 if (!process.env.PRIVATE_KEY && process.env.HARDHAT_NETWORK !== "hardhat") {
   console.error("❌ ERROR: PRIVATE_KEY is not set in .env");
   process.exit(1);
@@ -26,31 +25,17 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.20", // Updated to latest stable version
-        settings: { 
-          optimizer: { 
-            enabled: true, 
-            runs: 200 
-          },
-          evmVersion: "paris" // Specify EVM version
-        },
+        version: "0.8.19",
+        settings: { optimizer: { enabled: true, runs: 200 } },
       },
       {
-        version: "0.8.0", // Keep for backwards compatibility
-        settings: { 
-          optimizer: { 
-            enabled: true, 
-            runs: 200 
-          }
-        },
+        version: "0.8.0",
+        settings: { optimizer: { enabled: true, runs: 200 } },
       },
     ],
     overrides: Object.fromEntries(
       ["Treasury.sol", "ModularDEX.sol", "MockERC20.sol", "MockPriceFeeds.sol"].map(contract => [
-        `contracts/${contract}`, { 
-          version: "0.8.0",
-          settings: { optimizer: { enabled: true, runs: 200 } }
-        }
+        `contracts/${contract}`, { version: "0.8.0" }
       ])
     ),
   },
@@ -58,15 +43,6 @@ module.exports = {
     hardhat: {
       chainId: 31337,
       allowUnlimitedContractSize: true,
-      // Add forking capability for testing with real data
-      forking: {
-        enabled: false, // Enable this if you want to fork Polygon
-        url: POLYGON_RPC_URL,
-      },
-      accounts: {
-        mnemonic: "test test test test test test test test test test test junk",
-        count: 10,
-      },
     },
     localhost: {
       url: "http://127.0.0.1:8545",
@@ -76,34 +52,29 @@ module.exports = {
       url: SEPOLIA_RPC_URL,
       chainId: 11155111,
       accounts: process.env.PRIVATE_KEY ? [`0x${process.env.PRIVATE_KEY}`] : [],
-      gasPrice: 20000000000, // 20 gwei
     },
     polygon: {
       url: POLYGON_RPC_URL,
       chainId: 137,
       accounts: process.env.PRIVATE_KEY ? [`0x${process.env.PRIVATE_KEY}`] : [],
-      gasPrice: 35000000000, // 35 gwei - adjust based on network conditions
     },
   },
-  etherscan: {
-    apiKey: {
-      polygon: process.env.POLYGONSCAN_API_KEY,
-      sepolia: process.env.ETHERSCAN_API_KEY,
-    },
-    customChains: [
-      {
-        network: "polygon",
-        chainId: 137,
-        urls: {
-          apiURL: "https://api.polygonscan.com/api",
-          browserURL: "https://polygonscan.com",
-        },
+  verify: { // Replace etherscan with verify
+    etherscan: {
+      apiKey: {
+        polygon: process.env.POLYGONSCAN_API_KEY,
+        sepolia: process.env.ETHERSCAN_API_KEY,
       },
-    ],
+    },
   },
-  // Add mocha configuration for better test output
+  gasReporter: {
+    enabled: process.env.REPORT_GAS ? true : false,
+    currency: "USD",
+    gasPrice: 35,
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+  },
   mocha: {
     timeout: 40000,
-    reporter: 'spec'
+    reporter: "spec",
   },
 };
